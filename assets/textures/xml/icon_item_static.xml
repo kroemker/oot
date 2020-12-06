@@ -1,6 +1,7 @@
 <Root>
     <File Name="icon_item_static">
-        <Texture Name="Deku_Stick" Format="rgba32" Width="32" Height="32"/>
+        <Texture Name="Fairy_Bow_Bomb" Format="rgba32" Width="32" Height="32"/>
+        <!--<Texture Name="Deku_Stick" Format="rgba32" Width="32" Height="32"/>-->
         <Texture Name="Deku_Nut" Format="rgba32" Width="32" Height="32"/>
         <Texture Name="Bomb" Format="rgba32" Width="32" Height="32"/>
         <Texture Name="Fairy_Bow" Format="rgba32" Width="32" Height="32"/>

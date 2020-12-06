@@ -82,7 +82,8 @@ typedef enum {
 } InventorySlot;
 
 typedef enum {
-    /* 0x00 */ ITEM_STICK,
+    /* 0x00 */ ITEM_STICK = 0x00,
+    /* 0x00 */ ITEM_BOW_ARROW_BOMB = 0x00,
     /* 0x01 */ ITEM_NUT,
     /* 0x02 */ ITEM_BOMB,
     /* 0x03 */ ITEM_BOW,
@@ -97,6 +98,7 @@ typedef enum {
     /* 0x0C */ ITEM_ARROW_ICE,
     /* 0x0D */ ITEM_FARORES_WIND,
     /* 0x0E */ ITEM_BOOMERANG,
+    /* 0x0E */ ITEM_BOW_ARROW_TELEPORT = 0x0E,
     /* 0x0F */ ITEM_LENS,
     /* 0x10 */ ITEM_BEAN,
     /* 0x11 */ ITEM_HAMMER,

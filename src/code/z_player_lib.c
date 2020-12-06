@@ -12,13 +12,32 @@ typedef struct {
 
 SkeletonHeader* gPlayerSkelHeaders[] = { 0x060377F4, 0x0602CF6C };
 
+
+/* REG(19) = bootRegs[0];
+    REG(30) = bootRegs[1];
+    REG(32) = bootRegs[2];
+    REG(34) = bootRegs[3];
+    REG(35) = bootRegs[4];
+    REG(36) = bootRegs[5];
+    REG(37) = bootRegs[6]; 
+    REG(38) = bootRegs[7]; // LEG ANIM SPEED
+    REG(43) = bootRegs[8]; // AFTER JUMP DEACCELERATION
+    REG(45) = bootRegs[9]; // MAX SPEED
+    REG(68) = bootRegs[10]; //GRAVITY
+    REG(69) = bootRegs[11]; 
+    IREG(66) = bootRegs[12]; // BIG JUMP SPEED THRESHOLD
+    IREG(67) = bootRegs[13]; // BIG JUMP HEIGHT
+    IREG(68) = bootRegs[14]; // SMALL JUMP BASE HEIGHT
+    IREG(69) = bootRegs[15]; // SMALL JUMP VELOCITY MULTIPLIER * 1000
+    MREG(95) = bootRegs[16];*/ // STRAFING ANIMATION SPEED COEFFICIENT
 s16 sBootData[PLAYER_BOOTS_MAX][17] = {
-    { 200, 1000, 300, 700, 550, 270, 600, 350, 800, 600, -100, 600, 590, 750, 125, 200, 130 },
-    { 200, 1000, 300, 700, 550, 270, 1000, 0, 800, 300, -160, 600, 590, 750, 125, 200, 130 },
-    { 200, 1000, 300, 700, 550, 270, 600, 600, 800, 550, -100, 600, 540, 270, 25, 0, 130 },
-    { 200, 1000, 300, 700, 380, 400, 0, 300, 800, 500, -100, 600, 590, 750, 125, 200, 130 },
-    { 80, 800, 150, 700, 480, 270, 600, 50, 800, 550, -40, 400, 540, 270, 25, 0, 80 },
-    { 200, 1000, 300, 800, 500, 400, 800, 400, 800, 550, -100, 600, 540, 750, 125, 400, 200 },
+//    R19, R30 , R32, R34, R35, R36, R37, R38, R43, R45, R68,  R69,IR66,IR67,IR68,IR69,MR(95)
+    { 200, 1000, 300, 700, 550, 270, 600, 350, 800, 600, -100, 600, 590, 750, 125, 200, 130 }, //NORMAL
+    { 200, 1000, 300, 700, 550, 270, 1000, 0, 800, 300, -160, 600, 590, 750, 125, 200, 130 }, //IRON
+    { 200, 1000, 300, 700, 550, 270, 600, 600, 800, 550, -100, 600, 540, 270, 25, 0, 130 }, //HOVER
+    { 200, 1000, 300, 700, 380, 400, 0, 300, 800, 500, -100, 600, 590, 750, 125, 200, 130 }, //INDOOR
+    { 80, 800, 150, 700, 480, 270, 600, 50, 800, 550, -40, 400, 540, 270, 25, 0, 80 }, //IRON_UNDERWATER
+    { 200, 1000, 300, 800, 500, 400, 800, 400, 800, 550, -100, 600, 540, 750, 125, 400, 200 }, //NORMAL_CHILD
 };
 
 // Used to map action params to model groups

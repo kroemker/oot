@@ -18,6 +18,8 @@
 
 #define THIS ((Player*)thisx)
 
+#define NON_MATCHING 1
+
 typedef struct {
     /* 0x00 */ u8 itemId;
     /* 0x01 */ u8 field; // various bit-packed data
@@ -1738,6 +1740,10 @@ s8 Player_ItemToActionParam(s32 item) {
         return PLAYER_AP_LAST_USED;
     } else if (item == ITEM_FISHING_POLE) {
         return PLAYER_AP_FISHING_POLE;
+    } else if (item == ITEM_BOW_ARROW_BOMB) {
+        return PLAYER_AP_BOW_BOMB;
+    } else if (item == ITEM_BOW_ARROW_TELEPORT) {
+        return PLAYER_AP_BOW_TELEPORT;
     } else {
         return sItemActionParams[item];
     }
@@ -1911,7 +1917,7 @@ s32 func_80833C98(s32 item1, s32 actionParam) {
     }
 }
 
-s32 func_80833CDC(GlobalContext* globalCtx, s32 index) {
+s32 Player_GetButtonItem(GlobalContext* globalCtx, s32 index) {
     if (index >= 4) {
         return ITEM_NONE;
     } else if (globalCtx->bombchuBowlingAmmo != 0) {
@@ -1955,7 +1961,7 @@ void func_80833DF8(Player* this, GlobalContext* globalCtx) {
             }
         }
 
-        item = func_80833CDC(globalCtx, i);
+        item = Player_GetButtonItem(globalCtx, i);
         if (item >= ITEM_NONE_FE) {
             for (i = 0; i < ARRAY_COUNT(D_80854388); i++) {
                 if (CHECK_BTN_ALL(sControlInput->cur.button, D_80854388[i])) {
@@ -1963,7 +1969,7 @@ void func_80833DF8(Player* this, GlobalContext* globalCtx) {
                 }
             }
 
-            item = func_80833CDC(globalCtx, i);
+            item = Player_GetButtonItem(globalCtx, i);
             if ((item < ITEM_NONE_FE) && (Player_ItemToActionParam(item) == this->heldItemActionParam)) {
                 D_80853618 = true;
             }
@@ -2087,6 +2093,9 @@ s32 func_8083442C(Player* this, GlobalContext* globalCtx) {
                 if (this->unk_860 >= 0) {
                     if ((magicArrowType >= 0) && (magicArrowType < 3) &&
                         !func_80087708(globalCtx, sMagicArrowCosts[magicArrowType], 0)) {
+                        arrowType = 2;
+                    }
+                    if ((magicArrowType == 3) && (AMMO(ITEM_BOMB) == 0)) {
                         arrowType = 2;
                     }
 
@@ -2382,6 +2391,9 @@ s32 func_808350A4(GlobalContext* globalCtx, Player* this) {
             } else if (globalCtx->unk_11E5C != 0) {
                 globalCtx->unk_11E5C--;
             } else {
+                if (this->heldItemActionParam == PLAYER_AP_BOW_BOMB) {
+                    Inventory_ChangeAmmo(ITEM_BOMB, -1);
+                }
                 Inventory_ChangeAmmo(item, -1);
             }
 
@@ -9748,7 +9760,7 @@ void func_80848A04(GlobalContext* globalCtx, Player* this) {
     f32 temp;
 
     if (this->unk_85C == 0.0f) {
-        func_80835F44(globalCtx, this, 0xFF);
+        func_80835F44(globalCtx, this, ITEM_NONE);
         return;
     }
 
@@ -10693,7 +10705,7 @@ s32 func_8084B3CC(GlobalContext* globalCtx, Player* this) {
         func_80835C58(globalCtx, this, func_8084FA54, 0);
 
         if (!func_8002DD6C(this) || Player_HoldsHookshot(this)) {
-            func_80835F44(globalCtx, this, 3);
+            func_80835F44(globalCtx, this, ITEM_BOW);
         }
 
         this->stateFlags1 |= 0x100000;

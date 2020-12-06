@@ -579,11 +579,7 @@ endseg
 beginseg
     name "ovl_player_actor"
     include "build/src/overlays/actors/ovl_player_actor/z_player.o"
-#ifdef NON_MATCHING
     include "build/src/overlays/actors/ovl_player_actor/ovl_player_actor_reloc.o"
-#else
-    include "build/data/overlays/actors/z_player.reloc.o"
-#endif
 endseg
 
 beginseg
@@ -605,6 +601,12 @@ beginseg
 endseg
 
 beginseg
+    name "ovl_Arrow_Bomb"
+    include "build/src/overlays/actors/ovl_Arrow_Bomb/z_arrow_bomb.o"
+    include "build/src/overlays/actors/ovl_Arrow_Bomb/ovl_Arrow_Bomb_reloc.o"
+endseg
+
+beginseg
     name "ovl_Arrow_Fire"
     include "build/src/overlays/actors/ovl_Arrow_Fire/z_arrow_fire.o"
     include "build/src/overlays/actors/ovl_Arrow_Fire/ovl_Arrow_Fire_reloc.o"
@@ -620,6 +622,12 @@ beginseg
     name "ovl_Arrow_Light"
     include "build/src/overlays/actors/ovl_Arrow_Light/z_arrow_light.o"
     include "build/src/overlays/actors/ovl_Arrow_Light/ovl_Arrow_Light_reloc.o"
+endseg
+
+beginseg
+    name "ovl_Arrow_Teleport"
+    include "build/src/overlays/actors/ovl_Arrow_Teleport/z_arrow_teleport.o"
+    include "build/src/overlays/actors/ovl_Arrow_Teleport/ovl_Arrow_Teleport_reloc.o"
 endseg
 
 beginseg

@@ -564,7 +564,7 @@ typedef enum {
     /* 0x010A */ ACTOR_ARROW_FIRE,
     /* 0x010B */ ACTOR_ARROW_ICE,
     /* 0x010C */ ACTOR_ARROW_LIGHT,
-    /* 0x010D */ ACTOR_UNSET_10D,
+    /* 0x010D */ ACTOR_ARROW_BOMB,
     /* 0x010E */ ACTOR_UNSET_10E,
     /* 0x010F */ ACTOR_ITEM_ETCETERA,
     /* 0x0110 */ ACTOR_OBJ_KIBAKO,

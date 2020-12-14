@@ -170,7 +170,7 @@ void ArrowIce_Fly(ArrowIce* this, GlobalContext* globalCtx) {
     // check collision
     func_8002E4B4(globalCtx, &this->actor, 0.0f, 0.0f, 0.0f, 4);
     if (this->actor.bgCheckFlags & 0x20) { // underwater
-        if (!Object_IsLoaded(&globalCtx->objectCtx, OBJECT_SPOT08_OBJ)) {
+        if (!Object_IsLoaded(&globalCtx->objectCtx, Object_GetIndex(&globalCtx->objectCtx, OBJECT_SPOT08_OBJ))) {
             Object_Spawn(&globalCtx->objectCtx, OBJECT_SPOT08_OBJ);
         }
         Actor_Spawn(&globalCtx->actorCtx, globalCtx, 

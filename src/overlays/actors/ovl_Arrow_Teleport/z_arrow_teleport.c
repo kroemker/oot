@@ -6,6 +6,7 @@
 
 #include "z_arrow_teleport.h"
 #include "overlays/actors/ovl_En_Arrow/z_en_arrow.h"
+#include "overlays/effects/ovl_Effect_Ss_Fhg_Flash/z_eff_ss_fhg_flash.h"
 
 #define FLAGS 0x02000010
 
@@ -73,8 +74,18 @@ void ArrowTeleport_Charge(ArrowTeleport* this, GlobalContext* globalCtx) {
     }
 }
 
+void ArrowTeleport_WaitForDeletion(ArrowTeleport* this, GlobalContext* globalCtx) {
+    EnArrow* arrow = (EnArrow*)this->actor.parent;
+    if ((arrow == NULL) || (arrow->actor.update == NULL)) {
+        Actor_Kill(&this->actor);
+        return;
+    }
+}
+
 void ArrowTeleport_Hit(ArrowTeleport* this, GlobalContext* globalCtx) {
-    PLAYER->actor.posRot.pos = this->actor.posRot.pos;
+    Player* player = PLAYER;
+    player->actor.posRot.pos = this->actor.posRot.pos;
+
     Actor_Kill(&this->actor);
 }
 

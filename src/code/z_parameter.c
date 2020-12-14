@@ -2273,6 +2273,7 @@ void func_800876C8(GlobalContext* globalCtx) {
     }
 }
 
+// can use magic, handles reduction of magic etc.
 s32 func_80087708(GlobalContext* globalCtx, s16 arg1, s16 arg2) {
     if (!gSaveContext.magicAcquired) {
         return 0;
@@ -2833,8 +2834,6 @@ void Interface_DrawItemButtons(GlobalContext* globalCtx) {
 
 void Interface_DrawItemIconTexture(GlobalContext* globalCtx, void* texture, s16 button) {
     OPEN_DISPS(globalCtx->state.gfxCtx, "../z_parameter.c", 3079);
-
-    osSyncPrintf("draw item icon. texptr: %08x, button: %d\n", (u32)texture, button);
 
     gDPLoadTextureBlock(OVERLAY_DISP++, texture, G_IM_FMT_RGBA, G_IM_SIZ_32b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
                         G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);

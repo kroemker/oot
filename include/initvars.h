@@ -277,6 +277,7 @@ extern ActorInit Arrow_Ice_InitVars;
 extern ActorInit Arrow_Light_InitVars;
 extern ActorInit Arrow_Bomb_InitVars;
 extern ActorInit Arrow_Teleport_InitVars;
+extern ActorInit Light_Ball_InitVars;
 extern ActorInit Item_Etcetera_InitVars;
 extern ActorInit Obj_Kibako_InitVars;
 extern ActorInit Obj_Tsubo_InitVars;

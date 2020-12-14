@@ -74,7 +74,8 @@ typedef enum {
     /* 0x12 */ PLAYER_AP_BOMB,
     /* 0x13 */ PLAYER_AP_BOMBCHU,
     /* 0x14 */ PLAYER_AP_BOOMERANG,
-    /* 0x15 */ PLAYER_AP_MAGIC_SPELL_15,
+               PLAYER_AP_MAGIC_SPELL_15,
+    /* 0x15 */ PLAYER_AP_LIGHT_BALL = 0x15,
     /* 0x16 */ PLAYER_AP_MAGIC_SPELL_16,
     /* 0x17 */ PLAYER_AP_MAGIC_SPELL_17,
     /* 0x18 */ PLAYER_AP_FARORES_WIND,
@@ -120,7 +121,8 @@ typedef enum {
     /* 0x40 */ PLAYER_AP_MASK_GERUDO,
     /* 0x41 */ PLAYER_AP_MASK_TRUTH,
     /* 0x42 */ PLAYER_AP_LENS,
-    /* 0x43 */ PLAYER_AP_MAX
+               PLAYER_AP_FEATHER,
+    /* 0x44 */ PLAYER_AP_MAX
 } PlayerActionParam;
 
 typedef enum {
@@ -372,6 +374,8 @@ typedef struct Player {
     /* 0x0A86 */ s8         unk_A86;
     /* 0x0A87 */ u8         unk_A87;
     /* 0x0A88 */ Vec3f      unk_A88; // previous body part 0 position
-} Player; // size = 0xA94
+
+    s32 doubleJumpTimer;
+} Player; // size = 0xA94 + 1
 
 #endif

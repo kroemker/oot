@@ -333,6 +333,8 @@ s32 func_80852FFC(GlobalContext* globalCtx, Actor* actor, s32 csMode);
 void func_80853080(Player* this, GlobalContext* globalCtx);
 s32 Player_InflictDamage(GlobalContext* globalCtx, s32 damage);
 void func_80853148(GlobalContext* globalCtx, Actor* actor);
+Actor* Player_SpawnMagicSpell(GlobalContext* globalCtx, Player* this, s32 spell);
+void Player_FeatherJump(Player* this, GlobalContext* globalCtx, LinkAnimetionEntry* anim);
 
 // .bss part 1
 s32 D_80858AA0;
@@ -1187,6 +1189,7 @@ extern LinkAnimetionEntry D_040033A0;
 extern LinkAnimetionEntry D_040033B0;
 extern LinkAnimetionEntry D_040033B8;
 extern LinkAnimetionEntry D_040033C8;
+LinkAnimetionEntry* testAnims[] = {&D_04002340, &D_04002378, &D_04002400, &D_04002408, &D_04002420, &D_04002428, &D_04002430, &D_04002468, &D_040024E8, &D_040024F8, &D_04002538, &D_040025F8, &D_04002600, &D_04002608, &D_04002618, &D_04002620, &D_04002628, &D_04002630, &D_04002638, &D_04002650, &D_04002660, &D_04002668, &D_04002670, &D_04002688, &D_04002698, &D_040026A0, &D_040026B0, &D_040026B8, &D_040026E8, &D_04002700, &D_04002708, &D_04002770, &D_04002780, &D_04002788, &D_040027D0, &D_04002830, &D_04002838, &D_04002860, &D_04002878, &D_04002908, &D_04002AC8, &D_04002C00, &D_04002C08, &D_04002C10, &D_04002C18, &D_04002C20, &D_04002C28, &D_04002C30, &D_04002C38, &D_04002C90, &D_04002C98, &D_04002CA0, &D_04002D28, &D_04002D38, &D_04002D40, &D_04002D48, &D_04002D68, &D_04002D80, &D_04002D88, &D_04002DA0, &D_04002DA8, &D_04002DB0, &D_04002DB8, &D_04002DC0, &D_04002DD0, &D_04002DF0, &D_04002DF8, &D_04002E10, &D_04002E48, &D_04002E90, &D_04002EC8, &D_04002F00, &D_04002F08, &D_04002F10, &D_04002F28, &D_04002F30, &D_04002F40, &D_04002F58, &D_04002F60, &D_04002F68, &D_04002F98, &D_04002FA0, &D_04002FD0, &D_04002FE0, &D_04003000, &D_04003020, &D_04003040, &D_04003048, &D_04003050, &D_04003060, &D_04003068, &D_04003070, &D_04003098, &D_040030A0, &D_040030A8, &D_040030E0, &D_040030F0, &D_040030F8, &D_04003100, &D_04003108, &D_04003120, &D_04003128, &D_04003148, &D_04003150, &D_04003158, &D_04003160, &D_040031A0, &D_040031A8, &D_04003298, &D_040032B0, &D_040032B8, &D_040032C0, &D_040032C8, &D_040032D0, &D_040032D8, &D_040032E0, &D_040032E8, &D_040032F0, &D_04003300, &D_04003308, &D_04003310, &D_04003318, &D_04003320, &D_04003328, &D_04003330, &D_04003380, &D_04003390, &D_040033A0, &D_040033B0, &D_040033B8, &D_040033C8};
 extern Gfx D_04037E30[];
 extern Gfx D_04033EE0[];
 
@@ -1744,6 +1747,10 @@ s8 Player_ItemToActionParam(s32 item) {
         return PLAYER_AP_BOW_BOMB;
     } else if (item == ITEM_BOW_ARROW_TELEPORT) {
         return PLAYER_AP_BOW_TELEPORT;
+    } else if (item == ITEM_LIGHT_BALL) {
+        return PLAYER_AP_LIGHT_BALL;
+    } else if (item == ITEM_FEATHER) {
+        return PLAYER_AP_FEATHER;
     } else {
         return sItemActionParams[item];
     }
@@ -2744,6 +2751,7 @@ void func_80835E44(GlobalContext* globalCtx, s16 arg1) {
     }
 }
 
+// set camera for magic spells except dins
 void func_80835EA4(GlobalContext* globalCtx, s32 arg1) {
     func_80835E44(globalCtx, 0x38);
     Camera_SetCameraData(Gameplay_GetCamera(globalCtx, 0), 4, 0, 0, arg1, 0, 0);
@@ -2761,6 +2769,7 @@ void func_80835EFC(Player* this) {
     }
 }
 
+// action executer
 void func_80835F44(GlobalContext* globalCtx, Player* this, s32 item) {
     s8 actionParam;
     s32 temp;
@@ -2785,6 +2794,18 @@ void func_80835F44(GlobalContext* globalCtx, Player* this, s32 item) {
                   ((temp >= 0) && ((AMMO(sExplosiveInfos[temp].itemId) == 0) ||
                                    (globalCtx->actorCtx.actorList[ACTORTYPE_EXPLOSIVES].length >= 3)))))) {
                 func_80078884(NA_SE_SY_ERROR);
+                return;
+            }
+
+            if (actionParam == PLAYER_AP_FEATHER) {
+                if (this->actor.bgCheckFlags & 1) {
+                    Player_FeatherJump(this, globalCtx, (LinkAnimetionEntry*)0x04003148);
+                    this->doubleJumpTimer = 10;
+                }
+                else if (this->doubleJumpTimer == 0) {
+                    Player_FeatherJump(this, globalCtx, (LinkAnimetionEntry*)0x040029D0);
+                    this->doubleJumpTimer = -10;
+                }
                 return;
             }
 
@@ -3848,6 +3869,11 @@ void func_808389E8(Player* this, LinkAnimetionEntry* anim, f32 arg2, GlobalConte
     func_80838940(this, anim, arg2, globalCtx, NA_SE_VO_LI_SWORD_N);
 }
 
+void Player_FeatherJump(Player* this, GlobalContext* globalCtx, LinkAnimetionEntry* anim) {
+    func_80838940(this, anim, 10.0f, globalCtx, NA_SE_VO_LI_AUTO_JUMP);
+    this->unk_850 = 1;
+}
+
 s32 func_80838A14(Player* this, GlobalContext* globalCtx) {
     s32 sp3C;
     LinkAnimetionEntry* sp38;
@@ -4473,6 +4499,7 @@ void func_8083A434(GlobalContext* globalCtx, Player* this) {
     }
 }
 
+// jump
 s32 func_8083A4A8(Player* this, GlobalContext* globalCtx) {
     s16 yawDiff;
     LinkAnimetionEntry* anim;
@@ -4595,7 +4622,6 @@ void func_8083AA10(Player* this, GlobalContext* globalCtx) {
     f32 sp3C;
 
     this->fallDistance = this->fallStartHeight - (s32)this->actor.posRot.pos.y;
-
     if (!(this->stateFlags1 & 0x28000000) && !(this->actor.bgCheckFlags & 1)) {
         if (!func_80838FB8(globalCtx, this)) {
             if (D_80853604 == 8) {
@@ -4716,6 +4742,14 @@ void func_8083AE40(Player* this, s16 objectId) {
 }
 
 void func_8083AF44(GlobalContext* globalCtx, Player* this, s32 magicSpell) {
+    if (magicSpell == 0) {
+        if (!Object_IsLoaded(&globalCtx->objectCtx, Object_GetIndex(&globalCtx->objectCtx, OBJECT_FHG))) {
+            Object_Spawn(&globalCtx->objectCtx, OBJECT_FHG);
+        }
+        Player_SpawnMagicSpell(globalCtx, this, 3);
+        return;
+    }
+
     func_80835DE4(globalCtx, this, func_808507F4, 0);
 
     this->unk_84F = magicSpell - 3;
@@ -4723,8 +4757,8 @@ void func_8083AF44(GlobalContext* globalCtx, Player* this, s32 magicSpell) {
 
     SkelAnime_ChangeLinkAnimPlaybackStop(globalCtx, &this->skelAnime, &D_04002D28, 0.83f);
 
-    if (magicSpell == 5) {
-        this->unk_46C = func_800800F8(globalCtx, 1100, -101, NULL, 0);
+    if (magicSpell == 5) { // dins 
+        this->unk_46C = func_800800F8(globalCtx, 1100, -101, NULL, 0); // start one point demo?
     } else {
         func_80835EA4(globalCtx, 10);
     }
@@ -9012,10 +9046,10 @@ void func_808469BC(GlobalContext* globalCtx, Player* this) {
     this->stateFlags1 |= 0x20000000;
 }
 
-s16 D_80854700[] = { ACTOR_MAGIC_WIND, ACTOR_MAGIC_DARK, ACTOR_MAGIC_FIRE };
+s16 D_80854700[] = { ACTOR_MAGIC_WIND, ACTOR_MAGIC_DARK, ACTOR_MAGIC_FIRE , ACTOR_LIGHT_BALL};
 
-Actor* func_80846A00(GlobalContext* globalCtx, Player* this, s32 arg2) {
-    return Actor_Spawn(&globalCtx->actorCtx, globalCtx, D_80854700[arg2], this->actor.posRot.pos.x,
+Actor* Player_SpawnMagicSpell(GlobalContext* globalCtx, Player* this, s32 spell) {
+    return Actor_Spawn(&globalCtx->actorCtx, globalCtx, D_80854700[spell], this->actor.posRot.pos.x,
                        this->actor.posRot.pos.y, this->actor.posRot.pos.z, 0, 0, 0, 0);
 }
 
@@ -9185,7 +9219,7 @@ void Player_Init(Actor* thisx, GlobalContext* globalCtx) {
 
     if (gSaveContext.nayrusLoveTimer != 0) {
         gSaveContext.unk_13F0 = 3;
-        func_80846A00(globalCtx, this, 1);
+        Player_SpawnMagicSpell(globalCtx, this, 1);
         this->stateFlags3 &= ~0x40;
     }
 
@@ -9961,7 +9995,7 @@ void Player_UpdateCommon(Player* this, GlobalContext* globalCtx, Input* input) {
 
     if ((this->stateFlags3 & 0x40) && (gSaveContext.nayrusLoveTimer != 0) && (gSaveContext.unk_13F0 == 0)) {
         gSaveContext.unk_13F0 = 3;
-        func_80846A00(globalCtx, this, 1);
+        Player_SpawnMagicSpell(globalCtx, this, 1);
         this->stateFlags3 &= ~0x40;
     }
 
@@ -10123,7 +10157,15 @@ void Player_UpdateCommon(Player* this, GlobalContext* globalCtx, Input* input) {
             Math_ApproxF(&this->windSpeed, 0.0f, (this->stateFlags1 & 0x8000000) ? 0.5f : 1.0f);
         }
 
+        if (this->doubleJumpTimer > 0) {
+            this->doubleJumpTimer--;
+        } 
+        else if (this->actor.bgCheckFlags & 1) {
+            this->doubleJumpTimer = 0;
+        }
+
         if (!Player_InBlockingCsMode(globalCtx, this) && !(this->stateFlags2 & 0x40000)) {
+            
             func_8083D53C(globalCtx, this);
 
             if ((this->actor.type == ACTORTYPE_PLAYER) && (gSaveContext.health == 0)) {
@@ -12877,7 +12919,7 @@ void func_808507F4(Player* this, GlobalContext* globalCtx) {
             if (this->unk_850 == 0) {
                 SkelAnime_ChangeLinkAnimPlaybackStop(globalCtx, &this->skelAnime, D_80854A58[this->unk_84F], 0.83f);
 
-                if (func_80846A00(globalCtx, this, this->unk_84F) != NULL) {
+                if (Player_SpawnMagicSpell(globalCtx, this, this->unk_84F) != NULL) {
                     this->stateFlags1 |= 0x30000000;
                     if ((this->unk_84F != 0) || (gSaveContext.respawn[RESPAWN_MODE_TOP].data <= 0)) {
                         gSaveContext.unk_13F0 = 1;

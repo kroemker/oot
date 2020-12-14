@@ -3375,6 +3375,12 @@ beginseg
 endseg
 
 beginseg
+    name "ovl_Light_Ball"
+    include "build/src/overlays/actors/ovl_Light_Ball/z_light_ball.o"
+    include "build/src/overlays/actors/ovl_Light_Ball/ovl_Light_Ball_reloc.o"
+endseg
+
+beginseg
     name "ovl_Magic_Dark"
     include "build/src/overlays/actors/ovl_Magic_Dark/z_magic_dark.o"
     include "build/data/overlays/actors/z_magic_dark.data.o"

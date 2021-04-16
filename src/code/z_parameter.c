@@ -238,9 +238,7 @@ void func_8008277C(GlobalContext* globalCtx, s16 maxAlpha, s16 alpha) {
 
 void func_80082850(GlobalContext* globalCtx, s16 maxAlpha) {
     InterfaceContext* interfaceCtx = &globalCtx->interfaceCtx;
-    s16 alpha;
-
-    alpha = 255 - maxAlpha;
+    s16 alpha = 255 - maxAlpha;
 
     switch (gSaveContext.unk_13E8) {
         case 1:
@@ -600,9 +598,7 @@ void func_80083108(GlobalContext* globalCtx) {
     Player* player = PLAYER;
     InterfaceContext* interfaceCtx = &globalCtx->interfaceCtx;
     s16 i;
-    s16 sp28;
-
-    sp28 = 0;
+    s16 sp28 = 0;
 
     if ((gSaveContext.cutsceneIndex < 0xFFF0) ||
         ((globalCtx->sceneNum == SCENE_SPOT20) && (gSaveContext.cutsceneIndex == 0xFFF0))) {
@@ -760,22 +756,21 @@ void func_80083108(GlobalContext* globalCtx) {
                         }
                     }
                 } else {
-                    do {
-                        sp28 = 1;
+                    sp28 = 1;
 
-                        if ((gSaveContext.equips.buttonItems[0] == ITEM_NONE) ||
-                            (gSaveContext.equips.buttonItems[0] == ITEM_BOW)) {
+                    if ((gSaveContext.equips.buttonItems[0] == ITEM_NONE) ||
+                        (gSaveContext.equips.buttonItems[0] == ITEM_BOW)) {
 
-                            if ((gSaveContext.equips.buttonItems[0] != ITEM_SWORD_KOKIRI) &&
-                                (gSaveContext.equips.buttonItems[0] != ITEM_SWORD_MASTER) &&
-                                (gSaveContext.equips.buttonItems[0] != ITEM_SWORD_BGS) &&
-                                (gSaveContext.equips.buttonItems[0] != ITEM_SWORD_KNIFE)) {
-                                gSaveContext.equips.buttonItems[0] = gSaveContext.buttonStatus[0];
-                            } else {
-                                gSaveContext.buttonStatus[0] = gSaveContext.equips.buttonItems[0];
-                            }
+                        if ((gSaveContext.equips.buttonItems[0] != ITEM_SWORD_KOKIRI) &&
+                            (gSaveContext.equips.buttonItems[0] != ITEM_SWORD_MASTER) &&
+                            (gSaveContext.equips.buttonItems[0] != ITEM_SWORD_BGS) &&
+                            (gSaveContext.equips.buttonItems[0] != ITEM_SWORD_KNIFE)) {
+                            gSaveContext.equips.buttonItems[0] = gSaveContext.buttonStatus[0];
+                        } else {
+                            gSaveContext.buttonStatus[0] = gSaveContext.equips.buttonItems[0];
                         }
-                    } while (0); // Necessary to match
+                    }
+                    if (1) {} // Necessary to match
                 }
 
                 if (sp28) {
@@ -1788,10 +1783,9 @@ u8 Item_Give(GlobalContext* globalCtx, u8 item) {
 
 u8 Item_CheckObtainability(u8 item) {
     s16 i;
-    s16 slot;
+    s16 slot = SLOT(item);
     s32 temp;
 
-    slot = SLOT(item);
     if (item >= ITEM_STICKS_5) {
         slot = SLOT(sExtraItemBases[item - ITEM_STICKS_5]);
     }
@@ -2009,11 +2003,9 @@ void Inventory_UpdateBottleItem(GlobalContext* globalCtx, u8 item, u8 button) {
 }
 
 s32 Inventory_ConsumeFairy(GlobalContext* globalCtx) {
-    s32 bottleSlot;
+    s32 bottleSlot = SLOT(ITEM_FAIRY);
     s16 i;
     s16 j;
-
-    bottleSlot = SLOT(ITEM_FAIRY);
 
     for (i = 0; i < 4; i++) {
         if (gSaveContext.inventory.items[bottleSlot + i] == ITEM_FAIRY) {
@@ -2090,7 +2082,7 @@ void Interface_SetNaviCall(GlobalContext* globalCtx, u16 naviCallState) {
     InterfaceContext* interfaceCtx = &globalCtx->interfaceCtx;
 
     if (((naviCallState == 0x1D) || (naviCallState == 0x1E)) && !interfaceCtx->naviCalling &&
-        (globalCtx->csCtx.state == 0)) {
+        (globalCtx->csCtx.state == CS_STATE_IDLE)) {
         // clang-format off
         if (naviCallState == 0x1E) { Audio_PlaySoundGeneral(NA_SE_VO_NAVY_CALL, &D_801333D4, 4,
                                                             &D_801333E0, &D_801333E0, &D_801333E8); }
@@ -2462,8 +2454,8 @@ void Interface_UpdateMagicBar(GlobalContext* globalCtx) {
 
         case 7:
             if ((globalCtx->pauseCtx.state == 0) && (globalCtx->pauseCtx.flag == 0) && (msgCtx->msgMode == 0) &&
-                (globalCtx->unk_10A20 == 0) && (globalCtx->sceneLoadFlag == 0) && (globalCtx->transitionMode == 0) &&
-                !Gameplay_InCsMode(globalCtx)) {
+                (globalCtx->gameOverCtx.state == GAMEOVER_INACTIVE) && (globalCtx->sceneLoadFlag == 0) &&
+                (globalCtx->transitionMode == 0) && !Gameplay_InCsMode(globalCtx)) {
                 if ((gSaveContext.magic == 0) || ((func_8008F2F8(globalCtx) >= 2) && (func_8008F2F8(globalCtx) < 5)) ||
                     ((gSaveContext.equips.buttonItems[1] != ITEM_LENS) &&
                      (gSaveContext.equips.buttonItems[2] != ITEM_LENS) &&
@@ -2559,15 +2551,8 @@ void Interface_DrawMagicBar(GlobalContext* globalCtx) {
         OVERLAY_DISP = Gfx_TextureIA8(OVERLAY_DISP, D_02003940, 24, 16, R_MAGIC_BAR_X + 8, magicBarY,
                                       gSaveContext.unk_13F4, 16, 1024, 1024);
 
-        gDPSetTextureImage(OVERLAY_DISP++, G_IM_FMT_IA, G_IM_SIZ_16b, 1, D_020038C0);
-        gDPSetTile(OVERLAY_DISP++, G_IM_FMT_IA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_WRAP,
-                   G_TX_NOMASK, G_TX_NOLOD, G_TX_MIRROR | G_TX_WRAP, 3, G_TX_NOLOD);
-        gDPLoadSync(OVERLAY_DISP++);
-        gDPLoadBlock(OVERLAY_DISP++, G_TX_LOADTILE, 0, 0, 63, 2048);
-        gDPPipeSync(OVERLAY_DISP++);
-        gDPSetTile(OVERLAY_DISP++, G_IM_FMT_IA, G_IM_SIZ_8b, 1, 0, G_TX_RENDERTILE, 0, G_TX_NOMIRROR | G_TX_WRAP,
-                   G_TX_NOMASK, G_TX_NOLOD, G_TX_MIRROR | G_TX_WRAP, 3, G_TX_NOLOD);
-        gDPSetTileSize(OVERLAY_DISP++, G_TX_RENDERTILE, 0, 0, 28, 60);
+        gDPLoadTextureBlock(OVERLAY_DISP++, D_020038C0, G_IM_FMT_IA, G_IM_SIZ_8b, 8, 16, 0, G_TX_MIRROR | G_TX_WRAP,
+                            G_TX_NOMIRROR | G_TX_WRAP, 3, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
 
         gSPTextureRectangle(OVERLAY_DISP++, ((R_MAGIC_BAR_X + gSaveContext.unk_13F4) + 8) << 2, magicBarY << 2,
                             ((R_MAGIC_BAR_X + gSaveContext.unk_13F4) + 16) << 2, (magicBarY + 16) << 2, G_TX_RENDERTILE,
@@ -2655,15 +2640,8 @@ void func_80088B34(s16 arg0) {
 void Interface_DrawActionLabel(GraphicsContext* gfxCtx, void* texture) {
     OPEN_DISPS(gfxCtx, "../z_parameter.c", 2820);
 
-    gDPSetTextureImage(OVERLAY_DISP++, G_IM_FMT_IA, G_IM_SIZ_16b, 1, texture);
-    gDPSetTile(OVERLAY_DISP++, G_IM_FMT_IA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_WRAP,
-               G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOLOD);
-    gDPLoadSync(OVERLAY_DISP++);
-    gDPLoadBlock(OVERLAY_DISP++, G_TX_LOADTILE, 0, 0, 191, 683);
-    gDPPipeSync(OVERLAY_DISP++);
-    gDPSetTile(OVERLAY_DISP++, G_IM_FMT_IA, G_IM_SIZ_4b, 3, 0, G_TX_RENDERTILE, 0, G_TX_NOMIRROR | G_TX_WRAP,
-               G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOLOD);
-    gDPSetTileSize(OVERLAY_DISP++, G_TX_RENDERTILE, 0, 0, 188, 60);
+    gDPLoadTextureBlock_4b(OVERLAY_DISP++, texture, G_IM_FMT_IA, 48, 16, 0, G_TX_NOMIRROR | G_TX_WRAP,
+                           G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
 
     gSP1Quadrangle(OVERLAY_DISP++, 0, 2, 3, 1, 0);
 
@@ -2730,16 +2708,9 @@ void Interface_DrawItemButtons(GlobalContext* globalCtx) {
             gDPSetCombineLERP(OVERLAY_DISP++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0,
                               PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0);
 
-            gDPSetTextureImage(OVERLAY_DISP++, G_IM_FMT_IA, G_IM_SIZ_16b, 1,
-                               (u32)interfaceCtx->do_actionSegment + 0x300);
-            gDPSetTile(OVERLAY_DISP++, G_IM_FMT_IA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_WRAP,
-                       G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOLOD);
-            gDPLoadSync(OVERLAY_DISP++);
-            gDPLoadBlock(OVERLAY_DISP++, G_TX_LOADTILE, 0, 0, 191, 683);
-            gDPPipeSync(OVERLAY_DISP++);
-            gDPSetTile(OVERLAY_DISP++, G_IM_FMT_IA, G_IM_SIZ_4b, 3, 0, G_TX_RENDERTILE, 0, G_TX_NOMIRROR | G_TX_WRAP,
-                       G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOLOD);
-            gDPSetTileSize(OVERLAY_DISP++, G_TX_RENDERTILE, 0, 0, 188, 60);
+            gDPLoadTextureBlock_4b(OVERLAY_DISP++, (u32)interfaceCtx->do_actionSegment + 0x300, G_IM_FMT_IA, 48, 16, 0,
+                                   G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
+                                   G_TX_NOLOD, G_TX_NOLOD);
 
             dxdy = 1024.0f / (R_START_LABEL_DD(gSaveContext.language) / 100.0f);
             width = 48.0f / (R_START_LABEL_DD(gSaveContext.language) / 100.0f);
@@ -2752,7 +2723,7 @@ void Interface_DrawItemButtons(GlobalContext* globalCtx) {
     }
 
     if (interfaceCtx->naviCalling && (globalCtx->pauseCtx.state == 0) && (globalCtx->pauseCtx.flag == 0) &&
-        (globalCtx->csCtx.state == 0)) {
+        (globalCtx->csCtx.state == CS_STATE_IDLE)) {
         if (!sCUpInvisible) {
             // C-Up Button Texture, Color & Label (Navi Text)
             gDPPipeSync(OVERLAY_DISP++);
@@ -2776,15 +2747,9 @@ void Interface_DrawItemButtons(GlobalContext* globalCtx) {
             gDPSetCombineLERP(OVERLAY_DISP++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0,
                               PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0);
 
-            gDPSetTextureImage(OVERLAY_DISP++, G_IM_FMT_IA, G_IM_SIZ_16b, 1, sCUpLabelTextures[gSaveContext.language]);
-            gDPSetTile(OVERLAY_DISP++, G_IM_FMT_IA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_WRAP,
-                       G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOLOD);
-            gDPLoadSync(OVERLAY_DISP++);
-            gDPLoadBlock(OVERLAY_DISP++, G_TX_LOADTILE, 0, 0, 63, 1024);
-            gDPPipeSync(OVERLAY_DISP++);
-            gDPSetTile(OVERLAY_DISP++, G_IM_FMT_IA, G_IM_SIZ_4b, 2, 0, G_TX_RENDERTILE, 0, G_TX_NOMIRROR | G_TX_WRAP,
-                       G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOLOD);
-            gDPSetTileSize(OVERLAY_DISP++, G_TX_RENDERTILE, 0, 0, 124, 28);
+            gDPLoadTextureBlock_4b(OVERLAY_DISP++, sCUpLabelTextures[gSaveContext.language], G_IM_FMT_IA, 32, 8, 0,
+                                   G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
+                                   G_TX_NOLOD, G_TX_NOLOD);
 
             gSPTextureRectangle(OVERLAY_DISP++, R_C_UP_ICON_X << 2, R_C_UP_ICON_Y << 2, (R_C_UP_ICON_X + 32) << 2,
                                 (R_C_UP_ICON_Y + 8) << 2, G_TX_RENDERTILE, 0, 0, 1024, 1024);
@@ -3053,7 +3018,8 @@ s16 D_80125B5C[] = { 91, 91 }; // unused
 
 // Due to an unknown reason, bss ordering changes within the 5 static variables in the function below.
 // In order to restore the correct order, we need a specific number of bss variables in the file before that point.
-// For this, we introduce 3 dummy variables which end up in padding at the end of the file's bss, so they don't actually take space.
+// For this, we introduce 3 dummy variables which end up in padding at the end of the file's bss, so they don't actually
+// take space.
 s8 sBssDummy1;
 s8 sBssDummy2;
 s8 sBssDummy3;
@@ -3087,7 +3053,7 @@ void Interface_Draw(GlobalContext* globalCtx) {
     if (pauseCtx->flag == 0) {
         Interface_InitVertices(globalCtx);
         func_8008A994(interfaceCtx);
-        Health_Draw(globalCtx);
+        HealthMeter_Draw(globalCtx);
 
         func_80094520(globalCtx->state.gfxCtx);
 
@@ -3226,18 +3192,9 @@ void Interface_Draw(GlobalContext* globalCtx) {
                               PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0);
             gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->bAlpha);
 
-            gDPSetTextureImage(OVERLAY_DISP++, G_IM_FMT_IA, G_IM_SIZ_16b, 1,
-                               (u32)interfaceCtx->do_actionSegment + 0x180);
-            gDPSetTile(OVERLAY_DISP++, G_IM_FMT_IA, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0,
-                       G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK,
-                       G_TX_NOLOD);
-            gDPLoadSync(OVERLAY_DISP++);
-            gDPLoadBlock(OVERLAY_DISP++, G_TX_LOADTILE, 0, 0, 191, 683);
-            gDPPipeSync(OVERLAY_DISP++);
-            gDPSetTile(OVERLAY_DISP++, G_IM_FMT_IA, G_IM_SIZ_4b, 3, 0x0000, G_TX_RENDERTILE, 0,
-                       G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK,
-                       G_TX_NOLOD);
-            gDPSetTileSize(OVERLAY_DISP++, G_TX_RENDERTILE, 0, 0, 188, 60);
+            gDPLoadTextureBlock_4b(OVERLAY_DISP++, (u32)interfaceCtx->do_actionSegment + 0x180, G_IM_FMT_IA, 48, 16, 0,
+                                   G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
+                                   G_TX_NOLOD, G_TX_NOLOD);
 
             R_B_LABEL_DD = 1024.0f / (WREG(37 + gSaveContext.language) / 100.0f);
             gSPTextureRectangle(OVERLAY_DISP++, R_B_LABEL_X(gSaveContext.language) << 2,
@@ -3336,17 +3293,9 @@ void Interface_Draw(GlobalContext* globalCtx) {
                 gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, pauseCtx->unk_258);
                 gSPVertex(OVERLAY_DISP++, &pauseCtx->vtx_168[16], 4, 0);
 
-                gDPSetTextureImage(OVERLAY_DISP++, G_IM_FMT_RGBA, G_IM_SIZ_32b, 1, gItemIcons[pauseCtx->unk_24E]);
-                gDPSetTile(OVERLAY_DISP++, G_IM_FMT_RGBA, G_IM_SIZ_32b, 0, 0x0000, G_TX_LOADTILE, 0,
-                           G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK,
-                           G_TX_NOLOD);
-                gDPLoadSync(OVERLAY_DISP++);
-                gDPLoadBlock(OVERLAY_DISP++, G_TX_LOADTILE, 0, 0, 1023, 128);
-                gDPPipeSync(OVERLAY_DISP++);
-                gDPSetTile(OVERLAY_DISP++, G_IM_FMT_RGBA, G_IM_SIZ_32b, 8, 0x0000, G_TX_RENDERTILE, 0,
-                           G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK,
-                           G_TX_NOLOD);
-                gDPSetTileSize(OVERLAY_DISP++, G_TX_RENDERTILE, 0, 0, 124, 124);
+                gDPLoadTextureBlock(OVERLAY_DISP++, gItemIcons[pauseCtx->unk_24E], G_IM_FMT_RGBA, G_IM_SIZ_32b, 32, 32,
+                                    0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
+                                    G_TX_NOLOD, G_TX_NOLOD);
             } else {
                 // Magic Arrow Equip Effect
                 phi_s3_2 = pauseCtx->unk_24E - 0xBF;
@@ -3366,17 +3315,9 @@ void Interface_Draw(GlobalContext* globalCtx) {
                 }
 
                 gSPVertex(OVERLAY_DISP++, &pauseCtx->vtx_168[16], 4, 0);
-                gDPSetTextureImage(OVERLAY_DISP++, G_IM_FMT_IA, G_IM_SIZ_16b, 1, D_080895C0);
-                gDPSetTile(OVERLAY_DISP++, G_IM_FMT_IA, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0,
-                           G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK,
-                           G_TX_NOLOD);
-                gDPLoadSync(OVERLAY_DISP++);
-                gDPLoadBlock(OVERLAY_DISP++, G_TX_LOADTILE, 0, 0, 511, 512);
-                gDPPipeSync(OVERLAY_DISP++);
-                gDPSetTile(OVERLAY_DISP++, G_IM_FMT_IA, G_IM_SIZ_8b, 4, 0x0000, G_TX_RENDERTILE, 0,
-                           G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK,
-                           G_TX_NOLOD);
-                gDPSetTileSize(OVERLAY_DISP++, G_TX_RENDERTILE, 0, 0, 124, 124);
+                gDPLoadTextureBlock(OVERLAY_DISP++, D_080895C0, G_IM_FMT_IA, G_IM_SIZ_8b, 32, 32, 0,
+                                    G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
+                                    G_TX_NOLOD, G_TX_NOLOD);
             }
 
             gSP1Quadrangle(OVERLAY_DISP++, 0, 2, 3, 1, 0);
@@ -3389,23 +3330,15 @@ void Interface_Draw(GlobalContext* globalCtx) {
                 // Carrots rendering if the action corresponds to riding a horse
                 if (interfaceCtx->unk_1EE == 8) {
                     // Load Carrot Icon
-                    gDPSetTextureImage(OVERLAY_DISP++, G_IM_FMT_RGBA, G_IM_SIZ_32b, 1, &D_02002100);
-                    gDPSetTile(OVERLAY_DISP++, G_IM_FMT_RGBA, G_IM_SIZ_32b, 0, 0x0000, G_TX_LOADTILE, 0,
-                               G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_WRAP,
-                               G_TX_NOMASK, G_TX_NOLOD);
-                    gDPLoadSync(OVERLAY_DISP++);
-                    gDPLoadBlock(OVERLAY_DISP++, G_TX_LOADTILE, 0, 0, 255, 256);
-                    gDPPipeSync(OVERLAY_DISP++);
-                    gDPSetTile(OVERLAY_DISP++, G_IM_FMT_RGBA, G_IM_SIZ_32b, 4, 0x0000, G_TX_RENDERTILE, 0,
-                               G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_WRAP,
-                               G_TX_NOMASK, G_TX_NOLOD);
-                    gDPSetTileSize(OVERLAY_DISP++, G_TX_RENDERTILE, 0, 0, 60, 60);
+                    gDPLoadTextureBlock(OVERLAY_DISP++, &D_02002100, G_IM_FMT_RGBA, G_IM_SIZ_32b, 16, 16, 0,
+                                        G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
+                                        G_TX_NOLOD, G_TX_NOLOD);
 
                     // Draw 6 carrots
                     phi_s1 = ZREG(14);
                     for (phi_s3 = 1; phi_s3 < 7; phi_s3++) {
                         // Carrot Color (based on availability)
-                        if ((interfaceCtx->unk_23A == 0) || (interfaceCtx->unk_23A < phi_s3)) {
+                        if ((interfaceCtx->numHorseBoosts == 0) || (interfaceCtx->numHorseBoosts < phi_s3)) {
                             gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 0, 150, 255, interfaceCtx->aAlpha);
                         } else {
                             gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->aAlpha);
@@ -3422,17 +3355,9 @@ void Interface_Draw(GlobalContext* globalCtx) {
                 gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->bAlpha);
 
                 // Target Icon
-                gDPSetTextureImage(OVERLAY_DISP++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, D_02002600);
-                gDPSetTile(OVERLAY_DISP++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0,
-                           G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK,
-                           G_TX_NOLOD);
-                gDPLoadSync(OVERLAY_DISP++);
-                gDPLoadBlock(OVERLAY_DISP++, G_TX_LOADTILE, 0, 0, 383, 342);
-                gDPPipeSync(OVERLAY_DISP++);
-                gDPSetTile(OVERLAY_DISP++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 6, 0x0000, G_TX_RENDERTILE, 0,
-                           G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK,
-                           G_TX_NOLOD);
-                gDPSetTileSize(OVERLAY_DISP++, G_TX_RENDERTILE, 0, 0, 92, 60);
+                gDPLoadTextureBlock(OVERLAY_DISP++, D_02002600, G_IM_FMT_RGBA, G_IM_SIZ_16b, 24, 16, 0,
+                                    G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
+                                    G_TX_NOLOD, G_TX_NOLOD);
 
                 gSPTextureRectangle(OVERLAY_DISP++, (WREG(32) + 28) << 2, ZREG(15) << 2, (WREG(32) + 52) << 2,
                                     (ZREG(15) + 16) << 2, G_TX_RENDERTILE, 0, 0, 1024, 1024);
@@ -3495,8 +3420,9 @@ void Interface_Draw(GlobalContext* globalCtx) {
             }
         }
 
-        if ((globalCtx->pauseCtx.state == 0) && (globalCtx->pauseCtx.flag == 0) && (globalCtx->unk_10A20 == 0) &&
-            (msgCtx->msgMode == 0) && !(player->stateFlags2 & 0x01000000) && (globalCtx->sceneLoadFlag == 0) &&
+        if ((globalCtx->pauseCtx.state == 0) && (globalCtx->pauseCtx.flag == 0) &&
+            (globalCtx->gameOverCtx.state == GAMEOVER_INACTIVE) && (msgCtx->msgMode == 0) &&
+            !(player->stateFlags2 & 0x01000000) && (globalCtx->sceneLoadFlag == 0) &&
             (globalCtx->transitionMode == 0) && !Gameplay_InCsMode(globalCtx) && (gSaveContext.minigameState != 1) &&
             (globalCtx->shootingGalleryStatus <= 1) &&
             !((globalCtx->sceneNum == SCENE_BOWLING) && Flags_GetSwitch(globalCtx, 0x38))) {
@@ -3917,7 +3843,7 @@ void Interface_Update(GlobalContext* globalCtx) {
         if ((gSaveContext.minigameState == 1) || (gSaveContext.sceneSetupIndex < 4) ||
             ((globalCtx->sceneNum == SCENE_SPOT20) && (gSaveContext.sceneSetupIndex == 4))) {
             if ((msgCtx->msgMode == 0) || ((msgCtx->msgMode != 0) && (globalCtx->sceneNum == SCENE_BOWLING))) {
-                if (globalCtx->unk_10A20 == 0) {
+                if (globalCtx->gameOverCtx.state == GAMEOVER_INACTIVE) {
                     func_80083108(globalCtx);
                 }
             }
@@ -4040,7 +3966,7 @@ void Interface_Update(GlobalContext* globalCtx) {
         }
     }
 
-    Health_HandleCriticalAlarm(globalCtx);
+    HealthMeter_HandleCriticalAlarm(globalCtx);
     D_80125A58 = func_8008F2F8(globalCtx);
 
     if (D_80125A58 == 1) {
@@ -4053,7 +3979,7 @@ void Interface_Update(GlobalContext* globalCtx) {
         }
     }
 
-    Health_UpdateData(globalCtx);
+    HealthMeter_Update(globalCtx);
 
     if ((gSaveContext.timer1State >= 3) && (globalCtx->pauseCtx.state == 0) && (globalCtx->pauseCtx.flag == 0) &&
         (msgCtx->msgMode == 0) && !(player->stateFlags2 & 0x01000000) && (globalCtx->sceneLoadFlag == 0) &&
@@ -4137,8 +4063,9 @@ void Interface_Update(GlobalContext* globalCtx) {
     WREG(7) = interfaceCtx->unk_1F4;
 
     if ((globalCtx->pauseCtx.state == 0) && (globalCtx->pauseCtx.flag == 0) && (msgCtx->msgMode == 0) &&
-        (globalCtx->sceneLoadFlag == 0) && (globalCtx->unk_10A20 == 0) && (globalCtx->transitionMode == 0) &&
-        ((globalCtx->csCtx.state == 0) || !Player_InCsMode(globalCtx))) {
+        (globalCtx->sceneLoadFlag == 0) && (globalCtx->gameOverCtx.state == GAMEOVER_INACTIVE) &&
+        (globalCtx->transitionMode == 0) &&
+        ((globalCtx->csCtx.state == CS_STATE_IDLE) || !Player_InCsMode(globalCtx))) {
         if ((gSaveContext.magicAcquired != 0) && (gSaveContext.magicLevel == 0)) {
             gSaveContext.magicLevel = gSaveContext.doubleMagic + 1;
             gSaveContext.unk_13F0 = 8;

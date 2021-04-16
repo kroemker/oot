@@ -387,6 +387,9 @@ void Player_SetEquipmentData(GlobalContext* globalCtx, Player* this) {
         this->currentSword = B_BTN_ITEM;
         Player_SetModelGroup(this, Player_ActionToModelGroup(this, this->heldItemActionParam));
         Player_SetBootData(globalCtx, this);
+
+        gSaveContext.doubleDefense = this->currentTunic == PLAYER_TUNIC_DEFENSE;
+        gSaveContext.inventory.defenseHearts = gSaveContext.doubleDefense ? gSaveContext.health >> 1 : 0;
     }
 }
 
@@ -632,6 +635,7 @@ Color_RGB8 sTunicColors[] = {
     { 30, 105, 27 },
     { 100, 20, 0 },
     { 0, 60, 100 },
+    { 252, 78, 3 }
 };
 
 Color_RGB8 sGauntletColors[] = {

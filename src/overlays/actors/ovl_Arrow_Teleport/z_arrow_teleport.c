@@ -37,6 +37,9 @@ static InitChainEntry sInitChain[] = {
     ICHAIN_F32(uncullZoneForward, 2000, ICHAIN_STOP),
 };
 
+static s32 sTestActor = 0xDEADBEEF;
+static s32 sActorVar = 0xABCD1234;
+
 void ArrowTeleport_SetupAction(ArrowTeleport* this, ArrowTeleportActionFunc actionFunc) {
     this->actionFunc = actionFunc;
 }
@@ -84,7 +87,11 @@ void ArrowTeleport_WaitForDeletion(ArrowTeleport* this, GlobalContext* globalCtx
 
 void ArrowTeleport_Hit(ArrowTeleport* this, GlobalContext* globalCtx) {
     Player* player = PLAYER;
-    player->actor.posRot.pos = this->actor.posRot.pos;
+    Vec3f pos = player->actor.posRot.pos;
+    pos.x += Math_Sins(player->actor.posRot.rot.y) * 15.0f;
+    pos.z += Math_Coss(player->actor.posRot.rot.y) * 15.0f;
+    //player->actor.posRot.pos = this->actor.posRot.pos;
+    Actor_Spawn(&globalCtx->actorCtx, globalCtx, sTestActor, pos.x, pos.y, pos.z, 0, 0, 0, sActorVar);
 
     Actor_Kill(&this->actor);
 }

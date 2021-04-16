@@ -17,7 +17,8 @@ typedef enum {
     /* 0x00 */ PLAYER_TUNIC_KOKIRI,
     /* 0x01 */ PLAYER_TUNIC_GORON,
     /* 0x02 */ PLAYER_TUNIC_ZORA,
-    /* 0x03 */ PLAYER_TUNIC_MAX
+               PLAYER_TUNIC_DEFENSE,
+    /* 0x04 */ PLAYER_TUNIC_MAX
 } PlayerTunic;
 
 typedef enum {

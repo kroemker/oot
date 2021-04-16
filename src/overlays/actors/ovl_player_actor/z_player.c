@@ -334,7 +334,7 @@ void func_80853080(Player* this, GlobalContext* globalCtx);
 s32 Player_InflictDamage(GlobalContext* globalCtx, s32 damage);
 void func_80853148(GlobalContext* globalCtx, Actor* actor);
 Actor* Player_SpawnMagicSpell(GlobalContext* globalCtx, Player* this, s32 spell);
-void Player_FeatherJump(Player* this, GlobalContext* globalCtx, LinkAnimetionEntry* anim);
+void Player_FeatherJump(Player* this, GlobalContext* globalCtx, LinkAnimationHeader* anim);
 
 // .bss part 1
 s32 D_80858AA0;
@@ -2796,11 +2796,11 @@ void func_80835F44(GlobalContext* globalCtx, Player* this, s32 item) {
 
             if (actionParam == PLAYER_AP_FEATHER) {
                 if (this->actor.bgCheckFlags & 1) {
-                    Player_FeatherJump(this, globalCtx, (LinkAnimetionEntry*)0x04003148);
+                    Player_FeatherJump(this, globalCtx, (LinkAnimationHeader*)0x04003148);
                     this->doubleJumpTimer = 10;
                 }
                 else if (this->doubleJumpTimer == 0) {
-                    Player_FeatherJump(this, globalCtx, (LinkAnimetionEntry*)0x040029D0);
+                    Player_FeatherJump(this, globalCtx, (LinkAnimationHeader*)0x040029D0);
                     this->doubleJumpTimer = -10;
                 }
                 return;
@@ -3749,8 +3749,8 @@ s32 func_808382DC(Player* this, GlobalContext* globalCtx) {
             // However, `ColliderBody.atFlags` is a byte so the flag check at the end is incorrect and cannot work.
             // Additionally, `ColliderBody.atHit` can never be set while already colliding as AC, so it's also bugged.
             // This behavior was later fixed in MM, most likely by removing both the `atHit` and `atFlags` checks.
-            if (sp64 || ((this->invincibilityTimer < 0) && (this->cylinder.base.acFlags & 2) &&
-                         (this->cylinder.body.atHit != NULL) && (this->cylinder.body.atHit->atFlags & 0x20000000))) {
+            if (sp64 || ((this->invincibilityTimer < 0) && (this->cylinder.base.acFlags & 2))) {// &&
+                         //(this->cylinder.body.atHit != NULL) && (this->cylinder.body.atHit->atFlags & 0x20000000))) {
 
                 func_8083264C(this, 180, 20, 100, 0);
 
@@ -3865,7 +3865,7 @@ void func_808389E8(Player* this, LinkAnimationHeader* anim, f32 arg2, GlobalCont
     func_80838940(this, anim, arg2, globalCtx, NA_SE_VO_LI_SWORD_N);
 }
 
-void Player_FeatherJump(Player* this, GlobalContext* globalCtx, LinkAnimetionEntry* anim) {
+void Player_FeatherJump(Player* this, GlobalContext* globalCtx, LinkAnimationHeader* anim) {
     func_80838940(this, anim, 10.0f, globalCtx, NA_SE_VO_LI_AUTO_JUMP);
     this->unk_850 = 1;
 }
@@ -11040,6 +11040,7 @@ void func_8084BEE4(Player* this) {
     func_8002F7DC(&this->actor, (this->unk_84F != 0) ? NA_SE_PL_WALK_WALL : NA_SE_PL_WALK_LADDER);
 }
 
+// climb vines/ladder?
 void func_8084BF1C(Player* this, GlobalContext* globalCtx) {
     static Vec3f D_8085488C = { 0.0f, 0.0f, 26.0f };
     s32 sp84;

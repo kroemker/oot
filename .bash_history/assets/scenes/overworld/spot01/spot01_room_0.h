@@ -1,0 +1,15 @@
+extern SCmdEchoSettings spot01_room_0_header00_cmd00;
+extern SCmdRoomBehavior spot01_room_0_header00_cmd01;
+extern SCmdSkyboxDisables spot01_room_0_header00_cmd02;
+extern SCmdTimeSettings spot01_room_0_header00_cmd03;
+extern SCmdMesh spot01_room_0_header00_cmd04;
+extern SCmdEndMarker spot01_room_0_header00_cmd05;
+
+extern MeshHeader0 spot01_room_0_meshHeader;
+extern MeshEntry0 spot01_room_0_meshDListEntry[1];
+extern Gfx spot01_room_0_entry_0_opaque[];
+extern Vtx spot01_dl_Floor_mesh_layer_Opaque_vtx_cull[8];
+extern Vtx spot01_dl_Floor_mesh_layer_Opaque_vtx_0[4];
+extern Gfx spot01_dl_Floor_mesh_layer_Opaque_tri_0[];
+extern Gfx mat_spot01_dl_floor_mat_layerOpaque[];
+extern Gfx spot01_dl_Floor_mesh_layer_Opaque[];

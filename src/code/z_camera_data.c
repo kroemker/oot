@@ -204,11 +204,11 @@ CameraModeValue D_8011A518[] = {
 CameraModeValue D_8011A538[] = {
     /* CAM_FUNC_SUBJ3 */
     { 5, 0 },      // eyeNextYOffset
-    { 50, 1 },     // eyeDist
-    { 50, 2 },     // eyeNextDist
+    { 80, 1 },     // eyeDist
+    { 80, 2 },     // eyeNextDist
     { 10, 4 },     // unk_0C
     { 0, 19 },     // atOffset.x
-    { 0, 20 },     // atOffset.y
+    { 80, 20 },     // atOffset.y
     { 0, 21 },     // atOffset.z
     { 45, 7 },     // fovTarget
     { 0x2000, 9 }, // flags

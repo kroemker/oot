@@ -1,0 +1,19 @@
+extern SCmdSoundSettings spot01_scene_header00_cmd00;
+extern SCmdRoomList spot01_scene_header00_cmd01;
+extern SCmdMiscSettings spot01_scene_header00_cmd02;
+extern SCmdColHeader spot01_scene_header00_cmd03;
+extern SCmdEntranceList spot01_scene_header00_cmd04;
+extern SCmdSpecialFiles spot01_scene_header00_cmd05;
+extern SCmdSpawnList spot01_scene_header00_cmd06;
+extern SCmdSkyboxSettings spot01_scene_header00_cmd07;
+extern SCmdLightSettingList spot01_scene_header00_cmd08;
+extern SCmdEndMarker spot01_scene_header00_cmd09;
+
+extern ActorEntry spot01_scene_header00_startPositionList[];
+extern RomFile spot01_scene_roomList[];
+extern EntranceEntry spot01_scene_header00_entranceList[1];
+extern LightSettings spot01_scene_header00_lightSettings[4];
+extern u32 spot01_polygonTypes[];
+extern CollisionPoly spot01_polygons[];
+extern Vec3s spot01_vertices[4];
+extern CollisionHeader spot01_collisionHeader;

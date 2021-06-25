@@ -23,7 +23,7 @@ void ArrowTeleport_Hit(ArrowTeleport* this, GlobalContext* globalCtx);
 
 const ActorInit Arrow_Teleport_InitVars = {
     ACTOR_ARROW_BOMB,
-    ACTORTYPE_ITEMACTION,
+    ACTORCAT_ITEMACTION,
     FLAGS,
     OBJECT_GAMEPLAY_KEEP,
     sizeof(ArrowTeleport),
@@ -68,7 +68,7 @@ void ArrowTeleport_Charge(ArrowTeleport* this, GlobalContext* globalCtx) {
     }
 
     // copy position and rotation from arrow
-    this->actor.posRot.pos = arrow->actor.posRot.pos;
+    this->actor.world.pos = arrow->actor.world.pos;
     this->actor.shape.rot = arrow->actor.shape.rot;
 
     // if arrow has no parent, player has fired the arrow
@@ -87,10 +87,10 @@ void ArrowTeleport_WaitForDeletion(ArrowTeleport* this, GlobalContext* globalCtx
 
 void ArrowTeleport_Hit(ArrowTeleport* this, GlobalContext* globalCtx) {
     Player* player = PLAYER;
-    Vec3f pos = player->actor.posRot.pos;
-    pos.x += Math_Sins(player->actor.posRot.rot.y) * 15.0f;
-    pos.z += Math_Coss(player->actor.posRot.rot.y) * 15.0f;
-    //player->actor.posRot.pos = this->actor.posRot.pos;
+    Vec3f pos = player->actor.world.pos;
+    pos.x += Math_SinS(player->actor.world.rot.y) * 15.0f;
+    pos.z += Math_CosS(player->actor.world.rot.y) * 15.0f;
+    //player->actor.world.pos = this->actor.world.pos;
     Actor_Spawn(&globalCtx->actorCtx, globalCtx, sTestActor, pos.x, pos.y, pos.z, 0, 0, 0, sActorVar);
 
     Actor_Kill(&this->actor);
@@ -105,10 +105,10 @@ void ArrowTeleport_Fly(ArrowTeleport* this, GlobalContext* globalCtx) {
         return;
     }
     // copy position and rotation from arrow
-    this->actor.posRot.pos = arrow->actor.posRot.pos;
+    this->actor.world.pos = arrow->actor.world.pos;
     this->actor.shape.rot = arrow->actor.shape.rot;
 
-    if (arrow->hitWall & 1) {
+    if (arrow->hitFlags & 1) {
         ArrowTeleport_SetupAction(this, ArrowTeleport_Hit);
     } else if (arrow->timer < 2) {
         Actor_Kill(&this->actor);
@@ -133,11 +133,11 @@ void ArrowTeleport_Draw(Actor* thisx, GlobalContext* globalCtx) {
     arrow = (EnArrow*)this->actor.parent;
 
     if ((arrow != NULL) && (arrow->actor.update != NULL)) {
-        tranform = (arrow->hitWall & 2) ? &this->actor : &arrow->actor;
+        tranform = (arrow->hitFlags & 2) ? &this->actor : &arrow->actor;
 
         OPEN_DISPS(globalCtx->state.gfxCtx, "../z_arrow_teleport.c", 618);
 
-        Matrix_Translate(tranform->posRot.pos.x, tranform->posRot.pos.y, tranform->posRot.pos.z, MTXMODE_NEW);
+        Matrix_Translate(tranform->world.pos.x, tranform->world.pos.y, tranform->world.pos.z, MTXMODE_NEW);
         Matrix_RotateY(tranform->shape.rot.y * (M_PI / 32768), MTXMODE_APPLY);
         Matrix_RotateX(tranform->shape.rot.x * (M_PI / 32768), MTXMODE_APPLY);
         Matrix_RotateZ(tranform->shape.rot.z * (M_PI / 32768), MTXMODE_APPLY);

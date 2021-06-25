@@ -216,7 +216,7 @@ SavePlayerData sDebugSavePlayerData = {
 };
 
 ItemEquips sDebugSaveEquips = {
-    { ITEM_SWORD_MASTER, ITEM_BOW, ITEM_BOMB, ITEM_FEATHER }, // buttonItems
+    { ITEM_SWORD_MASTER, ITEM_BOOMERANG, ITEM_BOMB, ITEM_FEATHER }, // buttonItems
     { SLOT_BOW, SLOT_BOMB, SLOT_OCARINA },                          // cButtonSlots
     0x1122,                                                         // equipment
 };

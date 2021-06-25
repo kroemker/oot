@@ -3198,6 +3198,12 @@ beginseg
 endseg
 
 beginseg
+    name "ovl_Ice_Block"
+    include "build/src/overlays/actors/ovl_Ice_Block/z_ice_block.o"
+    include "build/src/overlays/actors/ovl_Ice_Block/ovl_Ice_Block_reloc.o"
+endseg
+
+beginseg
     name "ovl_Item_B_Heart"
     include "build/src/overlays/actors/ovl_Item_B_Heart/z_item_b_heart.o"
     include "build/src/overlays/actors/ovl_Item_B_Heart/ovl_Item_B_Heart_reloc.o"

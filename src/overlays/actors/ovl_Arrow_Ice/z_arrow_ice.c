@@ -166,21 +166,18 @@ void ArrowIce_Fly(ArrowIce* this, GlobalContext* globalCtx) {
         this->unk_160 = 1.0f;
     }
 
-    func_80867E8C(&this->unkPos, &this->actor.posRot.pos, 0.05f);
+    func_80867E8C(&this->unkPos, &this->actor.world.pos, 0.05f);
     
     // check collision
-    func_8002E4B4(globalCtx, &this->actor, 0.0f, 0.0f, 0.0f, 4);
+    Actor_UpdateBgCheckInfo(globalCtx, &this->actor, 0.0f, 0.0f, 0.0f, 4);
     if (this->actor.bgCheckFlags & 0x20) { // underwater
-        if (!Object_IsLoaded(&globalCtx->objectCtx, Object_GetIndex(&globalCtx->objectCtx, OBJECT_SPOT08_OBJ))) {
-            Object_Spawn(&globalCtx->objectCtx, OBJECT_SPOT08_OBJ);
-        }
         Actor_Spawn(&globalCtx->actorCtx, globalCtx, 
-            ACTOR_BG_SPOT08_ICEBLOCK, 
-            this->actor.posRot.pos.x,
-            this->actor.posRot.pos.y + this->actor.waterY,
-            this->actor.posRot.pos.z,
+            ACTOR_ICE_BLOCK, 
+            this->actor.world.pos.x,
+            this->actor.world.pos.y + this->actor.yDistToWater,
+            this->actor.world.pos.z,
             0,0,0,
-            0);
+            200);
         Actor_Kill(&this->actor);
         return;
     }

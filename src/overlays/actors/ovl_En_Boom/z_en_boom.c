@@ -30,6 +30,67 @@ const ActorInit En_Boom_InitVars = {
     (ActorFunc)EnBoom_Draw,
 };
 
+static Vtx hammerVertices[] = {
+    #include "../assets/objects/object_link_boy/object_link_boyVtx_00EFB8.vtx.inc"
+};
+
+Gfx hammer2DL[] = {
+    gsDPPipeSync(),
+    gsDPSetTextureLUT(G_TT_NONE),
+    gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
+    gsDPLoadTextureBlock(0x04001A00, G_IM_FMT_I, G_IM_SIZ_8b, 8, 8, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR |
+                         G_TX_WRAP, 3, 3, G_TX_NOLOD, G_TX_NOLOD),
+    gsDPSetCombineLERP(TEXEL0, 0, PRIMITIVE, 0, 0, 0, 0, 1, 0, 0, 0, COMBINED, 0, 0, 0, COMBINED),
+    gsDPSetRenderMode(G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2),
+    gsSPClearGeometryMode(G_LIGHTING | G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR),
+    gsSPSetGeometryMode(G_FOG),
+    gsSPDisplayList(0x0C000000),
+    gsDPSetPrimColor(0, 0, 79, 0, 0, 255),
+    gsSPVertex(&hammerVertices[2982], 9, 0),
+    gsSP2Triangles(0, 1, 2, 0, 3, 4, 2, 0),
+    gsSP2Triangles(5, 1, 0, 0, 2, 6, 0, 0),
+    gsSP2Triangles(7, 3, 5, 0, 7, 5, 0, 0),
+    gsSP2Triangles(8, 4, 3, 0, 4, 6, 2, 0),
+    gsSP2Triangles(3, 2, 1, 0, 3, 1, 5, 0),
+    gsDPPipeSync(),
+    gsSPTexture(0x07D0, 0x09C4, 0, G_TX_RENDERTILE, G_ON),
+    gsDPLoadTextureBlock(0x04000000, G_IM_FMT_RGBA, G_IM_SIZ_16b, 16, 16, 0, G_TX_MIRROR | G_TX_WRAP, G_TX_MIRROR |
+                         G_TX_WRAP, 4, 4, G_TX_NOLOD, 15),
+    gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, 0, 0, 0, 1, COMBINED, 0, PRIMITIVE, 0, 0, 0, 0, COMBINED),
+    gsSPSetGeometryMode(G_LIGHTING | G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR),
+    gsDPSetPrimColor(0, 0, 155, 192, 201, 255),
+    gsSPVertex(&hammerVertices[2991], 3, 0),
+    gsSP1Triangle(0, 1, 2, 0),
+    gsSPVertex(&hammerVertices[2994], 23, 0),
+    gsSP2Triangles(0, 1, 2, 0, 2, 3, 0, 0),
+    gsSP2Triangles(4, 5, 6, 0, 4, 6, 7, 0),
+    gsSP2Triangles(8, 9, 10, 0, 11, 12, 13, 0),
+    gsSP2Triangles(9, 14, 10, 0, 15, 16, 17, 0),
+    gsSP2Triangles(12, 11, 18, 0, 9, 8, 19, 0),
+    gsSP2Triangles(0, 3, 20, 0, 6, 5, 21, 0),
+    gsSP1Triangle(12, 18, 22, 0),
+    gsSPVertex(&hammerVertices[3017], 18, 0),
+    gsSP2Triangles(0, 1, 2, 0, 3, 1, 0, 0),
+    gsSP2Triangles(3, 4, 1, 0, 5, 6, 7, 0),
+    gsSP2Triangles(3, 8, 4, 0, 9, 10, 11, 0),
+    gsSP2Triangles(12, 7, 6, 0, 13, 14, 15, 0),
+    gsSP2Triangles(16, 12, 17, 0, 12, 16, 7, 0),
+    gsSPVertex(&hammerVertices[3035], 18, 0),
+    gsSP2Triangles(0, 1, 2, 0, 2, 1, 3, 0),
+    gsSP2Triangles(4, 5, 6, 0, 7, 8, 9, 0),
+    gsSP2Triangles(1, 10, 3, 0, 1, 11, 10, 0),
+    gsSP2Triangles(12, 13, 10, 0, 8, 14, 15, 0),
+    gsSP2Triangles(8, 7, 14, 0, 5, 16, 17, 0),
+    gsSP2Triangles(13, 12, 5, 0, 13, 5, 4, 0),
+    gsSPEndDisplayList(),
+};
+
+Gfx gHammerRefDL[] = {
+    gsSPDisplayList(hammer2DL),
+    gsSPEndDisplayList(),
+}; 
+
+
 static ColliderQuadInit sQuadInit = {
     {
         COLTYPE_NONE,
@@ -41,7 +102,7 @@ static ColliderQuadInit sQuadInit = {
     },
     {
         ELEMTYPE_UNK2,
-        { 0x00000010, 0x00, 0x01 },
+        { 0x00000040, 0x00, 0x04 },
         { 0xFFCFFFFF, 0x00, 0x00 },
         TOUCH_ON | TOUCH_NEAREST | TOUCH_SFX_NORMAL,
         BUMP_NONE,
@@ -69,22 +130,22 @@ void EnBoom_Init(Actor* thisx, GlobalContext* globalCtx) {
 
     trail.p1StartColor[0] = 255;
     trail.p1StartColor[1] = 255;
-    trail.p1StartColor[2] = 100;
+    trail.p1StartColor[2] = 255;
     trail.p1StartColor[3] = 255;
 
     trail.p2StartColor[0] = 255;
     trail.p2StartColor[1] = 255;
-    trail.p2StartColor[2] = 100;
+    trail.p2StartColor[2] = 255;
     trail.p2StartColor[3] = 64;
 
     trail.p1EndColor[0] = 255;
     trail.p1EndColor[1] = 255;
-    trail.p1EndColor[2] = 100;
+    trail.p1EndColor[2] = 255;
     trail.p1EndColor[3] = 0;
 
     trail.p2EndColor[0] = 255;
     trail.p2EndColor[1] = 255;
-    trail.p2EndColor[2] = 100;
+    trail.p2EndColor[2] = 255;
     trail.p2EndColor[3] = 0;
 
     trail.elemDuration = 8;
@@ -244,23 +305,27 @@ void EnBoom_Update(Actor* thisx, GlobalContext* globalCtx) {
 
     if (!(player->stateFlags1 & 0x20000000)) {
         this->actionFunc(this, globalCtx);
-        Actor_SetFocus(&this->actor, 0.0f);
+        Actor_SetFocus(&this->actor, 50.0f);
         this->activeTimer = this->activeTimer + 1;
     }
 }
 
 void EnBoom_Draw(Actor* thisx, GlobalContext* globalCtx) {
-    static Vec3f sMultVec1 = { -960.0f, 0.0f, 0.0f };
-    static Vec3f sMultVec2 = { 960.0f, 0.0f, 0.0f };
+    static Vec3f sMultVec1 = { -1200.0f, 0.0f, 0.0f };
+    static Vec3f sMultVec2 = { 1200.0f, 0.0f, 0.0f };
     EnBoom* this = THIS;
     Vec3f vec1;
     Vec3f vec2;
+    f32 scale = 50.0f;
 
     OPEN_DISPS(globalCtx->state.gfxCtx, "../z_en_boom.c", 567);
 
     Matrix_RotateY(this->actor.world.rot.y * (M_PI / 0x8000), MTXMODE_APPLY);
-    Matrix_RotateZ(0x1F40 * (M_PI / 0x8000), MTXMODE_APPLY);
-    Matrix_RotateX(this->actor.world.rot.x * (M_PI / 0x8000), MTXMODE_APPLY);
+    Matrix_RotateZ(this->actor.world.rot.z * (M_PI / 0x8000), MTXMODE_APPLY);
+    //Matrix_RotateZ(0x1F40 * (M_PI / 0x8000), MTXMODE_APPLY);
+    //Matrix_RotateX(this->actor.world.rot.x * (M_PI / 0x8000), MTXMODE_APPLY);
+    //Matrix_RotateY(0x8000 * (M_PI / 0x8000), MTXMODE_APPLY);
+    Matrix_RotateX(0x4000 * (M_PI / 0x8000), MTXMODE_APPLY);
     Matrix_MultVec3f(&sMultVec1, &vec1);
     Matrix_MultVec3f(&sMultVec2, &vec2);
 
@@ -269,11 +334,13 @@ void EnBoom_Draw(Actor* thisx, GlobalContext* globalCtx) {
     }
 
     func_80093D18(globalCtx->state.gfxCtx);
-    Matrix_RotateY((this->activeTimer * 12000) * (M_PI / 0x8000), MTXMODE_APPLY);
+    //Matrix_RotateY((this->activeTimer * 12000) * (M_PI / 0x8000), MTXMODE_APPLY);
+    Matrix_RotateZ((this->activeTimer * 12000) * (M_PI / 0x8000), MTXMODE_APPLY);
 
     gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(globalCtx->state.gfxCtx, "../z_en_boom.c", 601),
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gSPDisplayList(POLY_OPA_DISP++, gBoomerangRefDL);
+    //gSPDisplayList(POLY_OPA_DISP++, gBoomerangRefDL);
+    gSPDisplayList(POLY_OPA_DISP++, gHammerRefDL);
 
     CLOSE_DISPS(globalCtx->state.gfxCtx, "../z_en_boom.c", 604);
 }

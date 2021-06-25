@@ -398,7 +398,7 @@ void EnArrow_Update(Actor* thisx, GlobalContext* globalCtx) {
 
     if ((this->actor.params >= ARROW_FIRE) && (this->actor.params <= ARROW_0E)) {
         s16 elementalActorIds[] = { ACTOR_ARROW_FIRE, ACTOR_ARROW_ICE,  ACTOR_ARROW_LIGHT,
-                                    ACTOR_ARROW_FIRE, ACTOR_ARROW_FIRE, ACTOR_ARROW_FIRE };
+                                    ACTOR_ARROW_BOMB, ACTOR_ARROW_FIRE, ACTOR_ARROW_FIRE };
 
         if (this->actor.child == NULL) {
             Actor_SpawnAsChild(&globalCtx->actorCtx, &this->actor, globalCtx, elementalActorIds[this->actor.params - 3],

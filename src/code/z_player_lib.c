@@ -56,10 +56,22 @@ TextTriggerEntry sTextTriggers[] = {
 
 // Used to map model groups to model types for [animation, left hand, right hand, sheath, waist]
 u8 gPlayerModelTypes[][5] = {
-    { 2, 0, 10, 16, 20 }, { 1, 2, 9, 19, 20 },  { 1, 2, 10, 17, 20 }, { 0, 0, 8, 18, 20 },
-    { 0, 0, 8, 18, 20 },  { 3, 4, 9, 19, 20 },  { 4, 1, 11, 18, 20 }, { 5, 0, 8, 18, 20 },
-    { 0, 6, 8, 18, 20 },  { 4, 0, 15, 18, 20 }, { 3, 1, 9, 18, 20 },  { 3, 5, 9, 18, 20 },
-    { 0, 0, 13, 18, 20 }, { 0, 0, 14, 18, 20 }, { 0, 7, 8, 18, 20 },  { 0, 2, 8, 19, 20 },
+    { 2, 0, 10, 16, 20 }, //
+    { 1, 2, 9, 19, 20 },  //
+    { 1, 2, 10, 17, 20 }, // 0x02 - master/kokiri sword
+    { 0, 0, 8, 18, 20 },  // 0x03 - spells (except magic spell 17) and deku nut and trade items
+    { 0, 0, 8, 18, 20 },  // 
+    { 3, 4, 9, 19, 20 },  // 0x05 - big goron sword
+    { 4, 1, 11, 18, 20 }, // 0x06 - bow + arrows and slingshot
+    { 5, 0, 8, 18, 20 },  // 0x07 - bomb/chu
+    { 0, 6, 8, 18, 20 },  // 0x08 - boomerang
+    { 4, 0, 15, 18, 20 }, // 0x09 - hookshot/longshot
+    { 3, 1, 9, 18, 20 },  // 0x0A - fishing pole
+    { 3, 5, 9, 18, 20 },  // 0x0B - hammer
+    { 0, 0, 13, 18, 20 }, // 0x0C - fairy ocarina
+    { 0, 0, 14, 18, 20 }, // 0x0D - ocarina of time
+    { 0, 7, 8, 18, 20 },  // 0x0E - bottle + contents
+    { 0, 2, 8, 19, 20 },  //
 };
 
 Gfx* D_80125CE8[] = {
@@ -97,7 +109,7 @@ Gfx* D_80125E18[] = {
     0x06021CE8,
     0x06013E18,
     0x06026DF0,
-    0x060163C0,
+    0x060163C0
 };
 
 Gfx* D_80125E28[] = {
@@ -184,6 +196,7 @@ Gfx* D_80125ED8[] = {
     0x060164E0,
 };
 
+// hammer dlists?
 Gfx* D_80125EE8[] = {
     0x060233E0,
     0x06013CB0,
@@ -191,11 +204,16 @@ Gfx* D_80125EE8[] = {
     0x06016280,
 };
 
+// boomerang dlists?
 Gfx* D_80125EF8[] = {
+    0x060233E0,
+    0x06013CB0,
+    0x06028288,
+    0x06016280,/*
     0x06021AA8,
     0x06014660,
     0x06026C58,
-    0x06016908,
+    0x06016908,*/
 };
 
 Gfx* D_80125F08[] = {
@@ -354,6 +372,8 @@ void Player_SetModels(Player* this, s32 modelGroup) {
     this->rightHandDLists = &sPlayerDListGroups[gPlayerModelTypes[modelGroup][2]][(void)0, gSaveContext.linkAge];
     this->sheathDLists = &sPlayerDListGroups[gPlayerModelTypes[modelGroup][3]][(void)0, gSaveContext.linkAge];
     this->waistDLists = &sPlayerDListGroups[gPlayerModelTypes[modelGroup][4]][(void)0, gSaveContext.linkAge];
+
+    osSyncPrintf("Left Hand DList: %08x\n", *this->leftHandDLists);
 
     Player_SetModelsForHoldingShield(this);
 }

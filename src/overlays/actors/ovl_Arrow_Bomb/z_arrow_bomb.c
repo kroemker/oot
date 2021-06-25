@@ -22,7 +22,7 @@ void ArrowBomb_Hit(ArrowBomb* this, GlobalContext* globalCtx);
 
 const ActorInit Arrow_Bomb_InitVars = {
     ACTOR_ARROW_BOMB,
-    ACTORTYPE_ITEMACTION,
+    ACTORCAT_ITEMACTION,
     FLAGS,
     OBJECT_GAMEPLAY_KEEP,
     sizeof(ArrowBomb),
@@ -67,9 +67,9 @@ void ArrowBomb_Charge(ArrowBomb* this, GlobalContext* globalCtx) {
     }
 
     // copy position and rotation from arrow
-    this->actor.posRot.pos = arrow->actor.posRot.pos;
+    this->actor.world.pos = arrow->actor.world.pos;
     this->actor.shape.rot = arrow->actor.shape.rot;
-    Math_ApproxF(&this->bombScale, 0.005f, 0.001f);
+    Math_StepToF(&this->bombScale, 0.005f, 0.001f);
 
     // if arrow has no parent, player has fired the arrow
     if (arrow->actor.parent == NULL) {
@@ -92,11 +92,11 @@ void ArrowBomb_Fly(ArrowBomb* this, GlobalContext* globalCtx) {
         return;
     }
     // copy position and rotation from arrow
-    this->actor.posRot.pos = arrow->actor.posRot.pos;
+    this->actor.world.pos = arrow->actor.world.pos;
     this->actor.shape.rot = arrow->actor.shape.rot;
-    Math_ApproxF(&this->bombScale, 0.01f, 0.001f);
+    Math_StepToF(&this->bombScale, 0.01f, 0.001f);
 
-    if (arrow->hitWall & 1) {
+    if (arrow->hitFlags & 1) {
         ArrowBomb_SetupAction(this, ArrowBomb_Hit);
     } else if (arrow->timer < 2) {
         ((EnBom*)this->bomb)->timer = 0;
@@ -117,10 +117,10 @@ void ArrowBomb_Update(Actor* thisx, GlobalContext* globalCtx) {
         }
         ((EnBom*)this->bomb)->timer = 60;
         Actor_SetScale(this->bomb, this->bombScale);
-        this->bomb->posRot.pos = this->actor.posRot.pos;
-        this->bomb->posRot.pos.x += Math_Sins(this->actor.shape.rot.y) * 4.0f;
-        this->bomb->posRot.pos.y -= 20;
-        this->bomb->posRot.pos.z += Math_Coss(this->actor.shape.rot.y) * 4.0f;
+        this->bomb->world.pos = this->actor.world.pos;
+        this->bomb->world.pos.x += Math_SinS(this->actor.shape.rot.y) * 4.0f;
+        this->bomb->world.pos.y -= 20;
+        this->bomb->world.pos.z += Math_CosS(this->actor.shape.rot.y) * 4.0f;
 
         this->actionFunc(this, globalCtx);
     }
@@ -134,11 +134,11 @@ void ArrowBomb_Draw(Actor* thisx, GlobalContext* globalCtx) {
     arrow = (EnArrow*)this->actor.parent;
 
     if ((arrow != NULL) && (arrow->actor.update != NULL)) {
-        tranform = (arrow->hitWall & 2) ? &this->actor : &arrow->actor;
+        tranform = (arrow->hitFlags & 2) ? &this->actor : &arrow->actor;
 
         OPEN_DISPS(globalCtx->state.gfxCtx, "../z_arrow_bomb.c", 618);
 
-        Matrix_Translate(tranform->posRot.pos.x, tranform->posRot.pos.y, tranform->posRot.pos.z, MTXMODE_NEW);
+        Matrix_Translate(tranform->world.pos.x, tranform->world.pos.y, tranform->world.pos.z, MTXMODE_NEW);
         Matrix_RotateY(tranform->shape.rot.y * (M_PI / 32768), MTXMODE_APPLY);
         Matrix_RotateX(tranform->shape.rot.x * (M_PI / 32768), MTXMODE_APPLY);
         Matrix_RotateZ(tranform->shape.rot.z * (M_PI / 32768), MTXMODE_APPLY);

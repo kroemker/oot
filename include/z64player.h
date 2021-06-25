@@ -54,6 +54,17 @@ typedef enum {
 } PlayerMask;
 
 typedef enum {
+    /* 0x00 */ PLAYER_SPELL_0,
+    /* 0x01 */ PLAYER_SPELL_1,
+               PLAYER_SPELL_MINISH_CAP = 0x01,
+    /* 0x02 */ PLAYER_SPELL_2,
+    /* 0x03 */ PLAYER_SPELL_FARORES_WIND,
+    /* 0x04 */ PLAYER_SPELL_NAYRUS_LOVE,
+    /* 0x05 */ PLAYER_SPELL_DINS_FIRE,
+    /* 0x06 */ PLAYER_SPELL_MAX
+} PlayerSpell;
+
+typedef enum {
     /* 0x00 */ PLAYER_AP_NONE,
     /* 0x01 */ PLAYER_AP_LAST_USED,
     /* 0x02 */ PLAYER_AP_FISHING_POLE,
@@ -78,6 +89,7 @@ typedef enum {
                PLAYER_AP_MAGIC_SPELL_15,
     /* 0x15 */ PLAYER_AP_LIGHT_BALL = 0x15,
     /* 0x16 */ PLAYER_AP_MAGIC_SPELL_16,
+               PLAYER_AP_MINISH_CAP = 0x16,
     /* 0x17 */ PLAYER_AP_MAGIC_SPELL_17,
     /* 0x18 */ PLAYER_AP_FARORES_WIND,
     /* 0x19 */ PLAYER_AP_NAYRUS_LOVE,
@@ -186,7 +198,7 @@ typedef struct {
     /* 0x62 */ Vec3s unk_62[4];
     /* 0x7A */ Vec3s unk_7A[2];
     /* 0x86 */ Vec3s unk_86[2];
-    /* 0x92 */ u16 unk_92;
+    /* 0x92 */ u16 unk_92; // sfx id offset
     /* 0x94 */ u16 unk_94;
     /* 0x98 */ LinkAnimationHeader* unk_98;
     /* 0x9C */ LinkAnimationHeader* unk_9C;
@@ -278,7 +290,7 @@ typedef struct Player {
     /* 0x0668 */ char       unk_668[0x004];
     /* 0x066C */ s32        unk_66C;
     /* 0x0670 */ s32        swordEffectIndex;
-    /* 0x0674 */ PlayerFunc674 func_674;
+    /* 0x0674 */ PlayerFunc674 func_674; // main action function?
     /* 0x0678 */ PlayerAgeProperties* ageProperties;
     /* 0x067C */ u32        stateFlags1;
     /* 0x0680 */ u32        stateFlags2;
@@ -372,7 +384,7 @@ typedef struct Player {
     /* 0x0A60 */ u8         isBurning;
     /* 0x0A61 */ u8         flameTimers[18]; // one flame per body part
     /* 0x0A73 */ u8         unk_A73;
-    /* 0x0A74 */ PlayerFuncA74 func_A74;
+    /* 0x0A74 */ PlayerFuncA74 func_A74; // A-Button action function?
     /* 0x0A78 */ s8         invincibilityTimer; // prevents damage when nonzero (positive = visible, counts towards zero each frame)
     /* 0x0A79 */ u8         unk_A79;
     /* 0x0A7A */ u8         unk_A7A;
@@ -386,6 +398,9 @@ typedef struct Player {
     /* 0x0A88 */ Vec3f      unk_A88; // previous body part 0 position
 
     s32 doubleJumpTimer;
+    s16 conservedActorId; // TODO move these to save context when decomp is done, right now it may crash
+    s16 conservedActorParams; // TODO
+    s8 deconservingFrame;
 } Player; // size = 0xA94 + 1
 
 #endif

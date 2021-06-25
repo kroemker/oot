@@ -14,8 +14,6 @@ typedef struct ArrowBomb {
     /* 0x0000 */ Actor actor;
     /* 0x014C */ Vec3f unkPos;
     /* 0x0150 */ ArrowBombActionFunc actionFunc;
-    ColliderJntSph explosionCollider;
-    ColliderJntSphItem explosionColliderItems[1];
     Actor* bomb;
     f32 bombScale;
 } ArrowBomb;

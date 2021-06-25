@@ -404,7 +404,7 @@ typedef enum {
     /* 0x018D */ OBJECT_GI_SWORD_1,
     /* 0x018E */ OBJECT_DOOR_KILLER,
     /* 0x018F */ OBJECT_OUKE_HAKA,
-    /* 0x0190 */ OBJECT_TIMEBLOCK,
+    /* 0x0190 */ OBJECT_TIMEBLOCK,  
     /* 0x0191 */ OBJECT_ZL4,
     /* 0x0192 */ OBJECT_ID_MAX
 } ObjectID;

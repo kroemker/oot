@@ -735,12 +735,21 @@ void func_80083108(GlobalContext* globalCtx) {
                 }
 
                 Interface_ChangeAlpha(50);
-            } else if ((player->stateFlags1 & 0x00200000) || (player->stateFlags2 & 0x00040000)) {
+            } else if (player->stateFlags2 & 0x00040000) { // crawling
                 if (gSaveContext.buttonStatus[0] != BTN_DISABLED) {
                     gSaveContext.buttonStatus[0] = BTN_DISABLED;
                     gSaveContext.buttonStatus[1] = BTN_DISABLED;
                     gSaveContext.buttonStatus[2] = BTN_DISABLED;
                     gSaveContext.buttonStatus[3] = BTN_DISABLED;
+                    gSaveContext.unk_13EA = 0;
+                    Interface_ChangeAlpha(50);
+                }
+            } else if (player->stateFlags1 & 0x00200000) { // climbing
+                if (gSaveContext.buttonStatus[0] != BTN_DISABLED) {
+                    gSaveContext.buttonStatus[0] = BTN_DISABLED;
+                    gSaveContext.buttonStatus[1] = gSaveContext.equips.buttonItems[1] == ITEM_FEATHER ? BTN_ENABLED : BTN_DISABLED;
+                    gSaveContext.buttonStatus[2] = gSaveContext.equips.buttonItems[2] == ITEM_FEATHER ? BTN_ENABLED : BTN_DISABLED;
+                    gSaveContext.buttonStatus[3] = gSaveContext.equips.buttonItems[3] == ITEM_FEATHER ? BTN_ENABLED : BTN_DISABLED;
                     gSaveContext.unk_13EA = 0;
                     Interface_ChangeAlpha(50);
                 }

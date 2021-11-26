@@ -6529,20 +6529,43 @@ void func_8083FB14(Player* this, GlobalContext* globalCtx) {
     Player_PlayAnimationOnce(globalCtx, this, D_80853C5C[this->modelAnimType]);
 }
 
+// drop down from vines/ladder
 void func_8083FB7C(Player* this, GlobalContext* globalCtx) {
     this->stateFlags1 &= ~0x8200000;
     func_80837B9C(this, globalCtx);
     this->linearVelocity = -0.4f;
 }
 
+void Player_JumpFromVinesLadder(Player* this, GlobalContext* globalCtx) {
+    this->stateFlags1 &= ~0x8200000;
+    func_80838940(this, (LinkAnimationHeader*)0x04003148, 10.0f, globalCtx, NA_SE_VO_LI_AUTO_JUMP);
+    this->actor.shape.rot.y += 0x8000;
+    this->currentYaw = this->actor.shape.rot.y;
+    this->linearVelocity = 4.0f;
+    this->doubleJumpTimer = 0;
+}
+
 s32 func_8083FBC0(Player* this, GlobalContext* globalCtx) {
-    if (!CHECK_BTN_ALL(sControlInput->press.button, BTN_A) && (this->actor.bgCheckFlags & 0x200) &&
+    s32 i;
+    s32 item;
+    for (i = 0; i < ARRAY_COUNT(D_80854388); i++) {
+        if (CHECK_BTN_ALL(sControlInput->press.button, D_80854388[i])) {
+            break;
+        }
+    }
+    item = Player_GetButtonItem(globalCtx, i);
+    if (item == ITEM_NONE && !CHECK_BTN_ALL(sControlInput->press.button, BTN_A) && (this->actor.bgCheckFlags & 0x200) &&
         ((D_808535F0 & 8) || (D_808535F0 & 2) ||
          func_80041E4C(&globalCtx->colCtx, this->actor.wallPoly, this->actor.wallBgId))) {
         return 0;
     }
 
-    func_8083FB7C(this, globalCtx);
+    if (item == ITEM_FEATHER) {
+        Player_JumpFromVinesLadder(this, globalCtx);
+    }
+    else {
+        func_8083FB7C(this, globalCtx);
+    }
     func_80832698(this, NA_SE_VO_LI_AUTO_JUMP);
     return 1;
 }
@@ -11129,8 +11152,8 @@ void func_8084BEE4(Player* this) {
 
 void Player_Action_ClimbVinesLadder(Player* this, GlobalContext* globalCtx) {
     static Vec3f D_8085488C = { 0.0f, 0.0f, 26.0f };
-    s32 sp84;
-    s32 sp80;
+    s32 relY;
+    s32 relX;
     f32 phi_f0;
     f32 phi_f2;
     Vec3f sp6C;
@@ -11140,18 +11163,18 @@ void Player_Action_ClimbVinesLadder(Player* this, GlobalContext* globalCtx) {
     LinkAnimationHeader* anim1;
     LinkAnimationHeader* anim2;
 
-    sp84 = sControlInput->rel.stick_y;
-    sp80 = sControlInput->rel.stick_x;
+    relY = sControlInput->rel.stick_y;
+    relX = sControlInput->rel.stick_x;
 
     this->fallStartHeight = this->actor.world.pos.y;
     this->stateFlags2 |= 0x40;
 
-    if ((this->unk_84F != 0) && (ABS(sp84) < ABS(sp80))) {
-        phi_f0 = ABS(sp80) * 0.0325f;
-        sp84 = 0;
+    if ((this->unk_84F != 0) && (ABS(relY) < ABS(relX))) {
+        phi_f0 = ABS(relX) * 0.0325f;
+        relY = 0;
     } else {
-        phi_f0 = ABS(sp84) * 0.05f;
-        sp80 = 0;
+        phi_f0 = ABS(relY) * 0.05f;
+        relX = 0;
     }
 
     if (phi_f0 < 1.0f) {
@@ -11188,10 +11211,10 @@ void Player_Action_ClimbVinesLadder(Player* this, GlobalContext* globalCtx) {
                 return;
             }
 
-            if (sp84 != 0) {
+            if (relY != 0) {
                 sp68 = this->unk_84F + this->unk_850;
 
-                if (sp84 > 0) {
+                if (relY > 0) {
                     D_8085488C.y = this->ageProperties->unk_40;
                     temp_f0 = func_8083973C(globalCtx, this, &D_8085488C, &sp5C);
 
@@ -11233,10 +11256,10 @@ void Player_Action_ClimbVinesLadder(Player* this, GlobalContext* globalCtx) {
                 }
                 this->unk_850 ^= 1;
             } else {
-                if ((this->unk_84F != 0) && (sp80 != 0)) {
+                if ((this->unk_84F != 0) && (relX != 0)) {
                     anim2 = this->ageProperties->unk_BC[this->unk_850];
 
-                    if (sp80 > 0) {
+                    if (relX > 0) {
                         this->skelAnime.prevTransl = this->ageProperties->unk_7A[this->unk_850];
                         Player_PlayAnimationOnce(globalCtx, this, anim2);
                     } else {

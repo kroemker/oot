@@ -1,48 +1,44 @@
 #include "SetCollisionHeader.h"
-#include "../../BitConverter.h"
-#include "../../StringHelper.h"
-#include "../../ZFile.h"
-#include "../ZRoom.h"
 
-using namespace std;
+#include "Globals.h"
+#include "Utils/BitConverter.h"
+#include "Utils/StringHelper.h"
+#include "ZFile.h"
+#include "ZRoom/ZRoom.h"
 
-SetCollisionHeader::SetCollisionHeader(ZRoom* nZRoom, std::vector<uint8_t> rawData,
-                                       uint32_t rawDataIndex)
-	: ZRoomCommand(nZRoom, rawData, rawDataIndex)
+SetCollisionHeader::SetCollisionHeader(ZFile* nParent) : ZRoomCommand(nParent)
 {
-	segmentOffset = GETSEGOFFSET(BitConverter::ToInt32BE(rawData, rawDataIndex + 4));
-	collisionHeader = new ZCollisionHeader(nZRoom->parent);
-	collisionHeader->SetRawData(rawData);
-	collisionHeader->SetRawDataIndex(segmentOffset);
+}
+
+void SetCollisionHeader::ParseRawData()
+{
+	ZRoomCommand::ParseRawData();
+
+	collisionHeader = new ZCollisionHeader(parent);
 	collisionHeader->SetName(
-		StringHelper::Sprintf("%sCollisionHeader0x%06X", nZRoom->GetName().c_str(), segmentOffset));
-	collisionHeader->ParseRawData();
+		StringHelper::Sprintf("%sCollisionHeader_%06X", parent->GetName().c_str(), segmentOffset));
+	collisionHeader->ExtractFromFile(segmentOffset);
+	parent->AddResource(collisionHeader);
 }
 
-string SetCollisionHeader::GenerateSourceCodePass1(string roomName, uint32_t baseAddress)
+void SetCollisionHeader::DeclareReferences(const std::string& prefix)
 {
-	return StringHelper::Sprintf(
-		"%s 0x00, (u32)&%sCollisionHeader0x%06X",
-		ZRoomCommand::GenerateSourceCodePass1(roomName, baseAddress).c_str(),
-		zRoom->GetName().c_str(), segmentOffset);
+	collisionHeader->DeclareVar(prefix, "");
 }
 
-string SetCollisionHeader::GenerateSourceCodePass2(string roomName, uint32_t baseAddress)
+std::string SetCollisionHeader::GetBodySourceCode() const
 {
-	return "";
+	std::string listName;
+	Globals::Instance->GetSegmentedPtrName(cmdArg2, parent, "CollisionHeader", listName);
+	return StringHelper::Sprintf("SCENE_CMD_COL_HEADER(%s)", listName.c_str());
 }
 
-string SetCollisionHeader::GetCommandCName()
+std::string SetCollisionHeader::GetCommandCName() const
 {
 	return "SCmdColHeader";
 }
 
-string SetCollisionHeader::GenerateExterns()
-{
-	return "";
-}
-
-RoomCommand SetCollisionHeader::GetRoomCommand()
+RoomCommand SetCollisionHeader::GetRoomCommand() const
 {
 	return RoomCommand::SetCollisionHeader;
 }

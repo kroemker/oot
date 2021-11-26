@@ -1,5 +1,5 @@
-#ifndef _Z_BG_MORI_HASHIGO_H_
-#define _Z_BG_MORI_HASHIGO_H_
+#ifndef Z_BG_MORI_HASHIGO_H
+#define Z_BG_MORI_HASHIGO_H
 
 #include "ultra64.h"
 #include "global.h"
@@ -18,6 +18,9 @@ typedef struct BgMoriHashigo {
     /* 0x01CC */ s8 moriTexObjIndex;
 } BgMoriHashigo; // size = 0x01D0
 
-extern const ActorInit Bg_Mori_Hashigo_InitVars;
+typedef enum {
+    /* -1 */ HASHIGO_CLASP = -1,
+    /*  0  */ HASHIGO_LADDER
+} HasigoType;
 
 #endif

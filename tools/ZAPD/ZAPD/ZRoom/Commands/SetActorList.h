@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../ZRoomCommand.h"
+#include "ZRoom/ZRoomCommand.h"
 
 class ActorSpawnEntry
 {
@@ -9,33 +9,42 @@ public:
 	int16_t posX;
 	int16_t posY;
 	int16_t posZ;
-	int16_t rotX;
-	int16_t rotY;
-	int16_t rotZ;
+	uint16_t rotX;
+	uint16_t rotY;
+	uint16_t rotZ;
 	uint16_t initVar;
+	size_t largestActorName = 16;
 
-	ActorSpawnEntry(std::vector<uint8_t> rawData, uint32_t rawDataIndex);
+	ActorSpawnEntry(const std::vector<uint8_t>& rawData, uint32_t rawDataIndex);
+
+	std::string GetBodySourceCode() const;
+
+	std::string GetSourceTypeName() const;
+	int32_t GetRawDataSize() const;
+
+	uint16_t GetActorId() const;
+	void SetLargestActorName(size_t nameSize);
 };
 
 class SetActorList : public ZRoomCommand
 {
 public:
-	SetActorList(ZRoom* nZRoom, std::vector<uint8_t> rawData, uint32_t rawDataIndex);
-	~SetActorList();
+	uint8_t numActors;
+	std::vector<ActorSpawnEntry> actors;
 
-	std::string GetSourceOutputCode(std::string prefix);
-	virtual std::string GenerateSourceCodePass1(std::string roomName, uint32_t baseAddress) override;
-	virtual std::string GenerateSourceCodePass2(std::string roomName, uint32_t baseAddress) override;
-	virtual RoomCommand GetRoomCommand() override;
-	virtual size_t GetRawDataSize() override;
-	virtual std::string GetCommandCName() override;
-	virtual std::string GenerateExterns() override;
+	SetActorList(ZFile* nParent);
 
-private:
-	size_t GetActorListArraySize();
-	int32_t numActors;
-	std::vector<ActorSpawnEntry*> actors;
-	uint32_t segmentOffset;
-	std::vector<uint8_t> _rawData;
-	uint32_t _rawDataIndex;
+	void ParseRawData() override;
+	void DeclareReferences(const std::string& prefix) override;
+
+	void ParseRawDataLate() override;
+	void DeclareReferencesLate(const std::string& prefix) override;
+
+	std::string GetBodySourceCode() const override;
+
+	RoomCommand GetRoomCommand() const override;
+	std::string GetCommandCName() const override;
+
+protected:
+	size_t GetActorListArraySize() const;
 };

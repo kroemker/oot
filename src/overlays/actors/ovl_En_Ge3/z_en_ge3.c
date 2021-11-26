@@ -126,7 +126,7 @@ void EnGe3_LookAtPlayer(EnGe3* this, GlobalContext* globalCtx) {
 }
 
 void EnGe3_Wait(EnGe3* this, GlobalContext* globalCtx) {
-    if (func_8002F334(&this->actor, globalCtx)) {
+    if (Actor_TextboxIsClosing(&this->actor, globalCtx)) {
         this->actionFunc = EnGe3_WaitLookAtPlayer;
         this->actor.update = EnGe3_UpdateWhenNotTalking;
         this->actor.flags &= ~0x10000;
@@ -148,8 +148,8 @@ void EnGe3_WaitTillCardGiven(EnGe3* this, GlobalContext* globalCtx) {
 }
 
 void EnGe3_GiveCard(EnGe3* this, GlobalContext* globalCtx) {
-    if ((func_8010BDBC(&globalCtx->msgCtx) == 5) && (func_80106BC8(globalCtx) != 0)) {
-        func_80106CCC(globalCtx);
+    if ((Message_GetState(&globalCtx->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(globalCtx)) {
+        Message_CloseTextbox(globalCtx);
         this->actor.flags &= ~0x10000;
         this->actionFunc = EnGe3_WaitTillCardGiven;
         func_8002F434(&this->actor, globalCtx, GI_GERUDO_CARD, 10000.0f, 50.0f);
@@ -157,7 +157,7 @@ void EnGe3_GiveCard(EnGe3* this, GlobalContext* globalCtx) {
 }
 
 void EnGe3_ForceTalk(EnGe3* this, GlobalContext* globalCtx) {
-    if (func_8002F194(&this->actor, globalCtx)) {
+    if (Actor_ProcessTalkRequest(&this->actor, globalCtx)) {
         this->actionFunc = EnGe3_GiveCard;
     } else {
         if (!(this->unk_30C & 4)) {
@@ -205,7 +205,7 @@ void EnGe3_UpdateWhenNotTalking(Actor* thisx, GlobalContext* globalCtx) {
     EnGe3_UpdateCollision(this, globalCtx);
     this->actionFunc(this, globalCtx);
 
-    if (func_8002F194(&this->actor, globalCtx)) {
+    if (Actor_ProcessTalkRequest(&this->actor, globalCtx)) {
         this->actionFunc = EnGe3_Wait;
         this->actor.update = EnGe3_Update;
     } else {
@@ -276,20 +276,19 @@ void EnGe3_PostLimbDraw(GlobalContext* globalCtx, s32 limbIndex, Gfx** dList, Ve
     }
 }
 
-static u64* sEyeTextures[] = {
-    0x06005FE8, // Half-open
-    0x060065A8, // Quarter-open
-    0x06006D28, // Closed
-};
-
 void EnGe3_Draw(Actor* thisx, GlobalContext* globalCtx2) {
+    static void* eyeTextures[] = {
+        0x06005FE8, // Half-open
+        0x060065A8, // Quarter-open
+        0x06006D28, // Closed
+    };
     EnGe3* this = THIS;
     GlobalContext* globalCtx = globalCtx2;
 
     OPEN_DISPS(globalCtx->state.gfxCtx, "../z_en_ge3.c", 614);
 
     func_800943C8(globalCtx->state.gfxCtx);
-    gSPSegment(POLY_OPA_DISP++, 0x08, SEGMENTED_TO_VIRTUAL(sEyeTextures[this->eyeIndex]));
+    gSPSegment(POLY_OPA_DISP++, 0x08, SEGMENTED_TO_VIRTUAL(eyeTextures[this->eyeIndex]));
     func_8002EBCC(&this->actor, globalCtx, 0);
     SkelAnime_DrawFlexOpa(globalCtx, this->skelAnime.skeleton, this->skelAnime.jointTable, this->skelAnime.dListCount,
                           EnGe3_OverrideLimbDraw, EnGe3_PostLimbDraw, this);

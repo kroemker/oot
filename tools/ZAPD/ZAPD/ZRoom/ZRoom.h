@@ -1,52 +1,50 @@
 #pragma once
 
-#include <tinyxml2.h>
-#include "../ZResource.h"
-#include "ZRoomCommand.h"
-#include "ZTexture.h"
-
 #include <map>
 #include <string>
 #include <vector>
 
+#include "ZResource.h"
+#include "ZRoomCommand.h"
+#include "tinyxml2.h"
+
 class ZRoom : public ZResource
 {
-protected:
-	std::vector<ZRoomCommand*> commands;
-
-	std::string GetSourceOutputHeader(const std::string& prefix) override;
-	std::string GetSourceOutputCode(const std::string& prefix) override;
-	void ProcessCommandSets();
-	void SyotesRoomHack();
-
 public:
-	ZRoom* scene;
-	std::map<int32_t, ZTexture*> textures;
-	std::vector<CommandSet> commandSets;
+	std::vector<ZRoomCommand*> commands;
 	int32_t roomCount;  // Only valid for scenes
 
-	std::string extDefines;
+	std::string hackMode;
+
+	ZResourceType zroomType = ZResourceType::Error;
+	ZResourceType parentZroomType = ZResourceType::Error;
 
 	ZRoom(ZFile* nParent);
 	virtual ~ZRoom();
 
-	void ExtractFromXML(tinyxml2::XMLElement* reader, const std::vector<uint8_t>& nRawData,
-	                    const uint32_t nRawDataIndex, const std::string& nRelPath) override;
-	void ParseCommands(std::vector<ZRoomCommand*>& commandList, CommandSet commandSet);
-	size_t GetDeclarationSizeFromNeighbor(int32_t declarationAddress);
+	void ExtractFromXML(tinyxml2::XMLElement* reader, uint32_t nRawDataIndex) override;
+	void ExtractFromBinary(uint32_t nRawDataIndex, ZResourceType parentType);
+
+	void ParseXML(tinyxml2::XMLElement* reader) override;
+	void ParseRawData() override;
+	void DeclareReferences(const std::string& prefix) override;
+	void ParseRawDataLate() override;
+	void DeclareReferencesLate(const std::string& prefix) override;
+
+	Declaration* DeclareVar(const std::string& prefix, const std::string& body) override;
+	std::string GetBodySourceCode() const override;
+
+	std::string GetSourceOutputCode(const std::string& prefix) override;
+
+	std::string GetDefaultName(const std::string& prefix) const override;
+	size_t GetDeclarationSizeFromNeighbor(uint32_t declarationAddress);
 	size_t GetCommandSizeFromNeighbor(ZRoomCommand* cmd);
 	ZRoomCommand* FindCommandOfType(RoomCommand cmdType);
-	size_t GetRawDataSize() override;
-	virtual ZResourceType GetResourceType() override;
-	virtual void Save(const std::string& outFolder) override;
-	virtual void PreGenSourceFiles() override;
-};
 
-struct CommandSet
-{
-	int32_t address;
-	uint32_t commandCount;  // Only used if explicitly specified in the XML
+	size_t GetRawDataSize() const override;
+	std::string GetSourceTypeName() const override;
+	ZResourceType GetResourceType() const override;
 
-	CommandSet(int32_t nAddress);
-	CommandSet(int32_t nAddress, uint32_t nCommandCount);
+protected:
+	void SyotesRoomHack();
 };

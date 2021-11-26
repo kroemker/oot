@@ -100,7 +100,7 @@ static DamageTable sDamageTable = {
 };
 
 static InitChainEntry sInitChain[] = {
-    ICHAIN_S8(naviEnemyId, 40, ICHAIN_CONTINUE),
+    ICHAIN_S8(naviEnemyId, 0x28, ICHAIN_CONTINUE),
     ICHAIN_U8(targetMode, 2, ICHAIN_CONTINUE),
     ICHAIN_F32(targetArrowOffset, 30, ICHAIN_STOP),
 };
@@ -128,7 +128,7 @@ void EnNy_Init(Actor* thisx, GlobalContext* globalCtx) {
     this->unk_1E8 = 0.0f;
     this->unk_1E0 = 0.25f;
     if (this->actor.params == 0) {
-        // New initials
+        // "New initials"
         osSyncPrintf("ニュウ イニシャル[ %d ] ！！\n", this->actor.params);
         this->actor.colChkInfo.mass = 0;
         this->unk_1D4 = 0;
@@ -137,7 +137,7 @@ void EnNy_Init(Actor* thisx, GlobalContext* globalCtx) {
         func_80ABCDBC(this);
     } else {
         // This mode is unused in the final game
-        // Dummy new initials
+        // "Dummy new initials"
         osSyncPrintf("ダミーニュウ イニシャル[ %d ] ！！\n", this->actor.params);
         osSyncPrintf("En_Ny_actor_move2[ %x ] ！！\n", EnNy_UpdateUnused);
         this->actor.colChkInfo.mass = 0xFF;
@@ -334,7 +334,7 @@ s32 EnNy_CollisionCheck(EnNy* this, GlobalContext* globalCtx) {
                 this->actor.shape.shadowAlpha = 0;
                 this->actor.flags &= ~1;
                 this->unk_1D0 = sp3F;
-                func_80032C7C(globalCtx, &this->actor);
+                Enemy_StartFinishingBlow(globalCtx, &this->actor);
                 return 1;
             }
             EffectSsHitMark_SpawnFixedScale(globalCtx, 0, &effectPos);
@@ -534,18 +534,18 @@ void EnNy_Draw(Actor* thisx, GlobalContext* globalCtx) {
     gDPPipeSync(POLY_XLU_DISP++);
     gDPSetRenderMode(POLY_XLU_DISP++, G_RM_PASS, G_RM_AA_ZB_XLU_SURF2);
     gDPSetEnvColor(POLY_XLU_DISP++, 0, 0, 0, this->unk_1D8);
-    gSPDisplayList(POLY_XLU_DISP++, gEnNyMetalBodyDlist);
+    gSPDisplayList(POLY_XLU_DISP++, gEnNyMetalBodyDL);
     gDPPipeSync(POLY_XLU_DISP++);
     gDPSetRenderMode(POLY_XLU_DISP++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_XLU_SURF2);
     gDPSetEnvColor(POLY_XLU_DISP++, 0, 0, 0, this->unk_1D4);
-    gSPDisplayList(POLY_XLU_DISP++, gEnNyRockBodyDlist);
+    gSPDisplayList(POLY_XLU_DISP++, gEnNyRockBodyDL);
     if (this->unk_1E0 > 0.25f) {
         Matrix_Scale(this->unk_1E0, this->unk_1E0, this->unk_1E0, MTXMODE_APPLY);
         func_8002EBCC(&this->actor, globalCtx, 1);
         func_80093D18(globalCtx->state.gfxCtx);
         gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(globalCtx->state.gfxCtx, "../z_en_ny.c", 868),
                   G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gSPDisplayList(POLY_OPA_DISP++, gEnNySpikeDlist);
+        gSPDisplayList(POLY_OPA_DISP++, gEnNySpikeDL);
     }
     CLOSE_DISPS(globalCtx->state.gfxCtx, "../z_en_ny.c", 872);
     if (this->unk_1CA != 0) {
@@ -583,7 +583,7 @@ void EnNy_DrawDeathEffect(Actor* thisx, GlobalContext* globalCtx) {
             Matrix_Scale(scale, scale, scale, MTXMODE_APPLY);
             gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(globalCtx->state.gfxCtx, "../z_en_ny.c", 912),
                       G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-            gSPDisplayList(POLY_OPA_DISP++, gEnNyRockBodyDlist);
+            gSPDisplayList(POLY_OPA_DISP++, gEnNyRockBodyDL);
         }
     }
     CLOSE_DISPS(globalCtx->state.gfxCtx, "../z_en_ny.c", 919);

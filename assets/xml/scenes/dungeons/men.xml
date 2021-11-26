@@ -1,6 +1,8 @@
 <Root>
     <File Name="men_scene" Segment="2">
-        <Scene Name="men_scene"/>
+        <Texture Name="gGTGDayEntranceTex" OutName="day_entrance" Format="ia16" Width="8" Height="128" Offset="0xF8C0"/>
+        <Texture Name="gGTGNightEntranceTex" OutName="night_entrance" Format="ia16" Width="8" Height="128" Offset="0x100C0"/>
+        <Scene Name="men_scene" Offset="0x0"/>
     </File>
     <File Name="men_room_0" Segment="3">
         <DList Name="gMenDL_008118" Offset="0x8118"/>

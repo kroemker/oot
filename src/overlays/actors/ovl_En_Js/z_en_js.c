@@ -5,6 +5,7 @@
  */
 
 #include "z_en_js.h"
+#include "objects/object_js/object_js.h"
 
 #define FLAGS 0x00000009
 
@@ -49,10 +50,6 @@ static ColliderCylinderInit sCylinderInit = {
     { 30, 40, 0, { 0, 0, 0 } },
 };
 
-extern FlexSkeletonHeader D_06005EA0;
-extern AnimationHeader D_0600045C;
-extern AnimationHeader D_0600018C;
-
 void En_Js_SetupAction(EnJs* this, EnJsActionFunc actionFunc) {
     this->actionFunc = actionFunc;
 }
@@ -62,8 +59,9 @@ void EnJs_Init(Actor* thisx, GlobalContext* globalCtx) {
     s32 pad;
 
     ActorShape_Init(&this->actor.shape, 0.0f, NULL, 36.0f);
-    SkelAnime_InitFlex(globalCtx, &this->skelAnime, &D_06005EA0, &D_0600045C, this->jointTable, this->morphTable, 13);
-    Animation_PlayOnce(&this->skelAnime, &D_0600045C);
+    SkelAnime_InitFlex(globalCtx, &this->skelAnime, &gCarpetMerchantSkel, &gCarpetMerchantSlappingKneeAnim,
+                       this->jointTable, this->morphTable, 13);
+    Animation_PlayOnce(&this->skelAnime, &gCarpetMerchantSlappingKneeAnim);
     Collider_InitCylinder(globalCtx, &this->collider);
     Collider_SetCylinder(globalCtx, &this->collider, &this->actor, &sCylinderInit);
     this->actor.colChkInfo.mass = MASS_IMMOVABLE;
@@ -84,7 +82,7 @@ void EnJs_Destroy(Actor* thisx, GlobalContext* globalCtx) {
 u8 func_80A88F64(EnJs* this, GlobalContext* globalCtx, u16 textId) {
     s16 yawDiff;
 
-    if (func_8002F194(&this->actor, globalCtx)) {
+    if (Actor_ProcessTalkRequest(&this->actor, globalCtx)) {
         return 1;
     } else {
         this->actor.textId = textId;
@@ -100,19 +98,19 @@ u8 func_80A88F64(EnJs* this, GlobalContext* globalCtx, u16 textId) {
 
 void func_80A89008(EnJs* this) {
     En_Js_SetupAction(this, func_80A89304);
-    Animation_Change(&this->skelAnime, &D_0600045C, 1.0f, 0.0f, Animation_GetLastFrame(&D_0600045C), ANIMMODE_ONCE,
-                     -4.0f);
+    Animation_Change(&this->skelAnime, &gCarpetMerchantSlappingKneeAnim, 1.0f, 0.0f,
+                     Animation_GetLastFrame(&gCarpetMerchantSlappingKneeAnim), ANIMMODE_ONCE, -4.0f);
 }
 
 void func_80A89078(EnJs* this, GlobalContext* globalCtx) {
-    if (func_8002F334(&this->actor, globalCtx)) {
+    if (Actor_TextboxIsClosing(&this->actor, globalCtx)) {
         func_80A89008(this);
         this->actor.flags &= ~0x10000;
     }
 }
 
 void func_80A890C0(EnJs* this, GlobalContext* globalCtx) {
-    if (func_8002F194(&this->actor, globalCtx)) {
+    if (Actor_ProcessTalkRequest(&this->actor, globalCtx)) {
         En_Js_SetupAction(this, func_80A89078);
     } else {
         func_8002F2CC(&this->actor, globalCtx, 1000.0f);
@@ -120,7 +118,7 @@ void func_80A890C0(EnJs* this, GlobalContext* globalCtx) {
 }
 
 void func_80A8910C(EnJs* this, GlobalContext* globalCtx) {
-    if (func_8002F334(&this->actor, globalCtx)) {
+    if (Actor_TextboxIsClosing(&this->actor, globalCtx)) {
         this->actor.textId = 0x6078;
         En_Js_SetupAction(this, func_80A890C0);
         this->actor.flags |= 0x10000;
@@ -137,11 +135,11 @@ void func_80A89160(EnJs* this, GlobalContext* globalCtx) {
 }
 
 void func_80A891C4(EnJs* this, GlobalContext* globalCtx) {
-    if (func_8010BDBC(&globalCtx->msgCtx) == 4 && func_80106BC8(globalCtx)) {
+    if (Message_GetState(&globalCtx->msgCtx) == TEXT_STATE_CHOICE && Message_ShouldAdvance(globalCtx)) {
         switch (globalCtx->msgCtx.choiceIndex) {
             case 0: // yes
                 if (gSaveContext.rupees < 200) {
-                    func_8010B720(globalCtx, 0x6075);
+                    Message_ContinueTextbox(globalCtx, 0x6075);
                     func_80A89008(this);
                 } else {
                     Rupees_ChangeBy(-200);
@@ -149,7 +147,7 @@ void func_80A891C4(EnJs* this, GlobalContext* globalCtx) {
                 }
                 break;
             case 1: // no
-                func_8010B720(globalCtx, 0x6074);
+                Message_ContinueTextbox(globalCtx, 0x6074);
                 func_80A89008(this);
         }
     }
@@ -157,8 +155,8 @@ void func_80A891C4(EnJs* this, GlobalContext* globalCtx) {
 
 void func_80A89294(EnJs* this) {
     En_Js_SetupAction(this, func_80A891C4);
-    Animation_Change(&this->skelAnime, &D_0600018C, 1.0f, 0.0f, Animation_GetLastFrame(&D_0600018C), ANIMMODE_ONCE,
-                     -4.0f);
+    Animation_Change(&this->skelAnime, &gCarpetMerchantIdleAnim, 1.0f, 0.0f,
+                     Animation_GetLastFrame(&gCarpetMerchantIdleAnim), ANIMMODE_ONCE, -4.0f);
 }
 
 void func_80A89304(EnJs* this, GlobalContext* globalCtx) {

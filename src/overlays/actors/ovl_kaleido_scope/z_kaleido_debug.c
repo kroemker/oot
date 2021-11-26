@@ -1,4 +1,5 @@
 #include "z_kaleido_scope.h"
+#include "textures/parameter_static/parameter_static.h"
 
 // Positions of each input section in the editor
 static u16 sSectionPositions[][2] = {
@@ -81,11 +82,11 @@ void KaleidoScope_DrawDebugEditorText(Gfx** gfxp) {
 void KaleidoScope_DrawDigit(GlobalContext* globalCtx, s32 digit, s32 rectLeft, s32 rectTop) {
     OPEN_DISPS(globalCtx->state.gfxCtx, "../z_kaleido_debug.c", 208);
 
-    gDPLoadTextureBlock(POLY_OPA_DISP++, D_02003040[digit], G_IM_FMT_I, G_IM_SIZ_8b, 8, 16, 0,
+    gDPLoadTextureBlock(POLY_OPA_DISP++, ((u8*)gCounterDigit0Tex + (8 * 16 * digit)), G_IM_FMT_I, G_IM_SIZ_8b, 8, 16, 0,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                         G_TX_NOLOD);
     gSPTextureRectangle(POLY_OPA_DISP++, rectLeft << 2, rectTop << 2, (rectLeft + 8) << 2, (rectTop + 16) << 2,
-                        G_TX_RENDERTILE, 0, 0, 1024, 1024);
+                        G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);
 
     CLOSE_DISPS(globalCtx->state.gfxCtx, "../z_kaleido_debug.c", 220);
 }
@@ -318,21 +319,21 @@ void KaleidoScope_DrawDebugEditor(GlobalContext* globalCtx) {
         heldDBtnTimer = 16;
     }
 
-    if (dBtnInput & BTN_DDOWN) {
+    if (CHECK_BTN_ANY(dBtnInput, BTN_DDOWN)) {
         if ((u32)++curRow > 10) {
             curRow = 0;
         }
         curSection = sRowFirstSections[curRow];
-    } else if (dBtnInput & BTN_DUP) {
+    } else if (CHECK_BTN_ANY(dBtnInput, BTN_DUP)) {
         if (--curRow < 0) {
             curRow = 22;
         }
         curSection = sRowFirstSections[curRow];
-    } else if (dBtnInput & BTN_DLEFT) {
+    } else if (CHECK_BTN_ANY(dBtnInput, BTN_DLEFT)) {
         if (--curSection < 0) {
             curSection = 0x5C;
         }
-    } else if (dBtnInput & BTN_DRIGHT) {
+    } else if (CHECK_BTN_ANY(dBtnInput, BTN_DRIGHT)) {
         if (++curSection > 0x5C) {
             curSection = 0;
         }
@@ -414,17 +415,17 @@ void KaleidoScope_DrawDebugEditor(GlobalContext* globalCtx) {
                     }
 
                     if (CHECK_BTN_ALL(input->press.button, BTN_CLEFT)) {
-                        if (i != gSaveContext.inventory.items[SLOT(gAmmoItems[i])]) {
-                            gSaveContext.inventory.items[SLOT(gAmmoItems[i])] = gAmmoItems[i];
+                        if (i != INV_CONTENT(gAmmoItems[i])) {
+                            INV_CONTENT(gAmmoItems[i]) = gAmmoItems[i];
                         }
-                        gSaveContext.inventory.ammo[SLOT(gAmmoItems[i])]++;
-                        if (gSaveContext.inventory.ammo[SLOT(gAmmoItems[i])] > 99) {
-                            gSaveContext.inventory.ammo[SLOT(gAmmoItems[i])] = 99;
+                        AMMO(gAmmoItems[i])++;
+                        if (AMMO(gAmmoItems[i]) > 99) {
+                            AMMO(gAmmoItems[i]) = 99;
                         }
                     } else if (CHECK_BTN_ALL(input->press.button, BTN_CRIGHT)) {
-                        gSaveContext.inventory.ammo[SLOT(gAmmoItems[i])]--;
-                        if (gSaveContext.inventory.ammo[SLOT(gAmmoItems[i])] < 0) {
-                            gSaveContext.inventory.ammo[SLOT(gAmmoItems[i])] = 0;
+                        AMMO(gAmmoItems[i])--;
+                        if (AMMO(gAmmoItems[i]) < 0) {
+                            AMMO(gAmmoItems[i]) = 0;
                         }
                     }
                 } else if (i == SLOT_OCARINA) {

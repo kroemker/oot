@@ -13,15 +13,19 @@ public:
 	~ZArray();
 
 	void ParseXML(tinyxml2::XMLElement* reader) override;
-	std::string GetSourceOutputCode(const std::string& prefix) override;
-	size_t GetRawDataSize() override;
 
-	void ExtractFromXML(tinyxml2::XMLElement* reader, const std::vector<uint8_t>& nRawData,
-	                    const uint32_t nRawDataIndex, const std::string& nRelPath) override;
+	Declaration* DeclareVar(const std::string& prefix, const std::string& bodyStr) override;
+	std::string GetBodySourceCode() const override;
+
+	size_t GetRawDataSize() const override;
+
+	std::string GetSourceTypeName() const override;
+	ZResourceType GetResourceType() const override;
+
+	DeclarationAlignment GetDeclarationAlignment() const override;
 
 protected:
 	size_t arrayCnt;
-	ZFile* testFile;
-
-	// void ParseRawData(const std::vector<uint8_t>& data, const int32_t offset);
+	std::string childName;
+	std::vector<ZResource*> resList;
 };

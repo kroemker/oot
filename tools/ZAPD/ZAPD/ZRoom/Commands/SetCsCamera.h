@@ -1,37 +1,40 @@
 #pragma once
 
-#include "../../Vec3s.h"
-#include "../ZRoomCommand.h"
+#include "ZRoom/ZRoomCommand.h"
+#include "ZVector.h"
 
 class CsCameraEntry
 {
 public:
-	CsCameraEntry(std::vector<uint8_t> rawData, uint32_t rawDataIndex);
+	CsCameraEntry(const std::vector<uint8_t>& rawData, uint32_t rawDataIndex);
 
-	int32_t baseOffset;
-	int32_t type;
-	int32_t numPoints;
+	std::string GetSourceTypeName() const;
+	int32_t GetRawDataSize() const;
+
+	int16_t GetNumPoints() const;
+	segptr_t GetCamAddress() const;
+	uint32_t GetSegmentOffset() const;
+
+	int baseOffset;
+	int16_t type;
+	int16_t numPoints;
+	segptr_t camAddress;
 	uint32_t segmentOffset;
 };
 
 class SetCsCamera : public ZRoomCommand
 {
 public:
-	SetCsCamera(ZRoom* nZRoom, std::vector<uint8_t> rawData, uint32_t rawDataIndex);
-	~SetCsCamera();
+	std::vector<CsCameraEntry> cameras;
+	std::vector<ZVector> points;
 
-	std::string GetSourceOutputCode(std::string prefix);
-	virtual std::string GenerateSourceCodePass1(std::string roomName, uint32_t baseAddress) override;
-	virtual std::string GenerateSourceCodePass2(std::string roomName, uint32_t baseAddress) override;
-	virtual RoomCommand GetRoomCommand() override;
-	virtual size_t GetRawDataSize() override;
-	virtual std::string GetCommandCName() override;
-	virtual std::string GenerateExterns() override;
+	SetCsCamera(ZFile* nParent);
 
-private:
-	uint32_t segmentOffset;
-	std::vector<CsCameraEntry*> cameras;
-	std::vector<Vec3s> points;
-	std::vector<uint8_t> _rawData;
-	int32_t _rawDataIndex;
+	void ParseRawData() override;
+	void DeclareReferences(const std::string& prefix) override;
+
+	std::string GetBodySourceCode() const override;
+
+	RoomCommand GetRoomCommand() const override;
+	std::string GetCommandCName() const override;
 };

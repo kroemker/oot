@@ -1,4 +1,5 @@
 #include "z_bg_mori_elevator.h"
+#include "objects/object_mori_objects/object_mori_objects.h"
 
 #define FLAGS 0x00000010
 
@@ -38,9 +39,6 @@ static InitChainEntry sInitChain[] = {
     ICHAIN_F32(uncullZoneDownward, 3000, ICHAIN_CONTINUE),
     ICHAIN_VEC3F_DIV1000(scale, 1000, ICHAIN_STOP),
 };
-
-extern CollisionHeader D_060035F8;
-extern Gfx D_06002AD0[];
 
 f32 func_808A1800(f32* pValue, f32 target, f32 scale, f32 maxStep, f32 minStep) {
     f32 var = (target - *pValue) * scale;
@@ -94,18 +92,18 @@ void BgMoriElevator_Init(Actor* thisx, GlobalContext* globalCtx) {
     this->moriTexObjIndex = Object_GetIndex(&globalCtx->objectCtx, OBJECT_MORI_TEX);
     if (this->moriTexObjIndex < 0) {
         Actor_Kill(thisx);
-        // Forest Temple obj elevator Bank Danger!
+        // "Forest Temple obj elevator Bank Danger!"
         osSyncPrintf("Error : 森の神殿 obj elevator バンク危険！(%s %d)\n", "../z_bg_mori_elevator.c", 277);
     } else {
         switch (sIsSpawned) {
             case false:
-                // Forest Temple elevator CT
+                // "Forest Temple elevator CT"
                 osSyncPrintf("森の神殿 elevator CT\n");
                 sIsSpawned = true;
                 this->dyna.actor.room = -1;
                 Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
                 DynaPolyActor_Init(&this->dyna, DPM_PLAYER);
-                CollisionHeader_GetVirtual(&D_060035F8, &colHeader);
+                CollisionHeader_GetVirtual(&gMoriElevatorCol, &colHeader);
                 this->dyna.bgId = DynaPoly_SetBgActor(globalCtx, &globalCtx->colCtx.dyna, thisx, colHeader);
                 BgMoriElevator_SetupWaitAfterInit(this);
                 break;
@@ -120,7 +118,7 @@ void BgMoriElevator_Destroy(Actor* thisx, GlobalContext* globalCtx) {
     BgMoriElevator* this = THIS;
 
     if (this->unk_172 == 0) {
-        // Forest Temple elevator DT
+        // "Forest Temple elevator DT"
         osSyncPrintf("森の神殿 elevator DT\n");
         DynaPoly_DeleteBgActor(globalCtx, &globalCtx->colCtx.dyna, this->dyna.bgId);
         sIsSpawned = false;
@@ -129,7 +127,7 @@ void BgMoriElevator_Destroy(Actor* thisx, GlobalContext* globalCtx) {
 
 s32 BgMoriElevator_IsPlayerRiding(BgMoriElevator* this, GlobalContext* globalCtx) {
     return ((this->dyna.unk_160 & 2) && !(this->unk_170 & 2) &&
-            ((PLAYER->actor.world.pos.y - this->dyna.actor.world.pos.y) < 80.0f));
+            ((GET_PLAYER(globalCtx)->actor.world.pos.y - this->dyna.actor.world.pos.y) < 80.0f));
 }
 
 void BgMoriElevator_SetupWaitAfterInit(BgMoriElevator* this) {
@@ -143,7 +141,7 @@ void BgMoriElevator_WaitAfterInit(BgMoriElevator* this, GlobalContext* globalCtx
                 this->dyna.actor.world.pos.y = 73.0f;
                 BgMoriElevator_SetupSetPosition(this);
             } else {
-                // Error: Forest Temple obj elevator Room setting is dangerous
+                // "Error: Forest Temple obj elevator Room setting is dangerous"
                 osSyncPrintf("Error : 森の神殿 obj elevator 部屋設定が危険(%s %d)\n", "../z_bg_mori_elevator.c", 371);
             }
         } else {
@@ -204,7 +202,7 @@ void BgMoriElevator_SetPosition(BgMoriElevator* this, GlobalContext* globalCtx) 
             this->targetY = 233.0f;
             BgMoriElevator_StopMovement(this);
         } else {
-            // Error:Forest Temple obj elevator Room setting is dangerous(% s % d)
+            // "Error:Forest Temple obj elevator Room setting is dangerous(%s %d)"
             osSyncPrintf("Error : 森の神殿 obj elevator 部屋設定が危険(%s %d)\n", "../z_bg_mori_elevator.c", 479);
         }
     } else if ((globalCtx->roomCtx.curRoom.num == 2) && (this->dyna.actor.world.pos.y < -275.0f)) {
@@ -261,7 +259,7 @@ void BgMoriElevator_Draw(Actor* thisx, GlobalContext* globalCtx) {
     gSPSegment(POLY_OPA_DISP++, 0x08, globalCtx->objectCtx.status[this->moriTexObjIndex].segment);
     gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(globalCtx->state.gfxCtx, "../z_bg_mori_elevator.c", 580),
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gSPDisplayList(POLY_OPA_DISP++, D_06002AD0);
+    gSPDisplayList(POLY_OPA_DISP++, gMoriElevatorDL);
 
     CLOSE_DISPS(globalCtx->state.gfxCtx, "../z_bg_mori_elevator.c", 584);
 }

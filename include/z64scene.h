@@ -1,5 +1,5 @@
-#ifndef _Z64SCENE_H_
-#define _Z64SCENE_H_
+#ifndef Z64SCENE_H
+#define Z64SCENE_H
 
 #include "command_macros_base.h"
 
@@ -15,7 +15,7 @@ typedef struct {
     /* 0x11 */ u8  config;
     /* 0x12 */ u8  unk_12;
     /* 0x13 */ u8  unk_13;
-} Scene; // size = 0x14
+} SceneTableEntry; // size = 0x14
 
 typedef struct {
     /* 0x00 */ u8  code;
@@ -26,47 +26,47 @@ typedef struct {
 typedef struct {
     /* 0x00 */ u8  code;
     /* 0x01 */ u8  data1;
-    /* 0x04 */ u32 segment;
+    /* 0x04 */ void* segment;
 } SCmdSpawnList;
 
 typedef struct {
     /* 0x00 */ u8  code;
     /* 0x01 */ u8  num;
-    /* 0x04 */ u32 segment;
+    /* 0x04 */ void* segment;
 } SCmdActorList;
 
 typedef struct {
     /* 0x00 */ u8  code;
     /* 0x01 */ u8  data1;
-    /* 0x04 */ u32 segment;
+    /* 0x04 */ void* segment;
 } SCmdUnused02;
 
 typedef struct {
     /* 0x00 */ u8  code;
     /* 0x01 */ u8  data1;
-    /* 0x04 */ u32 segment;
+    /* 0x04 */ void* segment;
 } SCmdColHeader;
 
 typedef struct {
     /* 0x00 */ u8  code;
     /* 0x01 */ u8  num;
-    /* 0x04 */ u32 segment;
+    /* 0x04 */ void* segment;
 } SCmdRoomList;
 
 typedef struct {
     /* 0x00 */ u8  code;
     /* 0x01 */ u8  data1;
     /* 0x02 */ char pad[2];
-    /* 0x04 */ s8  unk_04;
-    /* 0x05 */ s8  unk_05;
-    /* 0x06 */ s8  unk_06;
+    /* 0x04 */ u8  x;
+    /* 0x05 */ u8  y;
+    /* 0x06 */ u8  z;
     /* 0x07 */ u8  unk_07;
 } SCmdWindSettings;
 
 typedef struct {
     /* 0x00 */ u8  code;
     /* 0x01 */ u8  data1;
-    /* 0x04 */ u32 segment;
+    /* 0x04 */ void* segment;
 } SCmdEntranceList;
 
 typedef struct {
@@ -84,37 +84,37 @@ typedef struct {
 typedef struct {
     /* 0x00 */ u8  code;
     /* 0x01 */ u8  data1;
-    /* 0x04 */ u32 segment;
+    /* 0x04 */ void* segment;
 } SCmdMesh;
 
 typedef struct {
     /* 0x00 */ u8  code;
     /* 0x01 */ u8  num;
-    /* 0x04 */ u32 segment;
+    /* 0x04 */ void* segment;
 } SCmdObjectList;
 
 typedef struct {
     /* 0x00 */ u8  code;
     /* 0x01 */ u8  num;
-    /* 0x04 */ u32 segment;
+    /* 0x04 */ void* segment;
 } SCmdLightList;
 
 typedef struct {
     /* 0x00 */ u8  code;
     /* 0x01 */ u8  data1;
-    /* 0x04 */ u32 segment;
+    /* 0x04 */ void* segment;
 } SCmdPathList;
 
 typedef struct {
     /* 0x00 */ u8  code;
     /* 0x01 */ u8  num;
-    /* 0x04 */ u32 segment;
+    /* 0x04 */ void* segment;
 } SCmdTransiActorList;
 
 typedef struct {
     /* 0x00 */ u8  code;
     /* 0x01 */ u8  num;
-    /* 0x04 */ u32 segment;
+    /* 0x04 */ void* segment;
 } SCmdLightSettingList;
 
 typedef struct {
@@ -152,7 +152,7 @@ typedef struct {
 typedef struct {
     /* 0x00 */ u8  code;
     /* 0x01 */ u8  data1;
-    /* 0x04 */ u32 segment;
+    /* 0x04 */ void* segment;
 } SCmdExitList;
 
 typedef struct {
@@ -173,13 +173,13 @@ typedef struct {
 typedef struct {
     /* 0x00 */ u8  code;
     /* 0x01 */ u8  data1;
-    /* 0x04 */ u32 segment;
+    /* 0x04 */ void* segment;
 } SCmdCutsceneData;
 
 typedef struct {
     /* 0x00 */ u8  code;
     /* 0x01 */ u8  data1;
-    /* 0x04 */ u32 segment;
+    /* 0x04 */ void* segment;
 } SCmdAltHeaders;
 
 typedef struct {
@@ -196,8 +196,8 @@ typedef struct {
     MeshHeaderBase base;
 
     u8 numEntries;
-    u32 dListStart;
-    u32 dListEnd;
+    Gfx* dListStart;
+    Gfx* dListEnd;
 } MeshHeader0;
 
 typedef struct {
@@ -254,21 +254,20 @@ typedef struct {
 typedef struct {
     MeshHeaderBase base;
     u8 numEntries;
-    u32 dListStart;
-    u32 dListEnd;
+    Gfx* dListStart;
+    Gfx* dListEnd;
 } MeshHeader2;
 
-
 typedef struct {
-    u8 ambientClrR, ambientClrG, ambientClrB;
-    u8 diffuseClrA_R, diffuseClrA_G, diffuseClrA_B;
-    u8 diffuseDirA_X, diffuseDirA_Y, diffuseDirA_Z;
-    u8 diffuseClrB_R, diffuseClrB_G, diffuseClrB_B;
-    u8 diffuseDirB_X, diffuseDirB_Y, diffuseDirB_Z;
-    u8 fogClrR, fogClrG, fogClrB;
-    u16 unk;
-    u16 drawDistance;
-} LightSettings;
+    /* 0x00 */ u8 ambientColor[3];
+    /* 0x03 */ s8 diffuseDir1[3];
+    /* 0x06 */ u8 diffuseColor1[3];
+    /* 0x09 */ s8 diffuseDir2[3];
+    /* 0x0C */ u8 diffuseColor2[3];
+    /* 0x0F */ u8 fogColor[3];
+    /* 0x12 */ u16 fogNear;
+    /* 0x14 */ u16 fogFar;
+} LightSettings; // size = 0x16
 
 typedef struct {
     /* 0x00 */ u8 count; // number of points in the path
@@ -493,8 +492,8 @@ typedef enum {
 #define SCENE_CMD_PATH_LIST(pathList) \
     { SCENE_CMD_ID_PATH_LIST, 0, CMD_PTR(pathList) }
 
-#define SCENE_CMD_TRANSITION_ACTOR_LIST(numTransitionActors, transitionActorList) \
-    { SCENE_CMD_ID_TRANSI_ACTOR_LIST, numTransitionActors, CMD_PTR(transitionActorList) } 
+#define SCENE_CMD_TRANSITION_ACTOR_LIST(numActors, list) \
+    { SCENE_CMD_ID_TRANSI_ACTOR_LIST, numActors, CMD_PTR(list) } 
 
 #define SCENE_CMD_ENV_LIGHT_SETTINGS(numLightSettings, lightSettingsList) \
     { SCENE_CMD_ID_ENV_LIGHT_SETTINGS, numLightSettings, CMD_PTR(lightSettingsList) }

@@ -1,7 +1,7 @@
 #include "global.h"
 
 // (Note: 80 = SCREEN_HEIGHT/3, see VisMono_DrawTexture)
-// Did the devs forget to update this? 1+1+1+80*(7+2+2+3)+1+1 makes more sense
+// This may not have been kept up-to-date with the code, 1+1+1+80*(7+2+2+3)+1+1 makes more sense
 #define DLSIZE (1 + 3 + 1 + 1 + 80 * (7 + 2 + 2 + 3) + 1)
 
 // framebuffer
@@ -60,8 +60,8 @@ Gfx* VisMono_DrawTexture(VisMono* this, Gfx* gfx) {
                    G_TX_NOMIRROR | G_TX_CLAMP, 0, 0);
         gDPSetTileSize(gfx++, 1, (1 << 2), 0, ((SCREEN_WIDTH * 2) << 2), (2 << 2));
 
-        gSPTextureRectangle(gfx++, 0, (y) << 2, (SCREEN_WIDTH << 2), (y + height) << 2, G_TX_RENDERTILE, 2 << 5, 0,
-                            (2 << 10), (1 << 10));
+        gSPTextureRectangle(gfx++, 0, y << 2, (SCREEN_WIDTH << 2), (y + height) << 2, G_TX_RENDERTILE, 2 << 5, 0,
+                            2 << 10, 1 << 10);
         tex += SCREEN_WIDTH * height;
     }
 

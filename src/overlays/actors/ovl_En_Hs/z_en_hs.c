@@ -6,6 +6,7 @@
 
 #include "z_en_hs.h"
 #include "vt.h"
+#include "objects/object_hs/object_hs.h"
 
 #define FLAGS 0x00000009
 
@@ -51,11 +52,6 @@ static ColliderCylinderInit sCylinderInit = {
     { 40, 40, 0, { 0, 0, 0 } },
 };
 
-extern AnimationHeader D_06000304;
-extern AnimationHeader D_06000528;
-extern AnimationHeader D_060005C0;
-extern FlexSkeletonHeader D_06006260;
-
 void func_80A6E3A0(EnHs* this, EnHsActionFunc actionFunc) {
     this->actionFunc = actionFunc;
 }
@@ -65,30 +61,31 @@ void EnHs_Init(Actor* thisx, GlobalContext* globalCtx) {
     s32 pad;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 36.0f);
-    SkelAnime_InitFlex(globalCtx, &this->skelAnime, &D_06006260, &D_060005C0, this->jointTable, this->morphTable, 16);
-    Animation_PlayLoop(&this->skelAnime, &D_060005C0);
+    SkelAnime_InitFlex(globalCtx, &this->skelAnime, &object_hs_Skel_006260, &object_hs_Anim_0005C0, this->jointTable,
+                       this->morphTable, 16);
+    Animation_PlayLoop(&this->skelAnime, &object_hs_Anim_0005C0);
     Collider_InitCylinder(globalCtx, &this->collider);
     Collider_SetCylinder(globalCtx, &this->collider, &this->actor, &sCylinderInit);
     this->actor.colChkInfo.mass = MASS_IMMOVABLE;
     Actor_SetScale(&this->actor, 0.01f);
 
-    if (LINK_IS_CHILD) {
+    if (!LINK_IS_ADULT) {
         this->actor.params = 0;
     } else {
         this->actor.params = 1;
     }
 
     if (this->actor.params == 1) {
-        // chicken shop (adult era)
+        // "chicken shop (adult era)"
         osSyncPrintf(VT_FGCOL(CYAN) " ヒヨコの店(大人の時) \n" VT_RST);
         func_80A6E3A0(this, func_80A6E9AC);
         if (gSaveContext.itemGetInf[3] & 1) {
-            // chicken shop closed
+            // "chicken shop closed"
             osSyncPrintf(VT_FGCOL(CYAN) " ヒヨコ屋閉店 \n" VT_RST);
             Actor_Kill(&this->actor);
         }
     } else {
-        // chicken shop (child era)
+        // "chicken shop (child era)"
         osSyncPrintf(VT_FGCOL(CYAN) " ヒヨコの店(子人の時) \n" VT_RST);
         func_80A6E3A0(this, func_80A6E9AC);
     }
@@ -106,7 +103,7 @@ void EnHs_Destroy(Actor* thisx, GlobalContext* globalCtx) {
 s32 func_80A6E53C(EnHs* this, GlobalContext* globalCtx, u16 textId, EnHsActionFunc actionFunc) {
     s16 yawDiff;
 
-    if (func_8002F194(&this->actor, globalCtx)) {
+    if (Actor_ProcessTalkRequest(&this->actor, globalCtx)) {
         func_80A6E3A0(this, actionFunc);
         return 1;
     }
@@ -122,7 +119,7 @@ s32 func_80A6E53C(EnHs* this, GlobalContext* globalCtx, u16 textId, EnHsActionFu
 }
 
 void func_80A6E5EC(EnHs* this, GlobalContext* globalCtx) {
-    if (func_8002F334(&this->actor, globalCtx)) {
+    if (Actor_TextboxIsClosing(&this->actor, globalCtx)) {
         func_80A6E3A0(this, func_80A6E6B0);
     }
 
@@ -130,7 +127,7 @@ void func_80A6E5EC(EnHs* this, GlobalContext* globalCtx) {
 }
 
 void func_80A6E630(EnHs* this, GlobalContext* globalCtx) {
-    if ((func_8010BDBC(&globalCtx->msgCtx) == 6) && func_80106BC8(globalCtx)) {
+    if ((Message_GetState(&globalCtx->msgCtx) == TEXT_STATE_DONE) && Message_ShouldAdvance(globalCtx)) {
         func_80088AA0(180);
         func_80A6E3A0(this, func_80A6E6B0);
         gSaveContext.eventInf[1] &= ~1;
@@ -144,13 +141,13 @@ void func_80A6E6B0(EnHs* this, GlobalContext* globalCtx) {
 }
 
 void func_80A6E6D8(EnHs* this, GlobalContext* globalCtx) {
-    if (func_8002F334(&this->actor, globalCtx)) {
+    if (Actor_TextboxIsClosing(&this->actor, globalCtx)) {
         func_80A6E3A0(this, func_80A6E9AC);
     }
 }
 
 void func_80A6E70C(EnHs* this, GlobalContext* globalCtx) {
-    if (func_8002F334(&this->actor, globalCtx)) {
+    if (Actor_TextboxIsClosing(&this->actor, globalCtx)) {
         func_80A6E3A0(this, func_80A6E9AC);
     }
 }
@@ -167,33 +164,33 @@ void func_80A6E740(EnHs* this, GlobalContext* globalCtx) {
 }
 
 void func_80A6E7BC(EnHs* this, GlobalContext* globalCtx) {
-    if ((func_8010BDBC(&globalCtx->msgCtx) == 4) && func_80106BC8(globalCtx)) {
+    if ((Message_GetState(&globalCtx->msgCtx) == TEXT_STATE_CHOICE) && Message_ShouldAdvance(globalCtx)) {
         switch (globalCtx->msgCtx.choiceIndex) {
             case 0:
                 func_80A6E3A0(this, func_80A6E740);
                 func_8002F434(&this->actor, globalCtx, GI_ODD_MUSHROOM, 10000.0f, 50.0f);
                 break;
             case 1:
-                func_8010B720(globalCtx, 0x10B4);
+                Message_ContinueTextbox(globalCtx, 0x10B4);
                 func_80A6E3A0(this, func_80A6E70C);
                 break;
         }
 
-        Animation_Change(&this->skelAnime, &D_060005C0, 1.0f, 0.0f, Animation_GetLastFrame(&D_060005C0), ANIMMODE_LOOP,
-                         8.0f);
+        Animation_Change(&this->skelAnime, &object_hs_Anim_0005C0, 1.0f, 0.0f,
+                         Animation_GetLastFrame(&object_hs_Anim_0005C0), ANIMMODE_LOOP, 8.0f);
     }
 
     this->unk_2A8 |= 1;
 }
 
 void func_80A6E8CC(EnHs* this, GlobalContext* globalCtx) {
-    Player* player = PLAYER;
+    Player* player = GET_PLAYER(globalCtx);
 
-    if ((func_8010BDBC(&globalCtx->msgCtx) == 5) && func_80106BC8(globalCtx)) {
-        func_8010B720(globalCtx, 0x10B3);
+    if ((Message_GetState(&globalCtx->msgCtx) == TEXT_STATE_EVENT) && Message_ShouldAdvance(globalCtx)) {
+        Message_ContinueTextbox(globalCtx, 0x10B3);
         func_80A6E3A0(this, func_80A6E7BC);
-        Animation_Change(&this->skelAnime, &D_06000528, 1.0f, 0.0f, Animation_GetLastFrame(&D_06000528), ANIMMODE_LOOP,
-                         8.0f);
+        Animation_Change(&this->skelAnime, &object_hs_Anim_000528, 1.0f, 0.0f,
+                         Animation_GetLastFrame(&object_hs_Anim_000528), ANIMMODE_LOOP, 8.0f);
     }
 
     if (this->unk_2AA > 0) {
@@ -207,15 +204,15 @@ void func_80A6E8CC(EnHs* this, GlobalContext* globalCtx) {
 }
 
 void func_80A6E9AC(EnHs* this, GlobalContext* globalCtx) {
-    Player* player = PLAYER;
+    Player* player = GET_PLAYER(globalCtx);
     s16 yawDiff;
 
-    if (func_8002F194(&this->actor, globalCtx)) {
+    if (Actor_ProcessTalkRequest(&this->actor, globalCtx)) {
         if (func_8002F368(globalCtx) == 7) {
             player->actor.textId = 0x10B2;
             func_80A6E3A0(this, func_80A6E8CC);
-            Animation_Change(&this->skelAnime, &D_06000304, 1.0f, 0.0f, Animation_GetLastFrame(&D_06000304),
-                             ANIMMODE_LOOP, 8.0f);
+            Animation_Change(&this->skelAnime, &object_hs_Anim_000304, 1.0f, 0.0f,
+                             Animation_GetLastFrame(&object_hs_Anim_000304), ANIMMODE_LOOP, 8.0f);
             this->unk_2AA = 40;
             func_80078884(NA_SE_SY_TRE_BOX_APPEAR);
         } else {

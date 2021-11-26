@@ -10,22 +10,15 @@
 class ZCutsceneMM : public ZCutsceneBase
 {
 public:
-	uint32_t segmentOffset;
-
 	ZCutsceneMM(ZFile* nParent);
 	virtual ~ZCutsceneMM();
 
-	std::string GetBodySourceCode() override;
-	void DeclareVar(const std::string& prefix, const std::string& bodyStr) override;
-	std::string GetSourceOutputCode(const std::string& prefix) override;
-	size_t GetRawDataSize() override;
-	uint32_t getSegmentOffset() override { return segmentOffset; }
+	std::string GetBodySourceCode() const override;
+
+	size_t GetRawDataSize() const override;
 
 	void ParseRawData() override;
-	ZResourceType GetResourceType() override;
-
-	void ExtractFromXML(tinyxml2::XMLElement* reader, const std::vector<uint8_t>& nRawData,
-	                    const uint32_t nRawDataIndex, const std::string& nRelPath) override;
+	ZResourceType GetResourceType() const override;
 
 protected:
 	int32_t numCommands;

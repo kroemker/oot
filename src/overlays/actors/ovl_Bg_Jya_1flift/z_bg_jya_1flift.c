@@ -5,6 +5,7 @@
  */
 
 #include "z_bg_jya_1flift.h"
+#include "objects/object_jya_obj/object_jya_obj.h"
 
 #define FLAGS 0x00000010
 
@@ -15,12 +16,12 @@ void BgJya1flift_Destroy(Actor* thisx, GlobalContext* globalCtx);
 void BgJya1flift_Update(Actor* thisx, GlobalContext* globalCtx);
 void BgJya1flift_Draw(Actor* thisx, GlobalContext* globalCtx);
 
-void func_80892DB0(BgJya1flift* this);
-void func_80892DCC(BgJya1flift* this, GlobalContext* globalCtx);
+void BgJya1flift_SetupWaitForSwitch(BgJya1flift* this);
+void BgJya1flift_WaitForSwitch(BgJya1flift* this, GlobalContext* globalCtx);
 void BgJya1flift_DoNothing(BgJya1flift* this, GlobalContext* globalCtx);
 void BgJya1flift_ChangeDirection(BgJya1flift* this);
 void BgJya1flift_Move(BgJya1flift* this, GlobalContext* globalCtx);
-void func_80892E0C(BgJya1flift* this);
+void BgJya1flift_SetupDoNothing(BgJya1flift* this);
 void BgJya1flift_ResetMoveDelay(BgJya1flift* this);
 void BgJya1flift_DelayMove(BgJya1flift* this, GlobalContext* globalCtx);
 
@@ -67,9 +68,6 @@ static InitChainEntry sInitChain[] = {
     ICHAIN_F32(uncullZoneDownward, 1200, ICHAIN_STOP),
 };
 
-extern CollisionHeader D_060004A8;
-extern Gfx D_060001F0[];
-
 void BgJya1flift_InitDynapoly(BgJya1flift* this, GlobalContext* globalCtx, CollisionHeader* collision, s32 moveFlag) {
     s32 pad;
     CollisionHeader* colHeader = NULL;
@@ -80,7 +78,7 @@ void BgJya1flift_InitDynapoly(BgJya1flift* this, GlobalContext* globalCtx, Colli
     this->dyna.bgId = DynaPoly_SetBgActor(globalCtx, &globalCtx->colCtx.dyna, &this->dyna.actor, colHeader);
 
     if (this->dyna.bgId == BG_ACTOR_MAX) {
-        // Warning : move BG login failed
+        // "Warning : move BG login failed"
         osSyncPrintf("Warning : move BG 登録失敗(%s %d)(name %d)(arg_data 0x%04x)\n", "../z_bg_jya_1flift.c", 179,
                      this->dyna.actor.id, this->dyna.actor.params);
     }
@@ -96,20 +94,20 @@ void BgJya1flift_InitCollision(Actor* thisx, GlobalContext* globalCtx) {
 
 void BgJya1flift_Init(Actor* thisx, GlobalContext* globalCtx) {
     BgJya1flift* this = THIS;
-    // 1 F lift
+    // "1 F lift"
     osSyncPrintf("(１Ｆリフト)(flag %d)(room %d)\n", sIsSpawned, globalCtx->roomCtx.curRoom.num);
     this->hasInitialized = false;
     if (sIsSpawned) {
         Actor_Kill(thisx);
         return;
     }
-    BgJya1flift_InitDynapoly(this, globalCtx, &D_060004A8, DPM_UNK);
+    BgJya1flift_InitDynapoly(this, globalCtx, &g1fliftCol, 0);
     Actor_ProcessInitChain(thisx, sInitChain);
     BgJya1flift_InitCollision(thisx, globalCtx);
     if (Flags_GetSwitch(globalCtx, (thisx->params & 0x3F))) {
-        LINK_AGE_IN_YEARS == YEARS_ADULT ? BgJya1flift_ChangeDirection(this) : func_80892E0C(this);
+        LINK_AGE_IN_YEARS == YEARS_ADULT ? BgJya1flift_ChangeDirection(this) : BgJya1flift_SetupDoNothing(this);
     } else {
-        func_80892DB0(this);
+        BgJya1flift_SetupWaitForSwitch(this);
     }
     thisx->room = -1;
     sIsSpawned = true;
@@ -126,18 +124,18 @@ void BgJya1flift_Destroy(Actor* thisx, GlobalContext* globalCtx) {
     }
 }
 
-void func_80892DB0(BgJya1flift* this) {
-    this->actionFunc = func_80892DCC;
+void BgJya1flift_SetupWaitForSwitch(BgJya1flift* this) {
+    this->actionFunc = BgJya1flift_WaitForSwitch;
     this->dyna.actor.world.pos.y = sFinalPositions[0];
 }
 
-void func_80892DCC(BgJya1flift* this, GlobalContext* globalCtx) {
+void BgJya1flift_WaitForSwitch(BgJya1flift* this, GlobalContext* globalCtx) {
     if (Flags_GetSwitch(globalCtx, (this->dyna.actor.params & 0x3F))) {
         BgJya1flift_ChangeDirection(this);
     }
 }
 
-void func_80892E0C(BgJya1flift* this) {
+void BgJya1flift_SetupDoNothing(BgJya1flift* this) {
     this->actionFunc = BgJya1flift_DoNothing;
     this->dyna.actor.world.pos.y = sFinalPositions[0];
 }
@@ -182,19 +180,18 @@ void BgJya1flift_DelayMove(BgJya1flift* this, GlobalContext* globalCtx) {
     }
 }
 
-void BgJya1flift_Update(Actor* thisx, GlobalContext* globalCtx) {
+void BgJya1flift_Update(Actor* thisx, GlobalContext* globalCtx2) {
     BgJya1flift* this = THIS;
-    s32 pad;
+    GlobalContext* globalCtx = globalCtx2;
     s32 tempIsRiding;
 
     // Room 0 is the first room and 6 is the room that the lift starts on
     if (globalCtx->roomCtx.curRoom.num == 6 || globalCtx->roomCtx.curRoom.num == 0) {
         this->actionFunc(this, globalCtx);
-        if (globalCtx) {}
         tempIsRiding = func_8004356C(&this->dyna) ? true : false;
         if ((this->actionFunc == BgJya1flift_Move) || (this->actionFunc == BgJya1flift_DelayMove)) {
             if (tempIsRiding) {
-                Camera_ChangeSetting(globalCtx->cameraPtrs[MAIN_CAM], CAM_SET_HIDAN1);
+                Camera_ChangeSetting(globalCtx->cameraPtrs[MAIN_CAM], CAM_SET_FIRE_PLATFORM);
             } else if (!tempIsRiding && this->isLinkRiding) {
                 Camera_ChangeSetting(globalCtx->cameraPtrs[MAIN_CAM], CAM_SET_DUNGEON0);
             }
@@ -208,5 +205,5 @@ void BgJya1flift_Update(Actor* thisx, GlobalContext* globalCtx) {
 }
 
 void BgJya1flift_Draw(Actor* thisx, GlobalContext* globalCtx) {
-    Gfx_DrawDListOpa(globalCtx, D_060001F0);
+    Gfx_DrawDListOpa(globalCtx, g1fliftDL);
 }

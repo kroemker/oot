@@ -25,24 +25,22 @@ void Select_LoadGame(SelectContext* this, s32 entranceIndex) {
         gSaveContext.unk_13F4 = 0;
         gSaveContext.magicLevel = gSaveContext.magic;
     }
-    gSaveContext.buttonStatus[4] = BTN_ENABLED;
-    gSaveContext.buttonStatus[3] = BTN_ENABLED;
-    gSaveContext.buttonStatus[2] = BTN_ENABLED;
-    gSaveContext.buttonStatus[1] = BTN_ENABLED;
-    gSaveContext.buttonStatus[0] = BTN_ENABLED;
+    gSaveContext.buttonStatus[0] = gSaveContext.buttonStatus[1] = gSaveContext.buttonStatus[2] =
+        gSaveContext.buttonStatus[3] = gSaveContext.buttonStatus[4] = BTN_ENABLED;
     gSaveContext.unk_13E7 = gSaveContext.unk_13E8 = gSaveContext.unk_13EA = gSaveContext.unk_13EC = 0;
-    Audio_SetBGM(NA_BGM_STOP);
+    Audio_QueueSeqCmd(NA_BGM_STOP);
     gSaveContext.entranceIndex = entranceIndex;
     gSaveContext.respawnFlag = 0;
     gSaveContext.respawn[RESPAWN_MODE_DOWN].entranceIndex = -1;
-    gSaveContext.seqIndex = 0xFF;
+    gSaveContext.seqIndex = (u8)NA_BGM_DISABLED;
     gSaveContext.nightSeqIndex = 0xFF;
     gSaveContext.showTitleCard = true;
-    D_8011FB30 = 0;
+    gWeatherMode = 0;
     this->state.running = false;
     SET_NEXT_GAMESTATE(&this->state, Gameplay_Init, GlobalContext);
 }
 
+// "Translation" ("Actual name")
 static SceneSelectEntry sScenes[] = {
     { " 1:Hyrule Field", Select_LoadGame, 0x00CD },
     { " 2:Kakariko Village", Select_LoadGame, 0x00DB },
@@ -173,22 +171,19 @@ static SceneSelectEntry sScenes[] = {
 };
 
 void Select_UpdateMenu(SelectContext* this) {
-    Input* controller1;
+    Input* input = &this->state.input[0];
     s32 pad;
     SceneSelectEntry* selectedScene;
 
-    controller1 = &this->state.input[0];
-
-    if (this->unk_21C == 0) {
-
-        if (CHECK_BTN_ALL(controller1->press.button, BTN_A) || CHECK_BTN_ALL(controller1->press.button, BTN_START)) {
+    if (this->verticalInputAccumulator == 0) {
+        if (CHECK_BTN_ALL(input->press.button, BTN_A) || CHECK_BTN_ALL(input->press.button, BTN_START)) {
             selectedScene = &this->scenes[this->currentScene];
             if (selectedScene->loadFunc != NULL) {
                 selectedScene->loadFunc(this, selectedScene->entranceIndex);
             }
         }
 
-        if (CHECK_BTN_ALL(controller1->press.button, BTN_B)) {
+        if (CHECK_BTN_ALL(input->press.button, BTN_B)) {
             if (LINK_AGE_IN_YEARS == YEARS_ADULT) {
                 gSaveContext.linkAge = 1;
             } else {
@@ -196,7 +191,7 @@ void Select_UpdateMenu(SelectContext* this) {
             }
         }
 
-        if (CHECK_BTN_ALL(controller1->press.button, BTN_Z)) {
+        if (CHECK_BTN_ALL(input->press.button, BTN_Z)) {
             if (gSaveContext.cutsceneIndex == 0x8000) {
                 gSaveContext.cutsceneIndex = 0;
             } else if (gSaveContext.cutsceneIndex == 0) {
@@ -224,7 +219,7 @@ void Select_UpdateMenu(SelectContext* this) {
             } else if (gSaveContext.cutsceneIndex == 0xFFFA) {
                 gSaveContext.cutsceneIndex = 0x8000;
             }
-        } else if (CHECK_BTN_ALL(controller1->press.button, BTN_R)) {
+        } else if (CHECK_BTN_ALL(input->press.button, BTN_R)) {
             if (gSaveContext.cutsceneIndex == 0x8000) {
                 gSaveContext.cutsceneIndex = 0xFFFA;
             } else if (gSaveContext.cutsceneIndex == 0) {
@@ -260,119 +255,119 @@ void Select_UpdateMenu(SelectContext* this) {
         }
 
         // user can change "opt", but it doesn't do anything
-        if (CHECK_BTN_ALL(controller1->press.button, BTN_CUP)) {
+        if (CHECK_BTN_ALL(input->press.button, BTN_CUP)) {
             this->opt--;
         }
-        if (CHECK_BTN_ALL(controller1->press.button, BTN_CDOWN)) {
+        if (CHECK_BTN_ALL(input->press.button, BTN_CDOWN)) {
             this->opt++;
         }
 
-        if (CHECK_BTN_ALL(controller1->press.button, BTN_DUP)) {
-            if (this->unk_22C == 1) {
-                this->unk_224 = 0;
+        if (CHECK_BTN_ALL(input->press.button, BTN_DUP)) {
+            if (this->lockUp == true) {
+                this->timerUp = 0;
             }
-            if (this->unk_224 == 0) {
-                this->unk_224 = 0x14;
-                this->unk_22C = 1;
+            if (this->timerUp == 0) {
+                this->timerUp = 20;
+                this->lockUp = true;
                 Audio_PlaySoundGeneral(NA_SE_IT_SWORD_IMPACT, &D_801333D4, 4, &D_801333E0, &D_801333E0, &D_801333E8);
-                this->unk_220 = R_UPDATE_RATE;
+                this->verticalInput = R_UPDATE_RATE;
             }
         }
 
-        if (CHECK_BTN_ALL(controller1->cur.button, BTN_DUP) && this->unk_224 == 0) {
+        if (CHECK_BTN_ALL(input->cur.button, BTN_DUP) && this->timerUp == 0) {
             Audio_PlaySoundGeneral(NA_SE_IT_SWORD_IMPACT, &D_801333D4, 4, &D_801333E0, &D_801333E0, &D_801333E8);
-            this->unk_220 = R_UPDATE_RATE * 3;
+            this->verticalInput = R_UPDATE_RATE * 3;
         }
 
-        if (CHECK_BTN_ALL(controller1->press.button, BTN_DDOWN)) {
-            if (this->unk_230 == 1) {
-                this->unk_228 = 0;
+        if (CHECK_BTN_ALL(input->press.button, BTN_DDOWN)) {
+            if (this->lockDown == true) {
+                this->timerDown = 0;
             }
-            if (this->unk_228 == 0) {
-                this->unk_228 = 0x14;
-                this->unk_230 = 1;
+            if (this->timerDown == 0) {
+                this->timerDown = 20;
+                this->lockDown = true;
                 Audio_PlaySoundGeneral(NA_SE_IT_SWORD_IMPACT, &D_801333D4, 4, &D_801333E0, &D_801333E0, &D_801333E8);
-                this->unk_220 = -R_UPDATE_RATE;
+                this->verticalInput = -R_UPDATE_RATE;
             }
         }
 
-        if (CHECK_BTN_ALL(controller1->cur.button, BTN_DDOWN) && (this->unk_228 == 0)) {
+        if (CHECK_BTN_ALL(input->cur.button, BTN_DDOWN) && (this->timerDown == 0)) {
             Audio_PlaySoundGeneral(NA_SE_IT_SWORD_IMPACT, &D_801333D4, 4, &D_801333E0, &D_801333E0, &D_801333E8);
-            this->unk_220 = -R_UPDATE_RATE * 3;
+            this->verticalInput = -R_UPDATE_RATE * 3;
         }
 
-        if (CHECK_BTN_ALL(controller1->press.button, BTN_DLEFT) || CHECK_BTN_ALL(controller1->cur.button, BTN_DLEFT)) {
+        if (CHECK_BTN_ALL(input->press.button, BTN_DLEFT) || CHECK_BTN_ALL(input->cur.button, BTN_DLEFT)) {
             Audio_PlaySoundGeneral(NA_SE_IT_SWORD_IMPACT, &D_801333D4, 4, &D_801333E0, &D_801333E0, &D_801333E8);
-            this->unk_220 = R_UPDATE_RATE;
+            this->verticalInput = R_UPDATE_RATE;
         }
 
-        if (CHECK_BTN_ALL(controller1->press.button, BTN_DRIGHT) ||
-            CHECK_BTN_ALL(controller1->cur.button, BTN_DRIGHT)) {
+        if (CHECK_BTN_ALL(input->press.button, BTN_DRIGHT) || CHECK_BTN_ALL(input->cur.button, BTN_DRIGHT)) {
             Audio_PlaySoundGeneral(NA_SE_IT_SWORD_IMPACT, &D_801333D4, 4, &D_801333E0, &D_801333E0, &D_801333E8);
-            this->unk_220 = -R_UPDATE_RATE;
+            this->verticalInput = -R_UPDATE_RATE;
         }
     }
 
-    if (CHECK_BTN_ALL(controller1->press.button, BTN_L)) {
-        this->unk_1DC++;
-        this->unk_1DC = (this->unk_1DC + 7) % 7;
-        this->currentScene = this->unk_20C = this->unk_1E0[this->unk_1DC];
+    if (CHECK_BTN_ALL(input->press.button, BTN_L)) {
+        this->pageDownIndex++;
+        this->pageDownIndex =
+            (this->pageDownIndex + ARRAY_COUNT(this->pageDownStops)) % ARRAY_COUNT(this->pageDownStops);
+        this->currentScene = this->topDisplayedScene = this->pageDownStops[this->pageDownIndex];
     }
 
-    this->unk_21C += this->unk_220;
+    this->verticalInputAccumulator += this->verticalInput;
 
-    if (this->unk_21C < -7) {
-        this->unk_220 = 0;
-        this->unk_21C = 0;
+    if (this->verticalInputAccumulator < -7) {
+        this->verticalInput = 0;
+        this->verticalInputAccumulator = 0;
 
         this->currentScene++;
         this->currentScene = (this->currentScene + this->count) % this->count;
 
-        if (this->currentScene == ((this->unk_20C + this->count + 0x13) % this->count)) {
-            this->unk_20C++;
-            this->unk_20C = (this->unk_20C + this->count) % this->count;
+        if (this->currentScene == ((this->topDisplayedScene + this->count + 19) % this->count)) {
+            this->topDisplayedScene++;
+            this->topDisplayedScene = (this->topDisplayedScene + this->count) % this->count;
         }
     }
 
-    if (this->unk_21C >= 8) {
-        this->unk_220 = 0;
-        this->unk_21C = 0;
+    if (this->verticalInputAccumulator > 7) {
+        this->verticalInput = 0;
+        this->verticalInputAccumulator = 0;
 
-        if (this->currentScene == this->unk_20C) {
-            this->unk_20C -= 2;
-            this->unk_20C = (this->unk_20C + this->count) % this->count;
+        if (this->currentScene == this->topDisplayedScene) {
+            this->topDisplayedScene -= 2;
+            this->topDisplayedScene = (this->topDisplayedScene + this->count) % this->count;
         }
 
         this->currentScene--;
         this->currentScene = (this->currentScene + this->count) % this->count;
 
-        if (this->currentScene == ((this->unk_20C + this->count) % this->count)) {
-            this->unk_20C--;
-            this->unk_20C = (this->unk_20C + this->count) % this->count;
+        if (this->currentScene == ((this->topDisplayedScene + this->count) % this->count)) {
+            this->topDisplayedScene--;
+            this->topDisplayedScene = (this->topDisplayedScene + this->count) % this->count;
         }
     }
 
     this->currentScene = (this->currentScene + this->count) % this->count;
-    this->unk_20C = (this->unk_20C + this->count) % this->count;
+    this->topDisplayedScene = (this->topDisplayedScene + this->count) % this->count;
 
     dREG(80) = this->currentScene;
-    dREG(81) = this->unk_20C;
-    dREG(82) = this->unk_1DC;
+    dREG(81) = this->topDisplayedScene;
+    dREG(82) = this->pageDownIndex;
 
-    if (this->unk_224 != 0) {
-        this->unk_224--;
+    if (this->timerUp != 0) {
+        this->timerUp--;
     }
 
-    if (this->unk_224 == 0) {
-        this->unk_22C = 0;
+    if (this->timerUp == 0) {
+        this->lockUp = false;
     }
 
-    if (this->unk_228 != 0) {
-        this->unk_228--;
+    if (this->timerDown != 0) {
+        this->timerDown--;
     }
 
-    if (this->unk_228 == 0) {
-        this->unk_230 = 0;
+    if (this->timerDown == 0) {
+        this->lockDown = false;
     }
 }
 
@@ -389,7 +384,7 @@ void Select_PrintMenu(SelectContext* this, GfxPrint* printer) {
     for (i = 0; i < 20; i++) {
         GfxPrint_SetPos(printer, 9, i + 4);
 
-        scene = ((this->unk_20C + i) + this->count) % this->count;
+        scene = (this->topDisplayedScene + i + this->count) % this->count;
         if (scene == this->currentScene) {
             GfxPrint_SetColor(printer, 255, 20, 20, 255);
         } else {
@@ -409,31 +404,32 @@ void Select_PrintMenu(SelectContext* this, GfxPrint* printer) {
     GfxPrint_Printf(printer, "OPT=%d", this->opt);
 }
 
-static char* sLoadingMessages[] = {
-    "\x8Dｼﾊﾞﾗｸｵﾏﾁｸﾀﾞｻｲ",                   // "Please wait a minute"
-    "\x8Dﾁｮｯﾄ ﾏｯﾃﾈ",                       // "Hold on a sec"
-    "\x8Cｳｪｲﾄ ｱ ﾓｰﾒﾝﾄ",                    // "Wait a moment"
-    "\x8Cﾛｰﾄﾞ\x8Dﾁｭｳ",                     // "Loading"
-    "\x8Dﾅｳ ﾜｰｷﾝｸﾞ",                       // "Now working"
-    "\x8Dｲﾏ ﾂｸｯﾃﾏｽ",                       // "Now creating"
-    "\x8Dｺｼｮｳｼﾞｬﾅｲﾖ",                      // "It's not broken"
-    "\x8Cｺｰﾋｰ ﾌﾞﾚｲｸ",                      // "Coffee Break"
-    "\x8C\Bﾒﾝｦｾｯﾄｼﾃｸﾀﾞｻｲ",                 // "Please set B side"
-    "\x8Dｼﾞｯﾄ\x8Cｶﾞﾏﾝ\x8Dﾉ\x8Cｺ\x8Dﾃﾞｱｯﾀ", // "Be patient, now"
-    "\x8Dｲﾏｼﾊﾞﾗｸｵﾏﾁｸﾀﾞｻｲ",                 // "Please wait just a minute"
-    "\x8Dｱﾜﾃﾅｲｱﾜﾃﾅｲ｡ﾋﾄﾔｽﾐﾋﾄﾔｽﾐ｡",          // "Don't worry, don't worry. Take a break, take a break"
+static const char* sLoadingMessages[] = {
+    "\x8Dｼﾊﾞﾗｸｵﾏﾁｸﾀﾞｻｲ", // "Please wait a minute",
+    "\x8Dﾁｮｯﾄ ﾏｯﾃﾈ",     // "Hold on a sec",
+    "\x8Cｳｪｲﾄ ｱ ﾓｰﾒﾝﾄ",  // "Wait a moment",
+    "\x8Cﾛｰﾄﾞ\x8Dﾁｭｳ",   // "Loading",
+    "\x8Dﾅｳ ﾜｰｷﾝｸﾞ",     // "Now working",
+    "\x8Dｲﾏ ﾂｸｯﾃﾏｽ",     // "Now creating",
+    "\x8Dｺｼｮｳｼﾞｬﾅｲﾖ",    // "It's not broken",
+    "\x8Cｺｰﾋｰ ﾌﾞﾚｲｸ",    // "Coffee Break",
+    "\x8C"
+    "Bﾒﾝｦｾｯﾄｼﾃｸﾀﾞｻｲ",                      // "Please set B side",
+    "\x8Dｼﾞｯﾄ\x8Cｶﾞﾏﾝ\x8Dﾉ\x8Cｺ\x8Dﾃﾞｱｯﾀ", // "Be patient, now",
+    "\x8Dｲﾏｼﾊﾞﾗｸｵﾏﾁｸﾀﾞｻｲ",                 // "Please wait just a minute",
+    "\x8Dｱﾜﾃﾅｲｱﾜﾃﾅｲ｡ﾋﾄﾔｽﾐﾋﾄﾔｽﾐ｡",          // "Don't worry, don't worry. Take a break, take a break",
 };
 
 void Select_PrintLoadingMessage(SelectContext* this, GfxPrint* printer) {
     s32 randomMsg;
 
-    GfxPrint_SetPos(printer, 0xA, 0xF);
+    GfxPrint_SetPos(printer, 10, 15);
     GfxPrint_SetColor(printer, 255, 255, 255, 255);
     randomMsg = Rand_ZeroOne() * ARRAY_COUNT(sLoadingMessages);
     GfxPrint_Printf(printer, "%s", sLoadingMessages[randomMsg]);
 }
 
-static char* sAgeLabels[] = {
+static const char* sAgeLabels[] = {
     "\x8D"
     "17(ﾜｶﾓﾉ)", // "17(young)"
     "\x8D"
@@ -499,7 +495,7 @@ void Select_PrintCutsceneSetting(SelectContext* this, GfxPrint* printer, u16 csI
             break;
     };
 
-    gSaveContext.environmentTime = gSaveContext.dayTime;
+    gSaveContext.skyboxTime = gSaveContext.dayTime;
     GfxPrint_Printf(printer, "Stage:\x8C%s", label);
 }
 
@@ -574,7 +570,7 @@ void Select_Main(GameState* thisx) {
 }
 
 void Select_Destroy(GameState* thisx) {
-    osSyncPrintf("%c", 7);
+    osSyncPrintf("%c", '\a'); // ASCII BEL character, plays an alert tone
     // "view_cleanup will hang, so it won't be called"
     osSyncPrintf("*** view_cleanupはハングアップするので、呼ばない ***\n");
 }
@@ -587,34 +583,34 @@ void Select_Init(GameState* thisx) {
     this->state.main = Select_Main;
     this->state.destroy = Select_Destroy;
     this->scenes = sScenes;
-    this->unk_20C = 0;
+    this->topDisplayedScene = 0;
     this->currentScene = 0;
-    this->unk_1E0[0] = 0;
-    this->unk_1E0[1] = 0x13;
-    this->unk_1E0[2] = 0x25;
-    this->unk_1E0[3] = 0x33;
-    this->unk_1E0[4] = 0x3B;
-    this->unk_1E0[5] = 0x49;
-    this->unk_1E0[6] = 0x5B;
-    this->unk_1DC = 0;
+    this->pageDownStops[0] = 0;  // Hyrule Field
+    this->pageDownStops[1] = 19; // Temple Of Time
+    this->pageDownStops[2] = 37; // Treasure Chest Game
+    this->pageDownStops[3] = 51; // Gravekeeper's Hut
+    this->pageDownStops[4] = 59; // Zora Shop
+    this->pageDownStops[5] = 73; // Bottom of the Well
+    this->pageDownStops[6] = 91; // Escaping Ganon's Tower 3
+    this->pageDownIndex = 0;
     this->opt = 0;
-    this->count = 126;
+    this->count = ARRAY_COUNT(sScenes);
     View_Init(&this->view, this->state.gfxCtx);
-    this->view.flags = 0xA;
-    this->unk_21C = 0;
-    this->unk_220 = 0;
-    this->unk_224 = 0;
-    this->unk_228 = 0;
-    this->unk_22C = 0;
-    this->unk_230 = 0;
+    this->view.flags = (0x08 | 0x02);
+    this->verticalInputAccumulator = 0;
+    this->verticalInput = 0;
+    this->timerUp = 0;
+    this->timerDown = 0;
+    this->lockUp = 0;
+    this->lockDown = 0;
     this->unk_234 = 0;
 
     size = (u32)_z_select_staticSegmentRomEnd - (u32)_z_select_staticSegmentRomStart;
 
     if ((dREG(80) >= 0) && (dREG(80) < this->count)) {
         this->currentScene = dREG(80);
-        this->unk_20C = dREG(81);
-        this->unk_1DC = dREG(82);
+        this->topDisplayedScene = dREG(81);
+        this->pageDownIndex = dREG(82);
     }
     R_UPDATE_RATE = 1;
 

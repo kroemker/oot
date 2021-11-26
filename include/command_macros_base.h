@@ -1,5 +1,5 @@
-#ifndef _COMMAND_MACROS_BASE_H_
-#define _COMMAND_MACROS_BASE_H_
+#ifndef COMMAND_MACROS_BASE_H
+#define COMMAND_MACROS_BASE_H
 
 /**
  * Command Base macros intended for use in designing of more specific command macros
@@ -15,6 +15,12 @@
 #define CMD_HH(a, b) (_SHIFTL(a, 16, 16) | _SHIFTL(b, 0, 16))
 
 #define CMD_W(a) (a)
+
+#ifdef __GNUC__
+#define CMD_F(a) {.f = (a)}
+#else
+#define CMD_F(a) {(a)}
+#endif
 
 #define CMD_PTR(a) (u32)(a)
 

@@ -49,7 +49,7 @@ public:
 	int8_t continueFlag;
 	int8_t cameraRoll;
 	int16_t nextPointFrame;
-	uint32_t viewAngle;
+	float viewAngle;
 	int16_t posX, posY, posZ;
 	int16_t unused;
 
@@ -352,7 +352,7 @@ public:
 	int16_t rotX, rotY, rotZ;
 	int32_t startPosX, startPosY, startPosZ;
 	int32_t endPosX, endPosY, endPosZ;
-	int32_t normalX, normalY, normalZ;
+	float normalX, normalY, normalZ;
 
 	ActorAction(const std::vector<uint8_t>& rawData, uint32_t rawDataIndex);
 };
@@ -412,9 +412,10 @@ class ZCutsceneBase : public ZResource
 {
 public:
 	ZCutsceneBase(ZFile* nParent);
-	virtual std::string GetBodySourceCode() = 0;
-	virtual void DeclareVar(const std::string& prefix, const std::string& bodyStr) = 0;
-	virtual uint32_t getSegmentOffset() = 0;
+
+	Declaration* DeclareVar(const std::string& prefix, const std::string& bodyStr) override;
+
+	std::string GetSourceTypeName() const override;
 };
 
 class ZCutscene : public ZCutsceneBase
@@ -423,22 +424,17 @@ public:
 	ZCutscene(ZFile* nParent);
 	~ZCutscene();
 
-	std::string GetBodySourceCode() override;
-	void DeclareVar(const std::string& prefix, const std::string& bodyStr) override;
-	std::string GetSourceOutputCode(const std::string& prefix) override;
-	size_t GetRawDataSize() override;
+	void ParseRawData() override;
+
+	std::string GetBodySourceCode() const override;
+
+	size_t GetRawDataSize() const override;
+
+	ZResourceType GetResourceType() const override;
+
 	CutsceneCommands GetCommandFromID(int32_t id);
-	uint32_t getSegmentOffset() override { return rawDataIndex; }
 
-	ZResourceType GetResourceType() override;
-
-	void ExtractFromXML(tinyxml2::XMLElement* reader, const std::vector<uint8_t>& nRawData,
-	                    const uint32_t nRawDataIndex, const std::string& nRelPath) override;
-
-protected:
 	int32_t numCommands;
 	int32_t endFrame;
 	std::vector<CutsceneCommand*> commands;
-
-	void ParseRawData() override;
 };

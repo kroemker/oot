@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../ZRoomCommand.h"
+#include "ZRoom/ZRoomCommand.h"
 
 class RoomEntry
 {
@@ -8,25 +8,46 @@ public:
 	int32_t virtualAddressStart;
 	int32_t virtualAddressEnd;
 
-	RoomEntry(int32_t nVAS, int32_t nVAE);
-	RoomEntry(std::vector<uint8_t> rawData, uint32_t rawDataIndex);
+	RoomEntry(uint32_t nVAS, uint32_t nVAE);
+	RoomEntry(const std::vector<uint8_t>& rawData, uint32_t rawDataIndex);
+
+	size_t GetRawDataSize() const;
+};
+
+class RomFile : public ZResource
+{
+public:
+	RomFile(ZFile* nParent);
+
+	void ParseXML(tinyxml2::XMLElement* reader) override;
+	void ParseRawData() override;
+
+	Declaration* DeclareVar(const std::string& prefix, const std::string& body) override;
+	std::string GetBodySourceCode() const override;
+	std::string GetSourceOutputCode(const std::string& prefix) override;
+
+	std::string GetSourceTypeName() const override;
+	virtual ZResourceType GetResourceType() const override;
+
+	virtual size_t GetRawDataSize() const override;
+
+	uint8_t numRooms = 0;
+	std::vector<RoomEntry> rooms;
 };
 
 class SetRoomList : public ZRoomCommand
 {
 public:
-	SetRoomList(ZRoom* nZRoom, std::vector<uint8_t> rawData, uint32_t rawDataIndex);
-	~SetRoomList();
+	// Borrowed reference. Don't delete.
+	RomFile* romfile = nullptr;
 
-	virtual std::string GenerateSourceCodePass1(std::string roomName, uint32_t baseAddress) override;
-	virtual std::string GenerateSourceCodePass2(std::string roomName, uint32_t baseAddress) override;
-	virtual std::string GetCommandCName() override;
-	virtual std::string GenerateExterns() override;
-	virtual RoomCommand GetRoomCommand() override;
-	virtual std::string PreGenSourceFiles() override;
-	virtual std::string Save() override;
+	SetRoomList(ZFile* nParent);
 
-private:
-	std::vector<RoomEntry*> rooms;
-	uint32_t segmentOffset;
+	void ParseRawData() override;
+	void DeclareReferences(const std::string& prefix) override;
+
+	std::string GetBodySourceCode() const override;
+
+	RoomCommand GetRoomCommand() const override;
+	std::string GetCommandCName() const override;
 };

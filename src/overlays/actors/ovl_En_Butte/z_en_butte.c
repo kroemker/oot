@@ -7,6 +7,7 @@
 #include "z_en_butte.h"
 #include "overlays/actors/ovl_En_Elf/z_en_elf.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
+#include "objects/gameplay_field_keep/gameplay_field_keep.h"
 
 #define FLAGS 0x00000000
 
@@ -82,9 +83,6 @@ static EnButteFlightParams sFollowLinkParams[] = {
     { 10, 20, 2.4f, 0.3f, 1.0f, 0 },
 };
 
-extern AnimationHeader D_05002470;
-extern SkeletonHeader D_050036F0;
-
 void EnButte_SelectFlightParams(EnButte* this, EnButteFlightParams* flightParams) {
     if (this->flightParamsIdx == 0) {
         if (Rand_ZeroOne() < 0.6f) {
@@ -125,7 +123,7 @@ void EnButte_DrawTransformationEffect(EnButte* this, GlobalContext* globalCtx) {
     alpha = Math_SinS(sTransformationEffectAlpha) * 250;
     alpha = CLAMP(alpha, 0, 255);
 
-    Camera_GetCamDir(&camDir, ACTIVE_CAM);
+    Camera_GetCamDir(&camDir, GET_ACTIVE_CAM(globalCtx));
     Matrix_RotateY(camDir.y * (M_PI / 0x8000), MTXMODE_NEW);
     Matrix_RotateX(camDir.x * (M_PI / 0x8000), MTXMODE_APPLY);
     Matrix_RotateZ(camDir.z * (M_PI / 0x8000), MTXMODE_APPLY);
@@ -162,14 +160,15 @@ void EnButte_Init(Actor* thisx, GlobalContext* globalCtx) {
         this->actor.uncullZoneScale = 200.0f;
     }
 
-    SkelAnime_Init(globalCtx, &this->skelAnime, &D_050036F0, &D_05002470, this->jointTable, this->morphTable, 8);
+    SkelAnime_Init(globalCtx, &this->skelAnime, &gButterflySkel, &gButterflyAnim, this->jointTable, this->morphTable,
+                   8);
     Collider_InitJntSph(globalCtx, &this->collider);
     Collider_SetJntSph(globalCtx, &this->collider, &this->actor, &sColliderInit, this->colliderItems);
     this->actor.colChkInfo.mass = 0;
     this->unk_25C = Rand_ZeroOne() * 0xFFFF;
     this->unk_25E = Rand_ZeroOne() * 0xFFFF;
     this->unk_260 = Rand_ZeroOne() * 0xFFFF;
-    Animation_Change(&this->skelAnime, &D_05002470, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP_INTERP, 0.0f);
+    Animation_Change(&this->skelAnime, &gButterflyAnim, 1.0f, 0.0f, 0.0f, ANIMMODE_LOOP_INTERP, 0.0f);
     EnButte_SetupFlyAround(this);
     this->actor.shape.rot.x -= 0x2320;
     this->drawSkelAnime = true;
@@ -218,7 +217,7 @@ void EnButte_SetupFlyAround(EnButte* this) {
 void EnButte_FlyAround(EnButte* this, GlobalContext* globalCtx) {
     EnButteFlightParams* flightParams = &sFlyAroundParams[this->flightParamsIdx];
     s16 yaw;
-    Player* player = PLAYER;
+    Player* player = GET_PLAYER(globalCtx);
     f32 distSqFromHome;
     f32 maxDistSqFromHome;
     f32 minAnimSpeed;
@@ -272,7 +271,8 @@ void EnButte_FlyAround(EnButte* this, GlobalContext* globalCtx) {
         EnButte_SelectFlightParams(this, &sFlyAroundParams[this->flightParamsIdx]);
     }
 
-    if (((this->actor.params & 1) == 1) && (player->heldItemActionParam == 6) && (this->swordDownTimer <= 0) &&
+    if (((this->actor.params & 1) == 1) && (player->heldItemActionParam == PLAYER_AP_STICK) &&
+        (this->swordDownTimer <= 0) &&
         ((Math3D_Dist2DSq(player->actor.world.pos.x, player->actor.world.pos.z, this->actor.home.pos.x,
                           this->actor.home.pos.z) < SQ(120.0f)) ||
          (this->actor.xzDistToPlayer < 60.0f))) {
@@ -293,7 +293,7 @@ void EnButte_SetupFollowLink(EnButte* this) {
 void EnButte_FollowLink(EnButte* this, GlobalContext* globalCtx) {
     static s32 D_809CE410 = 1500;
     EnButteFlightParams* flightParams = &sFollowLinkParams[this->flightParamsIdx];
-    Player* player = PLAYER;
+    Player* player = GET_PLAYER(globalCtx);
     f32 distSqFromHome;
     Vec3f swordTip;
     f32 animSpeed;
@@ -337,8 +337,8 @@ void EnButte_FollowLink(EnButte* this, GlobalContext* globalCtx) {
 
     distSqFromHome = Math3D_Dist2DSq(this->actor.world.pos.x, this->actor.world.pos.z, this->actor.home.pos.x,
                                      this->actor.home.pos.z);
-    if (!((player->heldItemActionParam == 6) && (fabsf(player->actor.speedXZ) < 1.8f) && (this->swordDownTimer <= 0) &&
-          (distSqFromHome < SQ(320.0f)))) {
+    if (!((player->heldItemActionParam == PLAYER_AP_STICK) && (fabsf(player->actor.speedXZ) < 1.8f) &&
+          (this->swordDownTimer <= 0) && (distSqFromHome < SQ(320.0f)))) {
         EnButte_SetupFlyAround(this);
     } else if (distSqFromHome > SQ(240.0f)) {
         distSqFromSword = Math3D_Dist2DSq(player->swordInfo[0].tip.x, player->swordInfo[0].tip.z,
@@ -400,7 +400,7 @@ void EnButte_Update(Actor* thisx, GlobalContext* globalCtx) {
     this->unk_260 += 0x600;
 
     if ((this->actor.params & 1) == 1) {
-        if (PLAYER->swordState == 0) {
+        if (GET_PLAYER(globalCtx)->swordState == 0) {
             if (this->swordDownTimer > 0) {
                 this->swordDownTimer--;
             }

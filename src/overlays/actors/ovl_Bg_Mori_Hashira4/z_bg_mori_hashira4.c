@@ -5,6 +5,7 @@
  */
 
 #include "z_bg_mori_hashira4.h"
+#include "objects/object_mori_objects/object_mori_objects.h"
 
 #define FLAGS 0x00000010
 
@@ -21,9 +22,6 @@ void BgMoriHashira4_SetupPillarsRotate(BgMoriHashira4* this);
 void BgMoriHashira4_PillarsRotate(BgMoriHashira4* this, GlobalContext* globalCtx);
 void BgMoriHashira4_GateWait(BgMoriHashira4* this, GlobalContext* globalCtx);
 void BgMoriHashira4_GateOpen(BgMoriHashira4* this, GlobalContext* globalCtx);
-
-extern CollisionHeader D_06001AF8;
-extern CollisionHeader D_060089E0;
 
 const ActorInit Bg_Mori_Hashira4_InitVars = {
     ACTOR_BG_MORI_HASHIRA4,
@@ -44,7 +42,7 @@ static InitChainEntry sInitChain[] = {
     ICHAIN_VEC3F_DIV1000(scale, 1000, ICHAIN_STOP),
 };
 
-static Gfx* sDisplayLists[] = { 0x06001300, 0x06008840 };
+static Gfx* sDisplayLists[] = { gMoriHashiraPlatformsDL, gMoriHashiraGateDL };
 
 static s16 sUnkTimer; // seems to be unused
 
@@ -64,7 +62,7 @@ void BgMoriHashira4_InitDynaPoly(BgMoriHashira4* this, GlobalContext* globalCtx,
     this->dyna.bgId = DynaPoly_SetBgActor(globalCtx, &globalCtx->colCtx.dyna, &this->dyna.actor, colHeader);
 
     if (this->dyna.bgId == BG_ACTOR_MAX) {
-        // Warning : move BG login failed
+        // "Warning : move BG login failed"
         osSyncPrintf("Warning : move BG 登録失敗(%s %d)(name %d)(arg_data 0x%04x)\n", "../z_bg_mori_hashira4.c", 155,
                      this->dyna.actor.id, this->dyna.actor.params);
     }
@@ -78,15 +76,15 @@ void BgMoriHashira4_Init(Actor* thisx, GlobalContext* globalCtx) {
     this->dyna.actor.params &= 0xFF;
 
     if (this->dyna.actor.params == 0) {
-        BgMoriHashira4_InitDynaPoly(this, globalCtx, &D_06001AF8, DPM_UNK3);
+        BgMoriHashira4_InitDynaPoly(this, globalCtx, &gMoriHashira1Col, DPM_UNK3);
     } else {
-        BgMoriHashira4_InitDynaPoly(this, globalCtx, &D_060089E0, DPM_UNK);
+        BgMoriHashira4_InitDynaPoly(this, globalCtx, &gMoriHashira2Col, DPM_UNK);
     }
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
     this->moriTexObjIndex = Object_GetIndex(&globalCtx->objectCtx, OBJECT_MORI_TEX);
     if (this->moriTexObjIndex < 0) {
         Actor_Kill(&this->dyna.actor);
-        // Bank danger!
+        // "Bank danger!"
         osSyncPrintf("Error : バンク危険！(arg_data 0x%04x)(%s %d)\n", this->dyna.actor.params,
                      "../z_bg_mori_hashira4.c", 196);
         return;
@@ -97,7 +95,7 @@ void BgMoriHashira4_Init(Actor* thisx, GlobalContext* globalCtx) {
     }
     Actor_SetFocus(&this->dyna.actor, 50.0f);
     BgMoriHashira4_SetupWaitForMoriTex(this);
-    // (4 pillars of the Forest Temple) Bank danger
+    // "(4 pillars of the Forest Temple) Bank danger"
     osSyncPrintf("(森の神殿 ４本柱)(arg_data 0x%04x)\n", this->dyna.actor.params);
     sUnkTimer = 0;
 }

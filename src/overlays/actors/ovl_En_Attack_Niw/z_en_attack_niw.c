@@ -5,6 +5,7 @@
  */
 
 #include "z_en_attack_niw.h"
+#include "objects/object_niw/object_niw.h"
 #include "overlays/actors/ovl_En_Niw/z_en_niw.h"
 
 #define FLAGS 0x00000010
@@ -19,9 +20,6 @@ void EnAttackNiw_Draw(Actor* thisx, GlobalContext* globalCtx);
 void func_809B5670(EnAttackNiw* this, GlobalContext* globalCtx);
 void func_809B5C18(EnAttackNiw* this, GlobalContext* globalCtx);
 void func_809B59B0(EnAttackNiw* this, GlobalContext* globalCtx);
-
-extern AnimationHeader D_060000E8;
-extern FlexSkeletonHeader D_06002530;
 
 const ActorInit En_Attack_Niw_InitVars = {
     ACTOR_EN_ATTACK_NIW,
@@ -47,7 +45,7 @@ void EnAttackNiw_Init(Actor* thisx, GlobalContext* globalCtx) {
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 25.0f);
-    SkelAnime_InitFlex(globalCtx, &this->skelAnime, &D_06002530, &D_060000E8, this->jointTable, this->morphTable, 16);
+    SkelAnime_InitFlex(globalCtx, &this->skelAnime, &gCuccoSkel, &gCuccoAnim, this->jointTable, this->morphTable, 16);
     if (this->actor.params < 0) {
         this->actor.params = 0;
     }
@@ -172,7 +170,7 @@ s32 func_809B55EC(EnAttackNiw* this, GlobalContext* globalCtx) {
     s16 sp1C;
 
     Actor_SetFocus(&this->actor, this->unk_2E4);
-    func_8002F374(globalCtx, &this->actor, &sp1E, &sp1C);
+    Actor_GetScreenPos(globalCtx, &this->actor, &sp1E, &sp1C);
     if ((this->actor.projectedPos.z < -20.0f) || (sp1E < 0) || (sp1E > SCREEN_WIDTH) || (sp1C < 0) ||
         (sp1C > SCREEN_HEIGHT)) {
         return 0;
@@ -207,7 +205,7 @@ void func_809B5670(EnAttackNiw* this, GlobalContext* globalCtx) {
     Math_ApproachF(&this->unk_2DC, 5000.0f, 1.0f, 100.0f);
 
     Actor_SetFocus(&this->actor, this->unk_2E4);
-    func_8002F374(globalCtx, &this->actor, &sp4E, &sp4C);
+    Actor_GetScreenPos(globalCtx, &this->actor, &sp4E, &sp4C);
 
     if (this->actor.bgCheckFlags & 8) {
         this->unk_2D4 = this->actor.yawTowardsPlayer;
@@ -300,7 +298,7 @@ void EnAttackNiw_Update(Actor* thisx, GlobalContext* globalCtx) {
     f32 tmpf1;
     EnAttackNiw* this = THIS;
     EnNiw* cucco;
-    Player* player = PLAYER;
+    Player* player = GET_PLAYER(globalCtx);
     s32 pad;
     Vec3f sp30;
     GlobalContext* globalCtx2 = globalCtx;

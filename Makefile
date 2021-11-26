@@ -63,9 +63,11 @@ OBJDUMP    := $(MIPS_BINUTILS_PREFIX)objdump
 EMULATOR = mupen64plus
 EMU_FLAGS = --noosd
 
+INC        := -Iinclude -Isrc -Iassets -Ibuild -I.
+
 # Check code syntax with host compiler
 CHECK_WARNINGS := -Wall -Wextra -Wno-format-security -Wno-unknown-pragmas -Wno-unused-parameter -Wno-unused-variable -Wno-missing-braces -Wno-int-conversion
-CC_CHECK   := gcc -fno-builtin -fsyntax-only -fsigned-char -std=gnu90 -D _LANGUAGE_C -D NON_MATCHING -Iinclude -Isrc -Iassets -Ibuild -include stdarg.h $(CHECK_WARNINGS)
+CC_CHECK   := gcc -fno-builtin -fsyntax-only -fsigned-char -std=gnu90 -D _LANGUAGE_C -D NON_MATCHING $(INC) -include stdarg.h $(CHECK_WARNINGS)
 
 CPP        := cpp
 MKLDSCRIPT := tools/mkldscript
@@ -77,7 +79,7 @@ ASFLAGS := -march=vr4300 -32 -Iinclude
 MIPS_VERSION := -mips2
 
 # we support Microsoft extensions such as anonymous structs, which the compiler does support but warns for their usage. Surpress the warnings with -woff.
-CFLAGS += -G 0 -non_shared -Xfullwarn -Xcpluscomm -Iinclude -Isrc -Iassets -Ibuild -Wab,-r4300_mul -woff 649,838,712
+CFLAGS += -G 0 -non_shared -Xfullwarn -Xcpluscomm $(INC) -Wab,-r4300_mul -woff 649,838,712
 
 ifeq ($(shell getconf LONG_BIT), 32)
   # Work around memory allocation bug in QEMU
@@ -97,11 +99,12 @@ SPEC := spec
 
 SRC_DIRS := $(shell find src -type d)
 ASM_DIRS := $(shell find asm -type d -not -path "asm/non_matchings*") $(shell find data -type d)
-ASSET_BIN_DIRS := $(shell find assets/* -type d -not -path "assets/xml*")
+ASSET_BIN_DIRS := $(shell find assets/* -type d -not -path "assets/xml*" -not -path "assets/text")
 ASSET_FILES_XML := $(foreach dir,$(ASSET_BIN_DIRS),$(wildcard $(dir)/*.xml))
 ASSET_FILES_BIN := $(foreach dir,$(ASSET_BIN_DIRS),$(wildcard $(dir)/*.bin))
 ASSET_FILES_OUT := $(foreach f,$(ASSET_FILES_XML:.xml=.c),$f) \
-				   $(foreach f,$(ASSET_FILES_BIN:.bin=.bin.inc.c),build/$f)
+				   $(foreach f,$(ASSET_FILES_BIN:.bin=.bin.inc.c),build/$f) \
+				   $(foreach f,$(wildcard assets/text/*.c),build/$(f:.c=.o))
 
 # source files
 C_FILES       := $(foreach dir,$(SRC_DIRS) $(ASSET_BIN_DIRS),$(wildcard $(dir)/*.c))
@@ -114,29 +117,13 @@ O_FILES       := $(foreach f,$(S_FILES:.s=.o),build/$f) \
 # (Only asm_processor dependencies are handled for now)
 DEP_FILES := $(O_FILES:.o=.asmproc.d)
 
-TEXTURE_FILES_RGBA32 := $(foreach dir,$(ASSET_BIN_DIRS),$(wildcard $(dir)/*.rgba32.png))
-TEXTURE_FILES_RGBA16 := $(foreach dir,$(ASSET_BIN_DIRS),$(wildcard $(dir)/*.rgb5a1.png))
-TEXTURE_FILES_GRAY4 := $(foreach dir,$(ASSET_BIN_DIRS),$(wildcard $(dir)/*.i4.png))
-TEXTURE_FILES_GRAY8 := $(foreach dir,$(ASSET_BIN_DIRS),$(wildcard $(dir)/*.i8.png))
-TEXTURE_FILES_GRAYA4 := $(foreach dir,$(ASSET_BIN_DIRS),$(wildcard $(dir)/*.ia4.png))
-TEXTURE_FILES_GRAYA8 := $(foreach dir,$(ASSET_BIN_DIRS),$(wildcard $(dir)/*.ia8.png))
-TEXTURE_FILES_GRAYA16 := $(foreach dir,$(ASSET_BIN_DIRS),$(wildcard $(dir)/*.ia16.png))
-TEXTURE_FILES_CI4 := $(foreach dir,$(ASSET_BIN_DIRS),$(wildcard $(dir)/*.ci4.png))
-TEXTURE_FILES_CI8 := $(foreach dir,$(ASSET_BIN_DIRS),$(wildcard $(dir)/*.ci8.png))
+TEXTURE_FILES_PNG := $(foreach dir,$(ASSET_BIN_DIRS),$(wildcard $(dir)/*.png))
 TEXTURE_FILES_JPG := $(foreach dir,$(ASSET_BIN_DIRS),$(wildcard $(dir)/*.jpg))
-TEXTURE_FILES_OUT := $(foreach f,$(TEXTURE_FILES_RGBA32:.rgba32.png=.rgba32.inc.c),build/$f) \
-					 $(foreach f,$(TEXTURE_FILES_RGBA16:.rgb5a1.png=.rgb5a1.inc.c),build/$f) \
-					 $(foreach f,$(TEXTURE_FILES_GRAY4:.i4.png=.i4.inc.c),build/$f) \
-					 $(foreach f,$(TEXTURE_FILES_GRAY8:.i8.png=.i8.inc.c),build/$f) \
-					 $(foreach f,$(TEXTURE_FILES_GRAYA4:.ia4.png=.ia4.inc.c),build/$f) \
-					 $(foreach f,$(TEXTURE_FILES_GRAYA8:.ia8.png=.ia8.inc.c),build/$f) \
-					 $(foreach f,$(TEXTURE_FILES_GRAYA16:.ia16.png=.ia16.inc.c),build/$f) \
-					 $(foreach f,$(TEXTURE_FILES_CI4:.ci4.png=.ci4.inc.c),build/$f) \
-					 $(foreach f,$(TEXTURE_FILES_CI8:.ci8.png=.ci8.inc.c),build/$f) \
+TEXTURE_FILES_OUT := $(foreach f,$(TEXTURE_FILES_PNG:.png=.inc.c),build/$f) \
 					 $(foreach f,$(TEXTURE_FILES_JPG:.jpg=.jpg.inc.c),build/$f) \
 
 # create build directories
-$(shell mkdir -p build/baserom $(foreach dir,$(SRC_DIRS) $(ASM_DIRS) $(ASSET_BIN_DIRS),build/$(dir)))
+$(shell mkdir -p build/baserom build/assets/text $(foreach dir,$(SRC_DIRS) $(ASM_DIRS) $(ASSET_BIN_DIRS),build/$(dir)))
 
 build/src/libultra_boot_O1/%.o: OPTFLAGS := -O1
 build/src/libultra_boot_O2/%.o: OPTFLAGS := -O2
@@ -158,12 +145,12 @@ build/src/code/code_801067F0.o: OPTFLAGS := -g
 
 build/src/libultra_boot_O1/%.o: CC := $(CC_OLD)
 build/src/libultra_boot_O2/%.o: CC := $(CC_OLD)
-build/src/libultra_code_O1/%.o: CC := python3 tools/asm_processor/build.py $(CC_OLD) -- $(AS) $(ASFLAGS) --
-build/src/libultra_code_O2/%.o: CC := python3 tools/asm_processor/build.py $(CC_OLD) -- $(AS) $(ASFLAGS) --
-build/src/libultra_code_O2_g3/%.o: CC := python3 tools/asm_processor/build.py $(CC_OLD) -- $(AS) $(ASFLAGS) --
+build/src/libultra_code_O1/%.o: CC := $(CC_OLD)
+build/src/libultra_code_O2/%.o: CC := $(CC_OLD)
+build/src/libultra_code_O2_g3/%.o: CC := $(CC_OLD)
 
-build/src/code/jpegutils.o: CC := python3 tools/asm_processor/build.py $(CC_OLD) -- $(AS) $(ASFLAGS) --
-build/src/code/jpegdecoder.o: CC := python3 tools/asm_processor/build.py $(CC_OLD) -- $(AS) $(ASFLAGS) --
+build/src/code/jpegutils.o: CC := $(CC_OLD)
+build/src/code/jpegdecoder.o: CC := $(CC_OLD)
 
 build/src/boot/%.o: CC := python3 tools/asm_processor/build.py $(CC) -- $(AS) $(ASFLAGS) --
 build/src/code/%.o: CC := python3 tools/asm_processor/build.py $(CC) -- $(AS) $(ASFLAGS) --
@@ -197,8 +184,13 @@ build/undefined_syms.txt: undefined_syms.txt
 clean:
 	$(RM) -r $(ROM) $(ELF) build
 
-distclean: clean
+assetclean:
 	$(RM) -r $(ASSET_BIN_DIRS)
+	$(RM) -r assets/text/*.h
+	$(RM) -r build/assets
+	$(RM) -r .extracted-assets.json
+
+distclean: clean assetclean
 	$(RM) -r baserom/
 	$(MAKE) -C tools distclean
 
@@ -212,7 +204,7 @@ resources: $(ASSET_FILES_OUT)
 test: $(ROM)
 	$(EMULATOR) $(EMU_FLAGS) $<
 
-.PHONY: all clean setup test distclean
+.PHONY: all clean setup test distclean assetclean
 
 #### Various Recipes ####
 
@@ -225,6 +217,14 @@ build/asm/%.o: asm/%.s
 build/data/%.o: data/%.s
 	iconv --from UTF-8 --to EUC-JP $< | $(AS) $(ASFLAGS) -o $@
 
+build/assets/text/%.enc.h: assets/text/%.h assets/text/charmap.txt
+	python3 tools/msgenc.py assets/text/charmap.txt $< $@
+
+build/assets/text/fra_message_data_static.o: build/assets/text/message_data.enc.h
+build/assets/text/ger_message_data_static.o: build/assets/text/message_data.enc.h
+build/assets/text/nes_message_data_static.o: build/assets/text/message_data.enc.h
+build/assets/text/staff_message_data_static.o: build/assets/text/message_data_staff.enc.h
+
 build/assets/%.o: assets/%.c
 	$(CC) -c $(CFLAGS) $(MIPS_VERSION) $(OPTFLAGS) -o $@ $<
 	$(OBJCOPY) -O binary $@ $@.bin
@@ -232,7 +232,7 @@ build/assets/%.o: assets/%.c
 build/src/overlays/%.o: src/overlays/%.c
 	$(CC) -c $(CFLAGS) $(MIPS_VERSION) $(OPTFLAGS) -o $@ $<
 	$(CC_CHECK) $<
-	$(ZAPD) bovl -i $@ -cfg $< --outputpath $(@D)/$(notdir $(@D))_reloc.s
+	$(ZAPD) bovl -eh -i $@ -cfg $< --outputpath $(@D)/$(notdir $(@D))_reloc.s
 	-test -f $(@D)/$(notdir $(@D))_reloc.s && $(AS) $(ASFLAGS) $(@D)/$(notdir $(@D))_reloc.s -o $(@D)/$(notdir $(@D))_reloc.o
 	@$(OBJDUMP) -d $@ > $(@:.o=.s)
 
@@ -253,42 +253,13 @@ build/src/libultra_code_O1/llcvt.o: src/libultra_code_O1/llcvt.c
 	python3 tools/set_o32abi_bit.py $@
 	@$(OBJDUMP) -d $@ > $(@:.o=.s)
 
-assets/%.c: assets/%.xml
-#	$(ZAPD) bsf -i $< -o $(dir $@)
-	$(ZAPD) bsf -eh -i $< -o $(dir $<)
-	$(CC) -c $(CFLAGS) $(MIPS_VERSION) $(OPTFLAGS) -o build/$(@:.c=.o) $@
-
-build/%.rgba32.inc.c: %.rgba32.png
-	$(ZAPD) btex -tt rgba32 -i $< -o $@
-
-build/%.rgb5a1.inc.c: %.rgb5a1.png
-	$(ZAPD) btex -tt rgb5a1 -i $< -o $@
-
-build/%.i4.inc.c: %.i4.png
-	$(ZAPD) btex -tt i4 -i $< -o $@
-
-build/%.i8.inc.c: %.i8.png
-	$(ZAPD) btex -tt i8 -i $< -o $@
-
-build/%.ia4.inc.c: %.ia4.png
-	$(ZAPD) btex -tt ia4 -i $< -o $@
-
-build/%.ia8.inc.c: %.ia8.png
-	$(ZAPD) btex -tt ia8 -i $< -o $@
-
-build/%.ia16.inc.c: %.ia16.png
-	$(ZAPD) btex -tt ia16 -i $< -o $@
-
-build/%.ci4.inc.c: %.ci4.png
-	$(ZAPD) btex -tt ci4 -i $< -o $@
-
-build/%.ci8.inc.c: %.ci8.png
-	$(ZAPD) btex -tt ci8 -i $< -o $@
+build/%.inc.c: %.png
+	$(ZAPD) btex -eh -tt $(subst .,,$(suffix $*)) -i $< -o $@
 
 build/assets/%.bin.inc.c: assets/%.bin
-	$(ZAPD) bblb -i $< -o $@
+	$(ZAPD) bblb -eh -i $< -o $@
 
 build/assets/%.jpg.inc.c: assets/%.jpg
-	$(ZAPD) bren -i $< -o $@ -eh
+	$(ZAPD) bren -eh -i $< -o $@
 
 -include $(DEP_FILES)

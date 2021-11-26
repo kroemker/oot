@@ -1,51 +1,118 @@
+# use variables in submakes
+export
 OPTIMIZATION_ON ?= 1
+ASAN ?= 0
+DEPRECATION_ON ?= 1
+DEBUG ?= 0
+COPYCHECK_ARGS ?=
+LLD ?= 0
 
-CC := g++
-INC := -I ZAPD -I lib/assimp/include -I lib/elfio -I lib/json/include -I lib/stb -I lib/tinygltf -I lib/libgfxd -I lib/tinyxml2
-
-CFLAGS := -g3 -fpic -Wl,-export-dynamic -std=c++17 -rdynamic -Wall
-ifeq ($(OPTIMIZATION_ON),1)
-  CFLAGS += -O2
+# Use clang++ if available, else use g++
+ifeq ($(shell command -v clang++ >/dev/null 2>&1; echo $$?),0)
+  CXX := clang++
 else
-  CFLAGS += -O0
+  CXX := g++
 endif
 
-LDFLAGS := -ldl
+INC := -I ZAPD -I lib/elfio -I lib/libgfxd -I lib/tinyxml2 -I ZAPDUtils
+CXXFLAGS := -fpic -std=c++17 -Wall -Wextra -fno-omit-frame-pointer
+OPTFLAGS :=
+
+ifneq ($(DEBUG),0)
+  OPTIMIZATION_ON = 0
+  CXXFLAGS += -g3 -DDEVELOPMENT -D_DEBUG
+  COPYCHECK_ARGS += --devel
+  DEPRECATION_ON = 0
+else
+  CXXFLAGS += -Werror
+endif
+
+ifeq ($(OPTIMIZATION_ON),0)
+  OPTFLAGS := -O0
+else
+  OPTFLAGS := -O2 -march=native -mtune=native
+endif
+
+ifneq ($(ASAN),0)
+  CXXFLAGS += -fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=undefined
+endif
+ifneq ($(DEPRECATION_ON),0)
+  CXXFLAGS += -DDEPRECATION_ON
+endif
+# CXXFLAGS += -DTEXTURE_DEBUG
+
+LDFLAGS := -lm -ldl -lpng
+
+# Use LLD if available. Set LLD=0 to not use it
+ifeq ($(shell command -v ld.lld >/dev/null 2>&1; echo $$?),0)
+  LLD := 1
+endif
+
+ifneq ($(LLD),0)
+  LDFLAGS += -fuse-ld=lld
+endif
+
 UNAME := $(shell uname)
-
-FS_INC =
 ifneq ($(UNAME), Darwin)
-    FS_INC += -lstdc++fs
+    LDFLAGS += -Wl,-export-dynamic -lstdc++fs
 endif
 
-SRC_DIRS := ZAPD ZAPD/ZRoom ZAPD/ZRoom/Commands ZAPD/Overlays ZAPD/HighLevel ZAPD/OpenFBX
+ZAPD_SRC_DIRS := $(shell find ZAPD -type d)
+SRC_DIRS = $(ZAPD_SRC_DIRS) lib/tinyxml2
 
-CPP_FILES := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.cpp))
-CPP_FILES += lib/tinyxml2/tinyxml2.cpp
-O_FILES   := $(CPP_FILES:.cpp=.o)
+ZAPD_CPP_FILES := $(foreach dir,$(ZAPD_SRC_DIRS),$(wildcard $(dir)/*.cpp))
+ZAPD_H_FILES   := $(foreach dir,$(ZAPD_SRC_DIRS),$(wildcard $(dir)/*.h))
 
+CPP_FILES += $(ZAPD_CPP_FILES) lib/tinyxml2/tinyxml2.cpp
+O_FILES   := $(foreach f,$(CPP_FILES:.cpp=.o),build/$f)
+O_FILES   += build/ZAPD/BuildInfo.o
+
+# create build directories
+$(shell mkdir -p $(foreach dir,$(SRC_DIRS),build/$(dir)))
+
+
+# Main targets
 all: ZAPD.out copycheck
 
-genbuildinfo:
-	python3 ZAPD/genbuildinfo.py
+build/ZAPD/BuildInfo.o:
+	python3 ZAPD/genbuildinfo.py $(COPYCHECK_ARGS)
+	$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(INC) -c $(OUTPUT_OPTION) build/ZAPD/BuildInfo.cpp
 
 copycheck: ZAPD.out
 	python3 copycheck.py
 
 clean:
-	rm -f $(O_FILES) ZAPD.out
+	rm -rf build ZAPD.out
 	$(MAKE) -C lib/libgfxd clean
+	$(MAKE) -C ZAPDUtils clean
+	$(MAKE) -C ExporterTest clean
 
 rebuild: clean all
 
-%.o: %.cpp
-	$(CC) $(CFLAGS) $(INC) -c $< -o $@ $(LDFLAGS)
+format:
+	clang-format-11 -i $(ZAPD_CPP_FILES) $(ZAPD_H_FILES)
+	$(MAKE) -C ZAPDUtils format
+	$(MAKE) -C ExporterTest format
 
-ZAPD/Main.o: genbuildinfo ZAPD/Main.cpp
-	$(CC) $(CFLAGS) $(INC) -c ZAPD/Main.cpp -o $@ $(LDFLAGS)
+.PHONY: all build/ZAPD/BuildInfo.o copycheck clean rebuild format
 
+build/%.o: %.cpp
+	$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(INC) -c $(OUTPUT_OPTION) $<
+
+
+# Submakes
 lib/libgfxd/libgfxd.a:
-	$(MAKE) -C lib/libgfxd -j
+	$(MAKE) -C lib/libgfxd
 
-ZAPD.out: $(O_FILES) lib/libgfxd/libgfxd.a
-	$(CC) $(CFLAGS) $(INC) $(O_FILES) lib/libgfxd/libgfxd.a -o $@ $(FS_INC) $(LDFLAGS)
+.PHONY: ExporterTest
+ExporterTest:
+	$(MAKE) -C ExporterTest
+
+.PHONY: ZAPDUtils
+ZAPDUtils:
+	$(MAKE) -C ZAPDUtils
+
+
+# Linking
+ZAPD.out: $(O_FILES) lib/libgfxd/libgfxd.a ExporterTest ZAPDUtils
+	$(CXX) $(CXXFLAGS) $(O_FILES) lib/libgfxd/libgfxd.a ZAPDUtils/ZAPDUtils.a -Wl,--whole-archive ExporterTest/ExporterTest.a -Wl,--no-whole-archive $(LDFLAGS) $(OUTPUT_OPTION)

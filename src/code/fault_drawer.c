@@ -34,20 +34,19 @@ const u32 sFaultDrawerFont[] = {
     0x05546F50, 0x00A99800, 0x02222080, 0x02001888,
 };
 
-// data
 FaultDrawer sFaultDrawerDefault = {
-    (u16*)0x803DA800,                   // fb
-    SCREEN_WIDTH,                       // w
-    SCREEN_HEIGHT,                      // h
-    16,                                 // yStart
-    223,                                // yEnd
-    22,                                 // xStart
-    297,                                // xEnd
-    GPACK_RGBA5551(255, 255, 255, 255), // foreColor
-    GPACK_RGBA5551(0, 0, 0, 0),         // backColor
-    22,                                 // cursorX
-    16,                                 // cursorY
-    sFaultDrawerFont,                   // font
+    (u16*)(0x80400000 - sizeof(u16[SCREEN_HEIGHT][SCREEN_WIDTH])), // fb
+    SCREEN_WIDTH,                                                  // w
+    SCREEN_HEIGHT,                                                 // h
+    16,                                                            // yStart
+    223,                                                           // yEnd
+    22,                                                            // xStart
+    297,                                                           // xEnd
+    GPACK_RGBA5551(255, 255, 255, 255),                            // foreColor
+    GPACK_RGBA5551(0, 0, 0, 0),                                    // backColor
+    22,                                                            // cursorX
+    16,                                                            // cursorY
+    sFaultDrawerFont,                                              // font
     8,
     8,
     0,
@@ -70,9 +69,8 @@ FaultDrawer sFaultDrawerDefault = {
     NULL, // inputCallback
 };
 
-// bss
-extern FaultDrawer sFaultDrawerStruct;
-extern char D_8016B6C0[0x20]; // ? unused
+FaultDrawer sFaultDrawerStruct;
+char D_8016B6C0[0x20];
 
 void FaultDrawer_SetOsSyncPrintfEnabled(u32 enabled) {
     sFaultDrawerStruct.osSyncPrintfEnabled = enabled;
@@ -274,6 +272,8 @@ void FaultDrawer_Printf(const char* fmt, ...) {
     va_start(args, fmt);
 
     FaultDrawer_VPrintf(fmt, args);
+
+    va_end(args);
 }
 
 void FaultDrawer_DrawText(s32 x, s32 y, const char* fmt, ...) {
@@ -282,6 +282,8 @@ void FaultDrawer_DrawText(s32 x, s32 y, const char* fmt, ...) {
 
     FaultDrawer_SetCursor(x, y);
     FaultDrawer_VPrintf(fmt, args);
+
+    va_end(args);
 }
 
 void FaultDrawer_SetDrawerFB(void* fb, u16 w, u16 h) {
@@ -300,5 +302,5 @@ void FaultDrawer_WritebackFBDCache() {
 
 void FaultDrawer_SetDefault() {
     bcopy(&sFaultDrawerDefault, &sFaultDrawerStruct, sizeof(FaultDrawer));
-    sFaultDrawerStruct.fb = (u16*)((osMemSize | 0x80000000) - 0x25800);
+    sFaultDrawerStruct.fb = (u16*)((osMemSize | 0x80000000) - sizeof(u16[SCREEN_HEIGHT][SCREEN_WIDTH]));
 }

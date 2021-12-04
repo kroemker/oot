@@ -78,6 +78,14 @@ void EnArrow_Init(Actor* thisx, GlobalContext* globalCtx) {
         0, 4, 0, { 0, 255, 200, 255 },   { 0, 255, 255, 255 }, { 0, 255, 200, 0 }, { 0, 255, 255, 0 }, 16,
         0, 1, 0, { 255, 255, 170, 255 }, { 255, 255, 0, 0 },
     };
+    static EffectBlureInit2 blureForest = {
+        0, 4, 0, { 0, 255, 200, 255 },   { 0, 255, 255, 255 }, { 0, 255, 200, 0 }, { 0, 255, 255, 0 }, 16,
+        0, 1, 0, { 170, 255, 170, 255 }, { 0, 255, 0, 0 },
+    };
+    static EffectBlureInit2 blureShadow = {
+        0, 4, 0, { 0, 255, 200, 255 },   { 0, 255, 255, 255 }, { 0, 255, 200, 0 }, { 0, 255, 255, 0 }, 16,
+        0, 1, 0, { 255, 170, 255, 255 }, { 255, 0, 255, 0 },
+    };
     static u32 dmgFlags[] = {
         0x00000800, 0x00000020, 0x00000020, 0x00000800, 0x00001000,
         0x00002000, 0x00010000, 0x00004000, 0x00008000, 0x00000004,
@@ -93,11 +101,11 @@ void EnArrow_Init(Actor* thisx, GlobalContext* globalCtx) {
 
     if (this->actor.params <= ARROW_SEED) {
 
-        if (this->actor.params <= ARROW_0E) {
+        if (this->actor.params <= ARROW_SHADOW) {
             SkelAnime_Init(globalCtx, &this->skelAnime, &gArrowSkel, &gArrow2Anim, NULL, NULL, 0);
         }
 
-        if (this->actor.params <= ARROW_NORMAL) {
+        if (this->actor.params <= ARROW_NORMAL || this->actor.params == ARROW_BOMB) {
             if (this->actor.params == ARROW_NORMAL_HORSE) {
                 blureNormal.elemDuration = 4;
             } else {
@@ -117,6 +125,12 @@ void EnArrow_Init(Actor* thisx, GlobalContext* globalCtx) {
         } else if (this->actor.params == ARROW_LIGHT) {
 
             Effect_Add(globalCtx, &this->effectIndex, EFFECT_BLURE2, 0, 0, &blureLight);
+        } else if (this->actor.params == ARROW_FOREST) {
+
+            Effect_Add(globalCtx, &this->effectIndex, EFFECT_BLURE2, 0, 0, &blureForest);
+        } else if (this->actor.params == ARROW_SHADOW) {
+
+            Effect_Add(globalCtx, &this->effectIndex, EFFECT_BLURE2, 0, 0, &blureShadow);
         }
 
         Collider_InitQuad(globalCtx, &this->collider);
@@ -171,12 +185,15 @@ void EnArrow_Shoot(EnArrow* this, GlobalContext* globalCtx) {
             case ARROW_NORMAL_LIT:
             case ARROW_NORMAL_HORSE:
             case ARROW_NORMAL:
+            case ARROW_BOMB:
                 func_8002F7DC(&player->actor, NA_SE_IT_ARROW_SHOT);
                 break;
 
             case ARROW_FIRE:
             case ARROW_ICE:
             case ARROW_LIGHT:
+            case ARROW_FOREST:
+            case ARROW_SHADOW:
                 func_8002F7DC(&player->actor, NA_SE_IT_MAGIC_ARROW_SHOT);
                 break;
         }
@@ -312,6 +329,40 @@ void EnArrow_Fly(EnArrow* this, GlobalContext* globalCtx) {
                     Audio_PlayActorSound2(&this->actor, NA_SE_IT_ARROW_STICK_CRE);
                 }
             } else if (this->touchedPoly) {
+                if (this->actor.params == ARROW_FOREST) {
+                    Vec3f normal;
+                    f32 dist = 1;
+                    s16 xRot, yRot, zRot;
+                    CollisionPoly_GetNormalF(this->actor.wallPoly, &normal.x, &normal.y, &normal.z);
+                    if (normal.y <= 0.0001) {
+                        if (normal.x == 0 && normal.y == -1.0f && normal.z == 0) {
+                            xRot = 0;
+                            yRot = GET_PLAYER(globalCtx)->actor.world.rot.y - 0x8000;
+                            zRot = 0;
+                        }
+                        else if ((normal.x == 0 && normal.y == 0 && normal.z == 1.0f) || (normal.x == 0 && normal.y == 0 && normal.z == -1.0f)) {
+                            xRot = 0;
+                            yRot = normal.z == 1.0f ? 0 : 0x8000;
+                            zRot = 0;
+                        }
+                        else if ((normal.x == 1.0f && normal.y == 0 && normal.z == 0) || (normal.x == -1.0f && normal.y == 0 && normal.z == 0)) {
+                            xRot = 0;
+                            yRot = 0x4000 * normal.x;
+                            zRot = 0;
+                        }
+                        else {
+                            xRot = 0;
+                            yRot = Math_Atan2S(normal.z, normal.x);
+                            zRot = 0;
+                        }
+                        osSyncPrintf("Normal: %f, %f, %f\n", normal.x, normal.y, normal.z);
+                        osSyncPrintf("Rotation: %d, %d, %d\n", xRot, yRot, zRot);
+
+                        Actor_Spawn(&globalCtx->actorCtx, globalCtx, ACTOR_VINE_SPOT, this->actor.world.pos.x + normal.x * dist,
+                            this->actor.world.pos.y + normal.y * dist, this->actor.world.pos.z + normal.z * dist, xRot, yRot, zRot, 0);
+                    }
+                }
+
                 EnArrow_SetupAction(this, func_809B45E0);
                 Animation_PlayOnce(&this->skelAnime, &gArrow2Anim);
 
@@ -337,7 +388,7 @@ void EnArrow_Fly(EnArrow* this, GlobalContext* globalCtx) {
             Math_Vec3f_Copy(&this->actor.world.pos, &hitPoint);
         }
 
-        if (this->actor.params <= ARROW_0E) {
+        if (this->actor.params <= ARROW_SHADOW) {
             this->actor.shape.rot.x = Math_Atan2S(this->actor.speedXZ, -this->actor.velocity.y);
         }
     }
@@ -396,9 +447,9 @@ void EnArrow_Update(Actor* thisx, GlobalContext* globalCtx) {
         this->actionFunc(this, globalCtx);
     }
 
-    if ((this->actor.params >= ARROW_FIRE) && (this->actor.params <= ARROW_0E)) {
+    if ((this->actor.params >= ARROW_FIRE) && (this->actor.params <= ARROW_SHADOW)) {
         s16 elementalActorIds[] = { ACTOR_ARROW_FIRE, ACTOR_ARROW_ICE,  ACTOR_ARROW_LIGHT,
-                                    ACTOR_ARROW_BOMB, ACTOR_ARROW_FIRE, ACTOR_ARROW_FIRE };
+                                    ACTOR_ARROW_BOMB, ACTOR_ARROW_FOREST, ACTOR_ARROW_FIRE };
 
         if (this->actor.child == NULL) {
             Actor_SpawnAsChild(&globalCtx->actorCtx, &this->actor, globalCtx, elementalActorIds[this->actor.params - 3],
@@ -456,7 +507,7 @@ void EnArrow_Draw(Actor* thisx, GlobalContext* globalCtx) {
     u8 alpha;
     f32 scale;
 
-    if (this->actor.params <= ARROW_0E) {
+    if (this->actor.params <= ARROW_SHADOW) {
         func_80093D18(globalCtx->state.gfxCtx);
         SkelAnime_DrawLod(globalCtx, this->skelAnime.skeleton, this->skelAnime.jointTable, NULL, NULL, this,
                           (this->actor.projectedPos.z < MREG(95)) ? 0 : 1);

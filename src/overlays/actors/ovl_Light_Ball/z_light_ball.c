@@ -37,7 +37,7 @@ void LightBall_SetupAction(LightBall* this, LightBallActionFunc actionFunc) {
 
 void LightBall_Init(Actor* thisx, GlobalContext* globalCtx) {
     LightBall* this = THIS;
-    Player* player = PLAYER;
+    Player* player = GET_PLAYER(globalCtx);
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
     Actor_SetScale(&this->actor, 0.01f);

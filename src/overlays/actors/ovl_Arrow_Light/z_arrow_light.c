@@ -46,6 +46,12 @@ void ArrowLight_SetupAction(ArrowLight* this, ArrowLightActionFunc actionFunc) {
 void ArrowLight_Init(Actor* thisx, GlobalContext* globalCtx) {
     ArrowLight* this = THIS;
 
+    Actor* actor = globalCtx->actorCtx.actorLists[ACTORCAT_ENEMY].head;
+    while (actor != NULL) {
+        Actor_Kill(actor);
+        actor = actor->next;
+    }
+
     Actor_ProcessInitChain(&this->actor, sInitChain);
     this->radius = 0;
     this->unk_160 = 1.0f;
@@ -54,6 +60,7 @@ void ArrowLight_Init(Actor* thisx, GlobalContext* globalCtx) {
     this->alpha = 130;
     this->timer = 0;
     this->unk_164 = 0.0f;
+
 }
 
 void ArrowLight_Destroy(Actor* thisx, GlobalContext* globalCtx) {

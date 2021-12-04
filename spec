@@ -3129,6 +3129,12 @@ beginseg
 endseg
 
 beginseg
+    name "ovl_Vine_Spot"
+    include "build/src/overlays/actors/ovl_Vine_Spot/z_vine_spot.o"
+    include "build/src/overlays/actors/ovl_Vine_Spot/ovl_Vine_Spot_reloc.o"
+endseg
+
+beginseg
     name "ovl_Item_B_Heart"
     include "build/src/overlays/actors/ovl_Item_B_Heart/z_item_b_heart.o"
     include "build/src/overlays/actors/ovl_Item_B_Heart/ovl_Item_B_Heart_reloc.o"

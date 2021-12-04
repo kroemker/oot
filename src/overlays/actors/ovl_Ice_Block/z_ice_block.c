@@ -10,7 +10,6 @@
 
 #define THIS ((IceBlock*)thisx)
 
-// maybe put dlists right into the overlay to not change gameplay_keep
 extern Gfx gIceBlockDL[];
 extern CollisionHeader gIceBlockCol_collisionHeader;
 
@@ -34,7 +33,7 @@ const ActorInit Ice_Block_InitVars = {
 static Color_RGBA8 sDustPrimColor = { 250, 250, 250, 255 };
 static Color_RGBA8 sDustEnvColor = { 180, 180, 180, 255 };
 
-void spawnDust(IceBlock* this, GlobalContext* globalCtx) {
+void IceBlock_SpawnDust(IceBlock* this, GlobalContext* globalCtx) {
     f32 direction[] = { -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f };
     Vec3f* icePos;
     Vec3f dustPos;
@@ -97,7 +96,7 @@ void IceBlock_Update(Actor* thisx, GlobalContext* globalCtx) {
         u32 dir = SurfaceType_GetConveyorDirection(&globalCtx->colCtx, this->dyna.actor.floorPoly, this->dyna.actor.floorBgId);
 
         this->dyna.actor.world.rot.y = dir << 10;
-        this->dyna.actor.speedXZ = (float)cspeed;
+        this->dyna.actor.speedXZ = (f32)cspeed;
         Actor_MoveForward(&this->dyna.actor);
         if (this->dyna.actor.yDistToWater < 0 && this->dyna.actor.yDistToWater > -10000.0f) {
             this->dyna.actor.world.pos.y += this->dyna.actor.yDistToWater;
@@ -112,7 +111,7 @@ void IceBlock_Update(Actor* thisx, GlobalContext* globalCtx) {
     this->lifetime++;
 
     if (this->lifetime < 20 || this->lifetime > maxLifetime) {
-        spawnDust(this, globalCtx);
+        IceBlock_SpawnDust(this, globalCtx);
     }
 
     if (this->size < 0.15f && this->lifetime < maxLifetime) {
@@ -133,7 +132,7 @@ void IceBlock_Update(Actor* thisx, GlobalContext* globalCtx) {
             this->size -= 0.008f;
             this->size = this->size < 0.0001f ? 0.0001f : this->size;
             Actor_SetScale(&this->dyna.actor, this->size);
-            spawnDust(this, globalCtx);
+            IceBlock_SpawnDust(this, globalCtx);
         }
         else {
             Actor_Kill(&this->dyna.actor);

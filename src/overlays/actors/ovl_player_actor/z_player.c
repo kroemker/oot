@@ -254,7 +254,7 @@ void func_8084ECA4(Player* this, GlobalContext* globalCtx);
 void func_8084EED8(Player* this, GlobalContext* globalCtx);
 void func_8084EFC0(Player* this, GlobalContext* globalCtx);
 void func_8084F104(Player* this, GlobalContext* globalCtx);
-void func_8084F390(Player* this, GlobalContext* globalCtx);
+void Player_Action_SlideDownSlope(Player* this, GlobalContext* globalCtx);
 void func_8084F608(Player* this, GlobalContext* globalCtx);
 void func_8084F698(Player* this, GlobalContext* globalCtx);
 void func_8084F710(Player* this, GlobalContext* globalCtx);
@@ -273,7 +273,7 @@ void func_808505DC(Player* this, GlobalContext* globalCtx);
 void func_8085063C(Player* this, GlobalContext* globalCtx);
 void func_8085076C(Player* this, GlobalContext* globalCtx);
 void Player_Action_CastSpell(Player* this, GlobalContext* globalCtx);
-void func_80850AEC(Player* this, GlobalContext* globalCtx);
+void Player_Action_FlyWithHookshot(Player* this, GlobalContext* globalCtx);
 void func_80850C68(Player* this, GlobalContext* globalCtx);
 void func_80850E84(Player* this, GlobalContext* globalCtx);
 void func_80851008(GlobalContext* globalCtx, Player* this, void* anim);
@@ -1109,7 +1109,7 @@ static u8 sMagicSpellCosts[] = { 12, 24, 24, 12, 24, 12 };
 
 static u16 D_80854398[] = { NA_SE_IT_BOW_DRAW, NA_SE_IT_SLING_DRAW, NA_SE_IT_HOOKSHOT_READY };
 
-static u8 sMagicArrowCosts[] = { 4, 4, 8 };
+static u8 sMagicArrowCosts[] = { 4, 4, 8, 0, 4, 6 };
 
 static LinkAnimationHeader* D_808543A4[] = {
     &gPlayerAnim_0025C0,
@@ -2057,7 +2057,7 @@ s32 Player_TryUseFirstPersonItem(Player* this, GlobalContext* globalCtx) {
                 magicArrowType = arrowType - ARROW_FIRE;
 
                 if (this->unk_860 >= 0) {
-                    if ((magicArrowType >= 0) && (magicArrowType <= 2) &&
+                    if ((magicArrowType >= 0) && (magicArrowType != 3) &&
                         !func_80087708(globalCtx, sMagicArrowCosts[magicArrowType], 0)) {
                         arrowType = ARROW_NORMAL;
                     }
@@ -2904,7 +2904,7 @@ s32 func_808365C8(Player* this) {
 
 s32 func_80836670(Player* this, GlobalContext* globalCtx) {
     if (!(this->stateFlags1 & 0x800000) && (this->actor.parent != NULL) && Player_HoldsHookshot(this)) {
-        SETUP_ACTION_WITH_LOG(globalCtx, this, func_80850AEC, 1);
+        SETUP_ACTION_WITH_LOG(globalCtx, this, Player_Action_FlyWithHookshot, 1);
         this->stateFlags3 |= 0x80;
         Player_PlayAnimationOnce(globalCtx, this, &gPlayerAnim_002C90);
         func_80832F54(globalCtx, this, 0x9B);
@@ -5905,7 +5905,7 @@ s32 func_8083E318(GlobalContext* globalCtx, Player* this, CollisionPoly* arg2) {
     f32 temp2;
     s16 temp3;
 
-    if (!Player_InBlockingCsMode(globalCtx, this) && (func_8084F390 != this->func_674) &&
+    if (!Player_InBlockingCsMode(globalCtx, this) && (Player_Action_SlideDownSlope != this->func_674) &&
         (SurfaceType_GetSlope(&globalCtx->colCtx, arg2, this->actor.floorBgId) == 1)) {
         sp4A = Math_Atan2S(this->actor.velocity.z, this->actor.velocity.x);
         func_8083E298(arg2, &sp3C, &sp3A);
@@ -5920,7 +5920,7 @@ s32 func_8083E318(GlobalContext* globalCtx, Player* this, CollisionPoly* arg2) {
             this->windDirection = sp3A;
             Math_StepToF(&this->windSpeed, temp1, temp2);
         } else {
-            SETUP_ACTION_WITH_LOG(globalCtx, this, func_8084F390, 0);
+            SETUP_ACTION_WITH_LOG(globalCtx, this, Player_Action_SlideDownSlope, 0);
             func_80832564(globalCtx, this);
             if (D_80853610 >= 0) {
                 this->unk_84F = 1;
@@ -12508,7 +12508,7 @@ void func_8084F308(Player* this, GlobalContext* globalCtx) {
     }
 }
 
-void func_8084F390(Player* this, GlobalContext* globalCtx) {
+void Player_Action_SlideDownSlope(Player* this, GlobalContext* globalCtx) {
     CollisionPoly* floorPoly;
     f32 sp50;
     f32 sp4C;
@@ -13123,7 +13123,7 @@ void Player_Action_CastSpell(Player* this, GlobalContext* globalCtx) {
     func_8083721C(this);
 }
 
-void func_80850AEC(Player* this, GlobalContext* globalCtx) {
+void Player_Action_FlyWithHookshot(Player* this, GlobalContext* globalCtx) {
     f32 temp;
 
     this->stateFlags2 |= 0x20;

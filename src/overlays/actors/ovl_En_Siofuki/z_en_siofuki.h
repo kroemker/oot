@@ -6,7 +6,8 @@
 
 typedef enum {
     /* 0x00 */ EN_SIOFUKI_RAISING,
-    /* 0x01 */ EN_SIOFUKI_LOWERING
+    /* 0x01 */ EN_SIOFUKI_LOWERING,
+    /* 0x02 */ EN_SIOFUKI_SPELL
 } EnSiofukiType;
 
 struct EnSiofuki;

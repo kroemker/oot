@@ -17,7 +17,7 @@ void MagicMinishCap_Update(Actor* thisx, GlobalContext* globalCtx);
 void MagicMinishCap_Draw(Actor* thisx, GlobalContext* globalCtx);
 
 const ActorInit Magic_Minish_Cap_InitVars = {
-    ACTOR_UNSET_109,
+    ACTOR_UNSET_128,
     ACTORCAT_ITEMACTION,
     FLAGS,
     OBJECT_GAMEPLAY_KEEP,

@@ -593,6 +593,12 @@ beginseg
 endseg
 
 beginseg
+    name "ovl_Arrow_Shadow"
+    include "build/src/overlays/actors/ovl_Arrow_Shadow/z_arrow_shadow.o"
+    include "build/src/overlays/actors/ovl_Arrow_Shadow/ovl_Arrow_Shadow_reloc.o"
+endseg
+
+beginseg
     name "ovl_Arrow_Bomb"
     include "build/src/overlays/actors/ovl_Arrow_Bomb/z_arrow_bomb.o"
     include "build/src/overlays/actors/ovl_Arrow_Bomb/ovl_Arrow_Bomb_reloc.o"

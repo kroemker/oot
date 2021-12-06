@@ -100,8 +100,8 @@ typedef enum {
     /* 0x0C */ ITEM_ARROW_ICE,
     /* 0x0D */ ITEM_FARORES_WIND,
     /* 0x0E */ ITEM_BOOMERANG,
-    /* 0x0F */ ITEM_BOW_ARROW_TELEPORT = 0x0F,
     /* 0x0F */ ITEM_LENS,
+               ITEM_BOW_ARROW_TELEPORT = 0x0F,
     /* 0x10 */ ITEM_BEAN,
                ITEM_FEATHER = 0x10,
     /* 0x11 */ ITEM_HAMMER,
@@ -243,6 +243,8 @@ typedef enum {
     /* 0x99 */ ITEM_STICK_UPGRADE_30,
     /* 0x9A */ ITEM_NUT_UPGRADE_30,
     /* 0x9B */ ITEM_NUT_UPGRADE_40,
+    /* 0x9C */ ITEM_BOW_ARROW_SHADOW,
+    /* 0x9D */ ITEM_MAGIC_WATER_SPOUT,
     /* 0xFC */ ITEM_LAST_USED = 0xFC,
     /* 0xFE */ ITEM_NONE_FE = 0xFE,
     /* 0xFF */ ITEM_NONE = 0xFF

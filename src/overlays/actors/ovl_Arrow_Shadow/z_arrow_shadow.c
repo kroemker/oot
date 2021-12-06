@@ -1,24 +1,24 @@
 /*
- * File: z_arrow_teleport.c
- * Overlay: ovl_Arrow_Teleport
- * Description: Teleport Arrow. Spawned as a child of a normal arrow.
+ * File: z_arrow_shadow.c
+ * Overlay: ovl_Arrow_Shadow
+ * Description: Shadow Arrow. Spawned as a child of a normal arrow.
  */
 
-#include "z_arrow_teleport.h"
+#include "z_arrow_shadow.h"
 #include "overlays/actors/ovl_En_Arrow/z_en_arrow.h"
 
 #define FLAGS 0x02000010
 
-#define THIS ((ArrowTeleport*)thisx)
+#define THIS ((ArrowShadow*)thisx)
 
-void ArrowTeleport_Init(Actor* thisx, GlobalContext* globalCtx);
-void ArrowTeleport_Destroy(Actor* thisx, GlobalContext* globalCtx);
-void ArrowTeleport_Update(Actor* thisx, GlobalContext* globalCtx);
-void ArrowTeleport_Draw(Actor* thisx, GlobalContext* globalCtx);
+void ArrowShadow_Init(Actor* thisx, GlobalContext* globalCtx);
+void ArrowShadow_Destroy(Actor* thisx, GlobalContext* globalCtx);
+void ArrowShadow_Update(Actor* thisx, GlobalContext* globalCtx);
+void ArrowShadow_Draw(Actor* thisx, GlobalContext* globalCtx);
 
-void ArrowTeleport_Charge(ArrowTeleport* this, GlobalContext* globalCtx);
-void ArrowTeleport_Fly(ArrowTeleport* this, GlobalContext* globalCtx);
-void ArrowTeleport_Hit(ArrowTeleport* this, GlobalContext* globalCtx);
+void ArrowShadow_Charge(ArrowShadow* this, GlobalContext* globalCtx);
+void ArrowShadow_Fly(ArrowShadow* this, GlobalContext* globalCtx);
+void ArrowShadow_Hit(ArrowShadow* this, GlobalContext* globalCtx);
 
 static u64 s1Tex[256];
 static u64 s2Tex[256];
@@ -27,15 +27,15 @@ static Gfx sMaterialDL[22];
 static Gfx sModelDL[24];
 
 static u64 s1Tex[256] = {
-#include "assets/overlays/ovl_Arrow_Ice/ice_tex_1.ia8.inc.c"
+#include "assets/overlays/ovl_Arrow_Fire/fire_tex_1.ia8.inc.c"
 };
 
 static u64 s2Tex[256] = {
-#include "assets/overlays/ovl_Arrow_Ice/ice_tex_2.ia8.inc.c"
+#include "assets/overlays/ovl_Arrow_Fire/fire_tex_2.ia8.inc.c"
 };
 
 static Vtx sVtx[43] = {
-#include "assets/overlays/ovl_Arrow_Ice/sVtx.vtx.inc"
+#include "assets/overlays/ovl_Arrow_Fire/sVtx.vtx.inc"
 };
 
 static Gfx sMaterialDL[22] = {
@@ -81,48 +81,46 @@ static Gfx sModelDL[24] = {
     gsSPEndDisplayList(),
 };
 
-const ActorInit Arrow_Teleport_InitVars = {
-    ACTOR_ARROW_FOREST,
+const ActorInit Arrow_Shadow_InitVars = {
+    ACTOR_ARROW_SHADOW,
     ACTORCAT_ITEMACTION,
     FLAGS,
     OBJECT_GAMEPLAY_KEEP,
-    sizeof(ArrowTeleport),
-    (ActorFunc)ArrowTeleport_Init,
-    (ActorFunc)ArrowTeleport_Destroy,
-    (ActorFunc)ArrowTeleport_Update,
-    (ActorFunc)ArrowTeleport_Draw,
+    sizeof(ArrowShadow),
+    (ActorFunc)ArrowShadow_Init,
+    (ActorFunc)ArrowShadow_Destroy,
+    (ActorFunc)ArrowShadow_Update,
+    (ActorFunc)ArrowShadow_Draw,
 };
 
 static InitChainEntry sInitChain[] = {
     ICHAIN_F32(uncullZoneForward, 2000, ICHAIN_STOP),
 };
 
-static s32 sTestActor = 0xDEADBEEF;
-static s32 sActorVar = 0xABCD1234;
-
-void ArrowTeleport_SetupAction(ArrowTeleport* this, ArrowTeleportActionFunc actionFunc) {
+void ArrowShadow_SetupAction(ArrowShadow* this, ArrowShadowActionFunc actionFunc) {
     this->actionFunc = actionFunc;
 }
 
-void ArrowTeleport_Init(Actor* thisx, GlobalContext* globalCtx) {
-    ArrowTeleport* this = THIS;
+void ArrowShadow_Init(Actor* thisx, GlobalContext* globalCtx) {
+    ArrowShadow* this = THIS;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
-    ArrowTeleport_SetupAction(this, ArrowTeleport_Charge);
+    ArrowShadow_SetupAction(this, ArrowShadow_Charge);
     Actor_SetScale(&this->actor, 0.01f);    
     
     this->alpha = 130;
     this->radius = 0;
     this->unk_160 = 1.0f;
+    LOG_STRING("ArrowShadow_Init", "../z_arrow_shadow.c", 114);
 }
 
-void ArrowTeleport_Destroy(Actor* thisx, GlobalContext* globalCtx) {
+void ArrowShadow_Destroy(Actor* thisx, GlobalContext* globalCtx) {
     func_800876C8(globalCtx);
     // Translates to: "Disappearance"
-    LOG_STRING("消滅", "../z_arrow_teleport.c", 421);
+    LOG_STRING("消滅", "../z_arrow_shadow.c", 421);
 }
 
-void ArrowTeleport_Charge(ArrowTeleport* this, GlobalContext* globalCtx) {
+void ArrowShadow_Charge(ArrowShadow* this, GlobalContext* globalCtx) {
     EnArrow* arrow;
 
     arrow = (EnArrow*)this->actor.parent;
@@ -142,11 +140,11 @@ void ArrowTeleport_Charge(ArrowTeleport* this, GlobalContext* globalCtx) {
     if (arrow->actor.parent == NULL) {
         this->radius = 10;
         this->alpha = 255;
-        ArrowTeleport_SetupAction(this, ArrowTeleport_Fly);
+        ArrowShadow_SetupAction(this, ArrowShadow_Fly);
     }
 }
 
-void ArrowTeleport_WaitForDeletion(ArrowTeleport* this, GlobalContext* globalCtx) {
+void ArrowShadow_WaitForDeletion(ArrowShadow* this, GlobalContext* globalCtx) {
     EnArrow* arrow = (EnArrow*)this->actor.parent;
     if (this->alpha > 10) {
         this->alpha -= 10;
@@ -158,17 +156,22 @@ void ArrowTeleport_WaitForDeletion(ArrowTeleport* this, GlobalContext* globalCtx
     }
 }
 
-void ArrowTeleport_Hit(ArrowTeleport* this, GlobalContext* globalCtx) {
+void ArrowShadow_Hit(ArrowShadow* this, GlobalContext* globalCtx) {
+    EnArrow* arrow = (EnArrow*)this->actor.parent;
     Player* player = GET_PLAYER(globalCtx);
     
     Vec3f pos = player->actor.world.pos;
     pos.x += Math_SinS(player->actor.world.rot.y) * 15.0f;
     pos.z += Math_CosS(player->actor.world.rot.y) * 15.0f;
-    
-    ArrowTeleport_SetupAction(this, ArrowTeleport_WaitForDeletion);
+
+    if (arrow->hitActor != NULL) {
+        arrow->hitActor->freezeTimer = 200;
+    }
+
+    ArrowShadow_SetupAction(this, ArrowShadow_WaitForDeletion);
 }
 
-void ArrowTeleport_Fly(ArrowTeleport* this, GlobalContext* globalCtx) {
+void ArrowShadow_Fly(ArrowShadow* this, GlobalContext* globalCtx) {
     EnArrow* arrow;
 
     arrow = (EnArrow*)this->actor.parent;
@@ -181,15 +184,16 @@ void ArrowTeleport_Fly(ArrowTeleport* this, GlobalContext* globalCtx) {
     this->actor.shape.rot = arrow->actor.shape.rot;
 
     if (arrow->hitFlags & 1) {
-        ArrowTeleport_SetupAction(this, ArrowTeleport_Hit);
+        ArrowShadow_SetupAction(this, ArrowShadow_Hit);
     } else if (arrow->timer < 2) {
         Actor_Kill(&this->actor);
     }
 }
 
-void ArrowTeleport_Update(Actor* thisx, GlobalContext* globalCtx) {
-    ArrowTeleport* this = THIS;
+void ArrowShadow_Update(Actor* thisx, GlobalContext* globalCtx) {
+    ArrowShadow* this = THIS;
 
+    LOG_STRING("ArrowShadow_Update", "../z_arrow_shadow.c", 191);
     if (globalCtx->msgCtx.msgMode == 0xD || globalCtx->msgCtx.msgMode == 0x11) {
         Actor_Kill(&this->actor);
     } else {
@@ -197,8 +201,8 @@ void ArrowTeleport_Update(Actor* thisx, GlobalContext* globalCtx) {
     }
 }
 
-void ArrowTeleport_Draw(Actor* thisx, GlobalContext* globalCtx) {
-    ArrowTeleport* this = THIS;
+void ArrowShadow_Draw(Actor* thisx, GlobalContext* globalCtx) {
+    ArrowShadow* this = THIS;
     EnArrow* arrow;
     u32 stateFrames = globalCtx->state.frames;
     Actor* tranform;
@@ -208,7 +212,7 @@ void ArrowTeleport_Draw(Actor* thisx, GlobalContext* globalCtx) {
     if ((arrow != NULL) && (arrow->actor.update != NULL)) {
         tranform = (arrow->hitFlags & 2) ? &this->actor : &arrow->actor;
 
-        OPEN_DISPS(globalCtx->state.gfxCtx, "../z_arrow_teleport.c", 137);
+        OPEN_DISPS(globalCtx->state.gfxCtx, "../z_arrow_shadow.c", 137);
 
         Matrix_Translate(tranform->world.pos.x, tranform->world.pos.y, tranform->world.pos.z, MTXMODE_NEW);
         Matrix_RotateY(tranform->shape.rot.y * (M_PI / 0x8000), MTXMODE_APPLY);
@@ -218,8 +222,8 @@ void ArrowTeleport_Draw(Actor* thisx, GlobalContext* globalCtx) {
 
         // Draw effect on the arrow
         func_80093D84(globalCtx->state.gfxCtx);
-        gDPSetPrimColor(POLY_XLU_DISP++, 0x80, 0x80, 170, 255, 170, this->alpha);
-        gDPSetEnvColor(POLY_XLU_DISP++, 0, 255, 0, 128);
+        gDPSetPrimColor(POLY_XLU_DISP++, 0x80, 0x80, 255, 170, 255, this->alpha);
+        gDPSetEnvColor(POLY_XLU_DISP++, 84, 8, 84, 128);
         Matrix_RotateZYX(0x4000, 0x0, 0x0, MTXMODE_APPLY);
         if (arrow->timer != 0) {
             Matrix_Translate(0.0f, 0.0f, 0.0f, MTXMODE_APPLY);
@@ -228,7 +232,7 @@ void ArrowTeleport_Draw(Actor* thisx, GlobalContext* globalCtx) {
         }
         Matrix_Scale(this->radius * 0.2f, this->unk_160 * 4.0f, this->radius * 0.2f, MTXMODE_APPLY);
         Matrix_Translate(0.0f, -700.0f, 0.0f, MTXMODE_APPLY);
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(globalCtx->state.gfxCtx, "../z_arrow_teleport.c", 167),
+        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(globalCtx->state.gfxCtx, "../z_arrow_shadow.c", 167),
                   G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         gSPDisplayList(POLY_XLU_DISP++, sMaterialDL);
         gSPDisplayList(POLY_XLU_DISP++,
@@ -236,6 +240,6 @@ void ArrowTeleport_Draw(Actor* thisx, GlobalContext* globalCtx) {
                                         511 - (stateFrames * 10) % 512, 511 - (stateFrames * 30) % 512, 8, 16));
         gSPDisplayList(POLY_XLU_DISP++, sModelDL);
 
-        CLOSE_DISPS(globalCtx->state.gfxCtx, "../z_arrow_teleport.c", 175);
+        CLOSE_DISPS(globalCtx->state.gfxCtx, "../z_arrow_shadow.c", 175);
     }
 }

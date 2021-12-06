@@ -20,6 +20,8 @@ void func_80AFC34C(EnSiofuki* this, GlobalContext* globalCtx);
 void func_80AFC544(EnSiofuki* this, GlobalContext* globalCtx);
 void func_80AFC478(EnSiofuki* this, GlobalContext* globalCtx);
 
+void En_Siofuki_RaisingFromSpell(EnSiofuki* this, GlobalContext* globalCtx);
+
 const ActorInit En_Siofuki_InitVars = {
     ACTOR_EN_SIOFUKI,
     ACTORCAT_BG,
@@ -42,10 +44,10 @@ void EnSiofuki_Init(Actor* thisx, GlobalContext* globalCtx) {
     CollisionHeader* colHeader = NULL;
     s32 pad;
 
-    if ((thisx->room == 10) && Flags_GetSwitch(globalCtx, 0x1E)) {
+    /*if ((thisx->room == 10) && Flags_GetSwitch(globalCtx, 0x1E)) {
         Actor_Kill(thisx);
         return;
-    }
+    }*/
 
     Actor_ProcessInitChain(thisx, sInitChain);
     DynaPolyActor_Init(&this->dyna, DPM_PLAYER);
@@ -54,7 +56,7 @@ void EnSiofuki_Init(Actor* thisx, GlobalContext* globalCtx) {
     this->sfxFlags |= 1;
 
     type = ((u16)thisx->params >> 0xC) & 0xF;
-    if (!((type == 0) || (type == 1))) {
+    if (!((type == EN_SIOFUKI_RAISING) || (type == EN_SIOFUKI_LOWERING) || (type == EN_SIOFUKI_SPELL))) {
         Actor_Kill(thisx);
         return;
     }
@@ -97,12 +99,16 @@ void EnSiofuki_Init(Actor* thisx, GlobalContext* globalCtx) {
             this->targetHeight = this->currentHeight;
             this->actionFunc = func_80AFC478;
         }
+    } else if (type == EN_SIOFUKI_SPELL) {
+        this->currentHeight = 0.0f;
+        this->targetHeight = 200.0f;
+        this->timer = 400;
+        this->actionFunc = En_Siofuki_RaisingFromSpell;
     }
 }
 
 void EnSiofuki_Destroy(Actor* thisx, GlobalContext* globalCtx) {
     EnSiofuki* this = THIS;
-
     DynaPoly_DeleteBgActor(globalCtx, &globalCtx->colCtx.dyna, this->dyna.bgId);
 }
 
@@ -182,6 +188,51 @@ void func_80AFBE8C(EnSiofuki* this, GlobalContext* globalCtx) {
 
 void func_80AFC1D0(EnSiofuki* this, GlobalContext* globalCtx) {
     Math_SmoothStepToF(&this->currentHeight, this->targetHeight, 0.8f, 3.0f, 0.01f);
+}
+
+void En_Siofuki_SpawnSplash(EnSiofuki* this, GlobalContext* globalCtx) {
+    s32 i;
+    Vec3f pos;
+    Color_RGBA8 envColor;
+    Color_RGBA8 primColor;
+    envColor.r = Rand_ZeroOne() * 40.0f;
+    envColor.g = Rand_ZeroOne() * 40.0f;
+    envColor.b = Rand_ZeroOne() * 55.0f + 200.0f;
+    envColor.a = Rand_ZeroOne() * 128 + 50.0f;
+    primColor.r = Rand_ZeroOne() * 40.0f + 100.0f;
+    primColor.g = Rand_ZeroOne() * 40.0f + 100.0f;
+    primColor.b = Rand_ZeroOne() * 25.0f + 230.0f;
+    primColor.a = Rand_ZeroOne() * 200.0f + 50.0f;
+
+    for (i = 0; i < 8; i++) {
+        f32 height = -Rand_ZeroOne() * this->targetHeight;
+        f32 dist = Rand_ZeroOne() * 300.0f * this->dyna.actor.scale.x;
+        f32 angle = Rand_ZeroOne() * 2 * M_PI;
+        pos.x = sinf(angle) * dist;
+        pos.y = height;
+        pos.z = cosf(angle) * dist;
+
+        Math_Vec3f_Sum(&this->dyna.actor.world.pos, &pos, &pos);
+
+        EffectSsGSplash_Spawn(globalCtx, &pos, &primColor, &envColor, (s16)(Rand_ZeroOne() * 2 + 0.5f), (s16)(Rand_ZeroOne() * 50.0f) + 20.0f);
+    }
+}
+void En_Siofuki_RaisingFromSpell(EnSiofuki* this, GlobalContext* globalCtx) {
+    func_80AFBDC8(this, globalCtx);
+    func_80AFBE8C(this, globalCtx);
+    func_80AFC1D0(this, globalCtx);
+
+    this->timer--;
+    if (this->timer < 0) {
+        Actor_Kill(&this->dyna.actor);
+    }
+    else if (this->timer < 20) {
+        Actor_SetScale(&this->dyna.actor, this->dyna.actor.scale.x - 0.005f);
+        En_Siofuki_SpawnSplash(this, globalCtx);
+    }
+    else if (this->timer == 350) {
+        func_800876C8(globalCtx);
+    }
 }
 
 void func_80AFC218(EnSiofuki* this, GlobalContext* globalCtx) {
@@ -307,6 +358,10 @@ void EnSiofuki_Draw(Actor* thisx, GlobalContext* globalCtx) {
                     heightRatio = (this->currentHeight - -35.0f) / (this->maxHeight - -35.0f);
                     func_800F436C(&thisx->projectedPos, NA_SE_EV_FOUNTAIN - SFX_FLAG, 1.0f + heightRatio);
                 }
+                break;
+            case EN_SIOFUKI_SPELL:
+                heightRatio = this->currentHeight / this->targetHeight;
+                func_800F436C(&thisx->projectedPos, NA_SE_EV_FOUNTAIN - SFX_FLAG, 1.0f + heightRatio);
                 break;
         }
     }

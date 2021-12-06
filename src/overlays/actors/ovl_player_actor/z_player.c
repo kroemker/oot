@@ -1698,12 +1698,16 @@ s8 Player_ItemToActionParam(s32 item) {
         return PLAYER_AP_BOW_BOMB;
     } else if (item == ITEM_BOW_ARROW_TELEPORT) {
         return PLAYER_AP_BOW_TELEPORT;
+    } else if (item == ITEM_BOW_ARROW_SHADOW) {
+        return PLAYER_AP_BOW_SHADOW;
     } else if (item == ITEM_LIGHT_BALL) {
         return PLAYER_AP_LIGHT_BALL;
     } else if (item == ITEM_FEATHER) {
         return PLAYER_AP_FEATHER;
     } else if (item == ITEM_MINISH_CAP) {
         return PLAYER_AP_MINISH_CAP;
+    } else if (item == ITEM_MAGIC_WATER_SPOUT) {
+        return PLAYER_AP_MAGIC_WATER_SPOUT;
     } else {
         return sItemActionParams[item];
     }
@@ -2041,7 +2045,7 @@ s32 Player_TryUseFirstPersonItem(Player* this, GlobalContext* globalCtx) {
     s32 arrowType;
     s32 magicArrowType;
 
-    if ((this->heldItemActionParam >= PLAYER_AP_BOW_FIRE) && (this->heldItemActionParam <= PLAYER_AP_BOW_0E) &&
+    if ((this->heldItemActionParam >= PLAYER_AP_BOW_FIRE) && (this->heldItemActionParam <= PLAYER_AP_BOW_SHADOW) &&
         (gSaveContext.unk_13F0 != 0)) {
         func_80078884(NA_SE_SY_ERROR);
     } else {
@@ -4740,7 +4744,7 @@ void Player_StartSpellCasting(GlobalContext* globalCtx, Player* this, s32 magicS
 
     LinkAnimation_PlayOnceSetSpeed(globalCtx, &this->skelAnime, &gPlayerAnim_002D28, 0.83f); // Initial Cast Animation
 
-    if (magicSpell == PLAYER_SPELL_DINS_FIRE) {
+    if (magicSpell == PLAYER_SPELL_DINS_FIRE || magicSpell == PLAYER_SPELL_WATER_SPOUT) {
         this->unk_46C = OnePointCutscene_Init(globalCtx, 1100, -101, NULL, MAIN_CAM);
     } else {
         func_80835EA4(globalCtx, 10);
@@ -6091,22 +6095,96 @@ void Player_AddMagicGauntletEffect(Player* this, GlobalContext* globalCtx) {
     s16 effectYaw = (s16)Rand_CenteredFloat(12288.0f) + 0x2000;
 
     Math_Vec3f_Copy(&position, &this->actor.world.pos);
-    //EffectSsKFire_Spawn(globalCtx, &this->leftHandPos, &velocity, &accel, 40, 0);
-    //EffectSsDFire_Spawn(globalCtx, &this->leftHandPos, &velocity, &accel, 10000, 500, 200, 10, 20);
-    //EffectSsGMagma2_Spawn(globalCtx, &this->leftHandPos, &primColor, &envColor, 5, 1, (s16)(Rand_ZeroOne() * 3000.0f) + 3000);
-    //EffectSsGMagma_Spawn(globalCtx, &this->leftHandPos);
-    //EffectSsEnIce_Spawn(globalCtx, &this->leftHandPos, 0.3f, &velocity, &accel, &primColor, &envColor, 32);
-    //EffectSsKiraKira_SpawnFocused(globalCtx, &this->leftHandPos, &velocity, &accel, &primColor, &envColor, 2000, 32);
-    //EffectSsLightning_Spawn(globalCtx, &position, &primColor, &envColor, 150, effectYaw, 6, 3);
 }
 
-void Player_SpawnConserveActorEffect(Player* this, GlobalContext* globalCtx, int mode) {
+void Player_AdjustSpellEffectLighting(Player* this, GlobalContext* globalCtx, f32 intensity) {
+    f32 colorScale;
+    f32 fogScale;
+    s32 i;
+
+    if (globalCtx->roomCtx.curRoom.unk_03 != 5) {
+        intensity = CLAMP_MIN(intensity, 0.0f);
+        intensity = CLAMP_MAX(intensity, 1.0f);
+        fogScale = intensity - 0.2f;
+
+        if (intensity < 0.2f) {
+            fogScale = 0.0f;
+        }
+
+        globalCtx->envCtx.adjFogNear = (850.0f - globalCtx->envCtx.lightSettings.fogNear) * fogScale;
+
+        if (intensity == 0.0f) {
+            for (i = 0; i < ARRAY_COUNT(globalCtx->envCtx.adjFogColor); i++) {
+                globalCtx->envCtx.adjFogColor[i] = 0;
+            }
+        } else {
+            colorScale = intensity * 5.0f;
+
+            if (colorScale > 1.0f) {
+                colorScale = 1.0f;
+            }
+
+            for (i = 0; i < ARRAY_COUNT(globalCtx->envCtx.adjFogColor); i++) {
+                globalCtx->envCtx.adjFogColor[i] = -(s16)(globalCtx->envCtx.lightSettings.fogColor[i] * colorScale);
+            }
+        }
+    }
+}
+
+static s16 waterSpellEffectFrame = 0;
+static f32 waterSpellEffectDarknessIntensity = 0;
+void Player_SpawnWaterSpellEffect(Player* this, GlobalContext* globalCtx, u32 status) {
+    Vec3f position; 
+    Vec3f velocity = {0, 0, 0};
+    Vec3f accel = {0, 0, 0};
+    Color_RGBA8 primColor = { 200, 200, 255, 255 };
+    Color_RGBA8 envColor = { 0, 0, 255, 255 };
+    s32 i;
+
+    osSyncPrintf("Player_SpawnWaterSpellEffect: status = %d, waterSpellEffectFrame = %d\n", status, waterSpellEffectFrame);
+
+    Math_Vec3f_Sum(&this->bodyPartsPos[12], &this->bodyPartsPos[15], &position);
+    Math_Vec3f_Scale(&position, 0.5f);
+
+    if (status == 1) {
+        s16 scale;
+
+        waterSpellEffectDarknessIntensity = (f32)waterSpellEffectFrame / 20.0f;
+        Player_AdjustSpellEffectLighting(this, globalCtx, waterSpellEffectDarknessIntensity);
+
+        waterSpellEffectFrame++;
+        scale = 500 * waterSpellEffectFrame > 8000 ? 8000 : 500 * waterSpellEffectFrame;        
+        for (i = 0; i < 6; i++) {
+            EffectSsKiraKira_SpawnFocused(globalCtx, &position, &velocity, &accel, &primColor, &envColor, scale, -2);
+        }
+    }
+    else if (status == 2) {
+        for (i = 0; i < 200; i++) {
+            velocity.x = Rand_ZeroOne() * 5.0f - 2.5f;
+            velocity.y = Rand_ZeroOne() * 5.0f - 2.5f;
+            velocity.z = Rand_ZeroOne() * 5.0f - 2.5f;
+            EffectSsKiraKira_SpawnFocused(globalCtx, &position, &velocity, &accel, &primColor, &envColor, 6000, -20);
+        }
+        func_8002F974(&this->actor, NA_SE_PL_MAGIC_SOUL_NORMAL - SFX_FLAG);
+    }
+    else if (status == 3) {
+        waterSpellEffectDarknessIntensity -= 0.1f;
+        Player_AdjustSpellEffectLighting(this, globalCtx, waterSpellEffectDarknessIntensity);
+    }
+    else {
+        waterSpellEffectFrame = 0;
+        waterSpellEffectDarknessIntensity = 0;
+        Player_AdjustSpellEffectLighting(this, globalCtx, waterSpellEffectDarknessIntensity);
+    }
+}
+
+void Player_SpawnConserveActorEffect(Player* this, GlobalContext* globalCtx, u32 mode) {
     Vec3f position;
     Vec3f velocity = {0, 0, 0};    
     Vec3f accel = {0, 0, 0};    
     Color_RGBA8 primColor = { 255, 255, 255, 255 };
     Color_RGBA8 envColor = { 192, 0, 192, 255 };
-    int i;
+    u32 i;
 
     position.x = (this->bodyPartsPos[15].x + this->leftHandPos.x) * 0.5f;
     position.y = this->bodyPartsPos[7].y + 23.0f;
@@ -9171,11 +9249,21 @@ void func_808469BC(GlobalContext* globalCtx, Player* this) {
     this->stateFlags1 |= 0x20000000;
 }
 
-static s16 gSpellActors[] = {ACTOR_MAGIC_CONSERVE, ACTOR_MAGIC_WIND, ACTOR_MAGIC_WIND, ACTOR_MAGIC_WIND, ACTOR_MAGIC_DARK, ACTOR_MAGIC_FIRE};
+static s16 gSpellActors[] = {ACTOR_MAGIC_CONSERVE, ACTOR_MAGIC_WIND, ACTOR_EN_SIOFUKI, ACTOR_MAGIC_WIND, ACTOR_MAGIC_DARK, ACTOR_MAGIC_FIRE};
 
 Actor* Player_SpawnMagicSpell(GlobalContext* globalCtx, Player* this, s32 spell) {
-    return Actor_Spawn(&globalCtx->actorCtx, globalCtx, gSpellActors[spell], this->actor.world.pos.x,
+    if (gSpellActors[spell] == ACTOR_EN_SIOFUKI) {
+        s32 objectIndex = Object_GetIndex(&globalCtx->objectCtx, OBJECT_SIOFUKI);
+        if (!Object_IsLoaded(&globalCtx->objectCtx, objectIndex)) {
+            Object_Spawn(&globalCtx->objectCtx, OBJECT_SIOFUKI);
+        }
+        return Actor_Spawn(&globalCtx->actorCtx, globalCtx, gSpellActors[spell], this->actor.world.pos.x,
+                       this->actor.world.pos.y, this->actor.world.pos.z, 0, 0, 0, 0x2000);
+    }
+    else {
+        return Actor_Spawn(&globalCtx->actorCtx, globalCtx, gSpellActors[spell], this->actor.world.pos.x,
                        this->actor.world.pos.y, this->actor.world.pos.z, 0, 0, 0, 0);
+    }
 }
 
 void func_80846A68(GlobalContext* globalCtx, Player* this) {
@@ -12997,7 +13085,7 @@ void func_8085076C(Player* this, GlobalContext* globalCtx) {
 static LinkAnimationHeader* gMagicSpellStartAnimations[] = {
     &gPlayerAnim_002818,
     &gPlayerAnim_002818,
-    &gPlayerAnim_002818,
+    &gPlayerAnim_002D10,
     &gPlayerAnim_002CF8,
     &gPlayerAnim_002CE0,
     &gPlayerAnim_002D10,
@@ -13006,7 +13094,7 @@ static LinkAnimationHeader* gMagicSpellStartAnimations[] = {
 static LinkAnimationHeader* gMagicSpellCastAnimations[] = {
     &gPlayerAnim_002818,
     &gPlayerAnim_002818,
-    &gPlayerAnim_002818,
+    &gPlayerAnim_002D18,
     &gPlayerAnim_002D00,
     &gPlayerAnim_002CE8,
     &gPlayerAnim_002D18,
@@ -13015,13 +13103,13 @@ static LinkAnimationHeader* gMagicSpellCastAnimations[] = {
 static LinkAnimationHeader* gMagicSpellFinishAnimations[] = {
     &gPlayerAnim_002818,
     &gPlayerAnim_002818,
-    &gPlayerAnim_002818,
+    &gPlayerAnim_002D20,
     &gPlayerAnim_002D08,
     &gPlayerAnim_002CF0,
     &gPlayerAnim_002D20,
 };
 
-static u8 gMagicSpellFrameDurationBeforeFinishAnimation[] = { 0, 10, 0, 70, 10, 10 };
+static u8 gMagicSpellFrameDurationBeforeFinishAnimation[] = { 0, 10, 10, 70, 10, 10 };
 
 static struct_80832924 D_80854A80[] = {
     { NA_SE_PL_SKIP, 0x814 },
@@ -13039,8 +13127,8 @@ static struct_80832924 gMagicSpellSpecificFrameSoundList[][2] = {
         { 0, -0x201E },
     },
     {
-        { 0, 0x4014 },
-        { 0, -0x201E },
+        { NA_SE_VO_LI_MAGIC_ATTACK, 0x2014 },
+        { NA_SE_IT_SWORD_SWING_HARD, -0x814 },
     },
     {
         { 0, 0x4014 },
@@ -13062,6 +13150,7 @@ void Player_Action_CastSpell(Player* this, GlobalContext* globalCtx) {
             if ((this->itemActionParam == PLAYER_AP_NAYRUS_LOVE) || (gSaveContext.unk_13F0 == 0)) {
                 func_80839FFC(this, globalCtx);
                 func_8005B1A4(Gameplay_GetCamera(globalCtx, 0));
+                Player_SpawnWaterSpellEffect(this, globalCtx, 4);
             }
         } else {
             if (this->unk_850 == 0) {
@@ -13077,7 +13166,6 @@ void Player_Action_CastSpell(Player* this, GlobalContext* globalCtx) {
                 }
             } else {
                 LinkAnimation_PlayLoopSetSpeed(globalCtx, &this->skelAnime, gMagicSpellCastAnimations[this->unk_84F], 0.83f);
-
                 if (this->unk_84F == PLAYER_SPELL_FARORES_WIND) {
                     this->unk_850 = -10;
                 }
@@ -13107,19 +13195,36 @@ void Player_Action_CastSpell(Player* this, GlobalContext* globalCtx) {
         } else if (this->unk_84F >= PLAYER_SPELL_0) {
             if (this->unk_850 == 0) {
                 Player_ProcessFrameSpecificSounds(this, D_80854A80);
+                if (this->unk_84F == PLAYER_SPELL_WATER_SPOUT && this->skelAnime.curFrame >= 28.0f) {
+                    Player_SpawnWaterSpellEffect(this, globalCtx, 1);
+                }
             } else if (this->unk_850 == 1) {
                 Player_ProcessFrameSpecificSounds(this, gMagicSpellSpecificFrameSoundList[this->unk_84F]);
-                if ((this->unk_84F == 2) && LinkAnimation_OnFrame(&this->skelAnime, 30.0f)) {
+                if (LinkAnimation_OnFrame(&this->skelAnime, 30.0f)) {
                     this->stateFlags1 &= ~0x30000000;
+                }
+                
+                if (this->unk_84F == PLAYER_SPELL_WATER_SPOUT) {
+                    if (LinkAnimation_OnFrame(&this->skelAnime, 26.0f)) {
+                        Player_SpawnWaterSpellEffect(this, globalCtx, 2);
+                    }
+                    else if (this->skelAnime.curFrame > 26.0f) {
+                        Player_SpawnWaterSpellEffect(this, globalCtx, 3);
+                    }
+                    else {
+                        Player_SpawnWaterSpellEffect(this, globalCtx, 1);
+                    }
                 }
             } else if (gMagicSpellFrameDurationBeforeFinishAnimation[this->unk_84F] < this->unk_850++) {
                 LinkAnimation_PlayOnceSetSpeed(globalCtx, &this->skelAnime, gMagicSpellFinishAnimations[this->unk_84F], 0.83f);
                 this->currentYaw = this->actor.shape.rot.y;
                 this->unk_84F = -1;
+                if (this->unk_84F == PLAYER_SPELL_WATER_SPOUT) {
+                    Player_SpawnWaterSpellEffect(this, globalCtx, 3);
+                }
             }
         }
     }
-
     func_8083721C(this);
 }
 

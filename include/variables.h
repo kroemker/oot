@@ -177,6 +177,7 @@ extern Gfx* D_80125E18[];
 extern Gfx* D_80125E58[];
 extern Gfx* D_80125EF8[];
 extern Gfx gCullBackDList[];
+extern Gfx gDekuStickDL[];
 extern Gfx gCullFrontDList[];
 extern Gfx gEmptyDL[];
 extern u32 gBitFlags[32];

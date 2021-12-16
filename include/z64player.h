@@ -17,7 +17,7 @@ typedef enum {
     /* 0x00 */ PLAYER_TUNIC_KOKIRI,
     /* 0x01 */ PLAYER_TUNIC_GORON,
     /* 0x02 */ PLAYER_TUNIC_ZORA,
-               PLAYER_TUNIC_DEFENSE,
+    /* 0x03 */ PLAYER_TUNIC_DEFENSE,
     /* 0x04 */ PLAYER_TUNIC_MAX
 } PlayerTunic;
 
@@ -79,7 +79,7 @@ typedef enum {
     /* 0x0A */ PLAYER_AP_BOW_ICE,
     /* 0x0B */ PLAYER_AP_BOW_LIGHT,
     /* 0x0C */ PLAYER_AP_BOW_BOMB,
-    /* 0x0D */ PLAYER_AP_BOW_TELEPORT,
+    /* 0x0D */ PLAYER_AP_BOW_FOREST,
     /* 0x0E */ PLAYER_AP_BOW_SHADOW,
     /* 0x0F */ PLAYER_AP_SLINGSHOT,
     /* 0x10 */ PLAYER_AP_HOOKSHOT,

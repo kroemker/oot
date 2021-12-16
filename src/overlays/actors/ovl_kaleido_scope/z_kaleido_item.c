@@ -134,9 +134,10 @@ void KaleidoScope_DrawItemSelect(GlobalContext* globalCtx) {
                             pauseCtx->cursorX[PAUSE_ITEM] -= 1;
                             pauseCtx->cursorPoint[PAUSE_ITEM] -= 1;
 
-                            if (gSaveContext.inventory.items[pauseCtx->cursorPoint[PAUSE_ITEM]] != ITEM_NONE) {
+                            moveCursorResult = 1;
+                            /*if (gSaveContext.inventory.items[pauseCtx->cursorPoint[PAUSE_ITEM]] != ITEM_NONE) {
                                 moveCursorResult = 1;
-                            }
+                            }*/
                         } else {
                             pauseCtx->cursorX[PAUSE_ITEM] = cursorX;
                             pauseCtx->cursorY[PAUSE_ITEM] += 1;
@@ -166,9 +167,10 @@ void KaleidoScope_DrawItemSelect(GlobalContext* globalCtx) {
                             pauseCtx->cursorX[PAUSE_ITEM] += 1;
                             pauseCtx->cursorPoint[PAUSE_ITEM] += 1;
 
-                            if (gSaveContext.inventory.items[pauseCtx->cursorPoint[PAUSE_ITEM]] != ITEM_NONE) {
+                            moveCursorResult = 1;
+                            /*if (gSaveContext.inventory.items[pauseCtx->cursorPoint[PAUSE_ITEM]] != ITEM_NONE) {
                                 moveCursorResult = 1;
-                            }
+                            }*/
                         } else {
                             pauseCtx->cursorX[PAUSE_ITEM] = cursorX;
                             pauseCtx->cursorY[PAUSE_ITEM] += 1;
@@ -288,9 +290,10 @@ void KaleidoScope_DrawItemSelect(GlobalContext* globalCtx) {
                                 pauseCtx->cursorY[PAUSE_ITEM] -= 1;
                                 pauseCtx->cursorPoint[PAUSE_ITEM] -= 6;
 
-                                if (gSaveContext.inventory.items[pauseCtx->cursorPoint[PAUSE_ITEM]] != ITEM_NONE) {
-                                    moveCursorResult = 1;
-                                }
+                                moveCursorResult = 1;
+                            /*if (gSaveContext.inventory.items[pauseCtx->cursorPoint[PAUSE_ITEM]] != ITEM_NONE) {
+                                moveCursorResult = 1;
+                            }*/
                             } else {
                                 pauseCtx->cursorY[PAUSE_ITEM] = cursorY;
                                 pauseCtx->cursorPoint[PAUSE_ITEM] = cursorPoint;
@@ -302,9 +305,10 @@ void KaleidoScope_DrawItemSelect(GlobalContext* globalCtx) {
                                 pauseCtx->cursorY[PAUSE_ITEM] += 1;
                                 pauseCtx->cursorPoint[PAUSE_ITEM] += 6;
 
-                                if (gSaveContext.inventory.items[pauseCtx->cursorPoint[PAUSE_ITEM]] != ITEM_NONE) {
-                                    moveCursorResult = 1;
-                                }
+                                moveCursorResult = 1;
+                            /*if (gSaveContext.inventory.items[pauseCtx->cursorPoint[PAUSE_ITEM]] != ITEM_NONE) {
+                                moveCursorResult = 1;
+                            }*/
                             } else {
                                 pauseCtx->cursorY[PAUSE_ITEM] = cursorY;
                                 pauseCtx->cursorPoint[PAUSE_ITEM] = cursorPoint;

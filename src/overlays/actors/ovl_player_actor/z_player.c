@@ -1696,8 +1696,8 @@ s8 Player_ItemToActionParam(s32 item) {
         return PLAYER_AP_FISHING_POLE;
     } else if (item == ITEM_BOW_ARROW_BOMB) {
         return PLAYER_AP_BOW_BOMB;
-    } else if (item == ITEM_BOW_ARROW_TELEPORT) {
-        return PLAYER_AP_BOW_TELEPORT;
+    } else if (item == ITEM_BOW_ARROW_FOREST) {
+        return PLAYER_AP_BOW_FOREST;
     } else if (item == ITEM_BOW_ARROW_SHADOW) {
         return PLAYER_AP_BOW_SHADOW;
     } else if (item == ITEM_LIGHT_BALL) {
@@ -2812,8 +2812,13 @@ void Player_ExecuteItemAction(GlobalContext* globalCtx, Player* this, s32 item) 
                 if (((actionParam == PLAYER_AP_FARORES_WIND) && (gSaveContext.respawn[RESPAWN_MODE_TOP].data > 0)) ||
                     ((gSaveContext.unk_13F4 != 0) && (gSaveContext.unk_13F0 == 0) &&
                      (gSaveContext.magic >= sMagicSpellCosts[temp]))) {
-                    this->itemActionParam = actionParam;
-                    this->unk_6AD = 4;
+                    if ((actionParam == PLAYER_AP_MAGIC_WATER_SPOUT) && (Player_IsWaterSpellActive(globalCtx) == 1)) {
+                        func_80078884(NA_SE_SY_ERROR);
+                    }
+                    else {
+                        this->itemActionParam = actionParam;
+                        this->unk_6AD = 4;
+                    }
                 } else {
                     func_80078884(NA_SE_SY_ERROR);
                 }
@@ -6097,42 +6102,20 @@ void Player_AddMagicGauntletEffect(Player* this, GlobalContext* globalCtx) {
     Math_Vec3f_Copy(&position, &this->actor.world.pos);
 }
 
-void Player_AdjustSpellEffectLighting(Player* this, GlobalContext* globalCtx, f32 intensity) {
-    f32 colorScale;
-    f32 fogScale;
-    s32 i;
-
-    if (globalCtx->roomCtx.curRoom.unk_03 != 5) {
-        intensity = CLAMP_MIN(intensity, 0.0f);
-        intensity = CLAMP_MAX(intensity, 1.0f);
-        fogScale = intensity - 0.2f;
-
-        if (intensity < 0.2f) {
-            fogScale = 0.0f;
+s32 Player_IsWaterSpellActive(GlobalContext* globalCtx) {
+    Actor* actor = globalCtx->actorCtx.actorLists[ACTORCAT_BG].head;
+    while (actor != NULL) {
+        if (actor->id == ACTOR_EN_SIOFUKI && actor->params == 0x2000) {
+            return 1;
         }
-
-        globalCtx->envCtx.adjFogNear = (850.0f - globalCtx->envCtx.lightSettings.fogNear) * fogScale;
-
-        if (intensity == 0.0f) {
-            for (i = 0; i < ARRAY_COUNT(globalCtx->envCtx.adjFogColor); i++) {
-                globalCtx->envCtx.adjFogColor[i] = 0;
-            }
-        } else {
-            colorScale = intensity * 5.0f;
-
-            if (colorScale > 1.0f) {
-                colorScale = 1.0f;
-            }
-
-            for (i = 0; i < ARRAY_COUNT(globalCtx->envCtx.adjFogColor); i++) {
-                globalCtx->envCtx.adjFogColor[i] = -(s16)(globalCtx->envCtx.lightSettings.fogColor[i] * colorScale);
-            }
-        }
+        actor = actor->next;
     }
+    return 0;
 }
 
 static s16 waterSpellEffectFrame = 0;
 static f32 waterSpellEffectDarknessIntensity = 0;
+static u8 spawnedWaterSpellEffect = 0;
 void Player_SpawnWaterSpellEffect(Player* this, GlobalContext* globalCtx, u32 status) {
     Vec3f position; 
     Vec3f velocity = {0, 0, 0};
@@ -6141,8 +6124,6 @@ void Player_SpawnWaterSpellEffect(Player* this, GlobalContext* globalCtx, u32 st
     Color_RGBA8 envColor = { 0, 0, 255, 255 };
     s32 i;
 
-    osSyncPrintf("Player_SpawnWaterSpellEffect: status = %d, waterSpellEffectFrame = %d\n", status, waterSpellEffectFrame);
-
     Math_Vec3f_Sum(&this->bodyPartsPos[12], &this->bodyPartsPos[15], &position);
     Math_Vec3f_Scale(&position, 0.5f);
 
@@ -6150,31 +6131,33 @@ void Player_SpawnWaterSpellEffect(Player* this, GlobalContext* globalCtx, u32 st
         s16 scale;
 
         waterSpellEffectDarknessIntensity = (f32)waterSpellEffectFrame / 20.0f;
-        Player_AdjustSpellEffectLighting(this, globalCtx, waterSpellEffectDarknessIntensity);
+        Environment_AdjustLights(globalCtx, waterSpellEffectDarknessIntensity, 800.0f, 0.2f, 0.9f);
 
         waterSpellEffectFrame++;
         scale = 500 * waterSpellEffectFrame > 8000 ? 8000 : 500 * waterSpellEffectFrame;        
         for (i = 0; i < 6; i++) {
             EffectSsKiraKira_SpawnFocused(globalCtx, &position, &velocity, &accel, &primColor, &envColor, scale, -2);
         }
+        if (!spawnedWaterSpellEffect) {
+            Actor* spellActor = Actor_Spawn(&globalCtx->actorCtx, globalCtx, ACTOR_OCEFF_SPOT, this->actor.world.pos.x, this->actor.world.pos.y, this->actor.world.pos.z, 
+                                    0, this->actor.shape.rot.y, 0, 0x0005);
+            spawnedWaterSpellEffect = spellActor != NULL;
+        }
     }
     else if (status == 2) {
-        for (i = 0; i < 200; i++) {
-            velocity.x = Rand_ZeroOne() * 5.0f - 2.5f;
-            velocity.y = Rand_ZeroOne() * 5.0f - 2.5f;
-            velocity.z = Rand_ZeroOne() * 5.0f - 2.5f;
-            EffectSsKiraKira_SpawnFocused(globalCtx, &position, &velocity, &accel, &primColor, &envColor, 6000, -20);
-        }
+        globalCtx->envCtx.unk_F2[0] = 1000;
         func_8002F974(&this->actor, NA_SE_PL_MAGIC_SOUL_NORMAL - SFX_FLAG);
     }
     else if (status == 3) {
-        waterSpellEffectDarknessIntensity -= 0.1f;
-        Player_AdjustSpellEffectLighting(this, globalCtx, waterSpellEffectDarknessIntensity);
+        waterSpellEffectDarknessIntensity = CLAMP_MIN(waterSpellEffectDarknessIntensity - 0.075f, 0.0f);
+        Environment_AdjustLights(globalCtx, waterSpellEffectDarknessIntensity, 800.0f, 0.2f, 0.9f);
     }
     else {
+        globalCtx->envCtx.unk_F2[0] = 0;
         waterSpellEffectFrame = 0;
         waterSpellEffectDarknessIntensity = 0;
-        Player_AdjustSpellEffectLighting(this, globalCtx, waterSpellEffectDarknessIntensity);
+        spawnedWaterSpellEffect = 0;
+        Environment_AdjustLights(globalCtx, waterSpellEffectDarknessIntensity, 800.0f, 0.2f, 0.9f);
     }
 }
 
@@ -6223,7 +6206,7 @@ void Player_ConserveActor(Player* this, GlobalContext* globalCtx) {
         Player_SpawnConserveActorEffect(this, globalCtx, 1);
         osSyncPrintf("Conserved actor reestablished\n");
     }
-    else if (this->heldActor != NULL) {
+    else if ((this->stateFlags1 & 0x800) && (this->heldActor != NULL)) {
         this->conservedActorId = this->heldActor->id;
         this->conservedActorParams = this->heldActor->params;
         Actor_Kill(this->heldActor);
@@ -14341,6 +14324,7 @@ void func_80852C50(GlobalContext* globalCtx, Player* this, CsCmdActorAction* arg
     func_80852B4C(globalCtx, this, linkCsAction, &D_80854E50[ABS(sp24)]);
 }
 
+// cutscene mode? used when warping away with song
 void func_80852E14(Player* this, GlobalContext* globalCtx) {
     if (this->csMode != this->prevCsMode) {
         D_80858AA0 = this->skelAnime.moveFlags;

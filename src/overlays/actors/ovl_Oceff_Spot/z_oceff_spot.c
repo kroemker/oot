@@ -61,6 +61,12 @@ void OceffSpot_Init(Actor* thisx, GlobalContext* globalCtx) {
         this->actor.scale.y = 0.3f;
     }
 
+    if (this->actor.params == 0x0005) {
+        this->actor.scale.x = 0.7f;
+        this->actor.scale.y = 4.0f;
+        this->actor.scale.z = 0.7f;
+    }
+
     this->unk_174 = 0.0f;
 }
 
@@ -71,32 +77,37 @@ void OceffSpot_Destroy(Actor* thisx, GlobalContext* globalCtx) {
 
     LightContext_RemoveLight(globalCtx, &globalCtx->lightCtx, this->lightNode1);
     LightContext_RemoveLight(globalCtx, &globalCtx->lightCtx, this->lightNode2);
-    func_800876C8(globalCtx);
-    if ((gSaveContext.nayrusLoveTimer != 0) && (globalCtx->actorCtx.actorLists[ACTORCAT_PLAYER].length != 0)) {
-        player->stateFlags3 |= 0x40;
+    
+    if (this->actor.params != 0x0005) {
+        func_800876C8(globalCtx);
+        if ((gSaveContext.nayrusLoveTimer != 0) && (globalCtx->actorCtx.actorLists[ACTORCAT_PLAYER].length != 0)) {
+            player->stateFlags3 |= 0x40;
+        }
     }
 }
 
 void OceffSpot_End(OceffSpot* this, GlobalContext* globalCtx) {
     if (this->unk_174 > 0.0f) {
-        this->unk_174 -= 0.05f;
+        this->unk_174 -= this->actor.params == 0x0005 ? 0.1f : 0.05f;
     } else {
         Actor_Kill(&this->actor);
-        if (gTimeIncrement != 400 && globalCtx->msgCtx.unk_E40E == 0 && (gSaveContext.eventInf[0] & 0xF) != 1) {
-            if (globalCtx->msgCtx.ocarinaAction != OCARINA_ACTION_CHECK_NOWARP_DONE ||
-                globalCtx->msgCtx.ocarinaMode != OCARINA_MODE_08) {
-                gSaveContext.sunsSongState = SUNSSONG_START;
+        if (this->actor.params != 0x0005) {
+            if (gTimeIncrement != 400 && globalCtx->msgCtx.unk_E40E == 0 && (gSaveContext.eventInf[0] & 0xF) != 1) {
+                if (globalCtx->msgCtx.ocarinaAction != OCARINA_ACTION_CHECK_NOWARP_DONE ||
+                    globalCtx->msgCtx.ocarinaMode != OCARINA_MODE_08) {
+                    gSaveContext.sunsSongState = SUNSSONG_START;
+                    osSyncPrintf(VT_FGCOL(YELLOW));
+                    // "Sun's Song Flag"
+                    osSyncPrintf("z_oceff_spot  太陽の歌フラグ\n");
+                    osSyncPrintf(VT_RST);
+                }
+            } else {
+                globalCtx->msgCtx.ocarinaMode = OCARINA_MODE_04;
                 osSyncPrintf(VT_FGCOL(YELLOW));
-                // "Sun's Song Flag"
-                osSyncPrintf("z_oceff_spot  太陽の歌フラグ\n");
+                // "Ocarina End"
+                osSyncPrintf("z_oceff_spot  オカリナ終了\n");
                 osSyncPrintf(VT_RST);
             }
-        } else {
-            globalCtx->msgCtx.ocarinaMode = OCARINA_MODE_04;
-            osSyncPrintf(VT_FGCOL(YELLOW));
-            // "Ocarina End"
-            osSyncPrintf("z_oceff_spot  オカリナ終了\n");
-            osSyncPrintf(VT_RST);
         }
     }
 }
@@ -110,11 +121,21 @@ void OceffSpot_Wait(OceffSpot* this, GlobalContext* globalCtx) {
 }
 
 void OceffSpot_GrowCylinder(OceffSpot* this, GlobalContext* globalCtx) {
-    if (this->unk_174 < 1.0f) {
-        this->unk_174 += 0.05f;
-    } else {
-        OceffSpot_SetupAction(this, OceffSpot_Wait);
-        this->timer = 60;
+    if (this->actor.params == 0x0005) {
+        if (this->unk_174 < 2.0f) {
+            this->unk_174 += 0.1f;
+        } else {
+            OceffSpot_SetupAction(this, OceffSpot_Wait);
+            this->timer = 60;
+        }
+    }
+    else {
+        if (this->unk_174 < 1.0f) {
+            this->unk_174 += 0.05f;
+        } else {
+            OceffSpot_SetupAction(this, OceffSpot_Wait);
+            this->timer = 60;
+        }
     }
 }
 
@@ -127,24 +148,31 @@ void OceffSpot_Update(Actor* thisx, GlobalContext* globalCtx) {
     temp = (1.0f - cosf(this->unk_174 * M_PI)) * 0.5f;
     this->actionFunc(this, globalCtx);
 
-    this->actor.scale.z = 0.42f * temp;
-    this->actor.scale.x = 0.42f * temp;
+    if (this->actor.params == 0x0005) {
+        this->actor.world.pos = player->actor.world.pos;
+        this->actor.world.pos.y += 5.0f;
 
-    this->actor.world.pos = player->actor.world.pos;
-    this->actor.world.pos.y += 5.0f;
+        temp = (4.0f - this->unk_174) * this->unk_174;
+    }
+    else {
+        this->actor.scale.z = 0.42f * temp;
+        this->actor.scale.x = 0.42f * temp;
 
-    temp = (2.0f - this->unk_174) * this->unk_174;
-    Environment_AdjustLights(globalCtx, temp * 0.5F, 880.0f, 0.2f, 0.9f);
+        this->actor.world.pos = player->actor.world.pos;
+        this->actor.world.pos.y += 5.0f;
 
+        temp = (2.0f - this->unk_174) * this->unk_174;
+        Environment_AdjustLights(globalCtx, temp * 0.5F, 880.0f, 0.2f, 0.9f);
+    }
     Lights_PointNoGlowSetInfo(&this->lightInfo1, (s16)this->actor.world.pos.x, (s16)this->actor.world.pos.y + 55.0f,
-                              (s16)this->actor.world.pos.z, (s32)(255.0f * temp), (s32)(255.0f * temp),
-                              (s32)(200.0f * temp), (s16)(100.0f * temp));
+                            (s16)this->actor.world.pos.z, (s32)(255.0f * temp), (s32)(255.0f * temp),
+                            (s32)(200.0f * temp), (s16)(100.0f * temp));
 
     Lights_PointNoGlowSetInfo(&this->lightInfo2,
-                              (s16)this->actor.world.pos.x + Math_SinS(player->actor.shape.rot.y) * 20.0f,
-                              (s16)this->actor.world.pos.y + 20.0f,
-                              (s16)this->actor.world.pos.z + Math_CosS(player->actor.shape.rot.y) * 20.0f,
-                              (s32)(255.0f * temp), (s32)(255.0f * temp), (s32)(200.0f * temp), (s16)(100.0f * temp));
+                            (s16)this->actor.world.pos.x + Math_SinS(player->actor.shape.rot.y) * 20.0f,
+                            (s16)this->actor.world.pos.y + 20.0f,
+                            (s16)this->actor.world.pos.z + Math_CosS(player->actor.shape.rot.y) * 20.0f,
+                            (s32)(255.0f * temp), (s32)(255.0f * temp), (s32)(200.0f * temp), (s16)(100.0f * temp));
 }
 
 void OceffSpot_Draw(Actor* thisx, GlobalContext* globalCtx) {
@@ -157,7 +185,15 @@ void OceffSpot_Draw(Actor* thisx, GlobalContext* globalCtx) {
 
     gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(globalCtx->state.gfxCtx, "../z_oceff_spot.c", 469),
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gSPDisplayList(POLY_XLU_DISP++, sCylinderMaterialDL);
+    if (this->actor.params == 0x0005) {
+        u8 alpha = (u8)CLAMP(this->unk_174 * 0.35f * 255.0f, 0.0f, 255.0f);
+        gSPDisplayList(POLY_XLU_DISP++, sCylinderMaterialBlueDL);
+        gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 200, 255, 255, alpha);
+        gDPSetEnvColor(POLY_XLU_DISP++, 0, 0, 255, alpha);
+    }
+    else {
+        gSPDisplayList(POLY_XLU_DISP++, sCylinderMaterialDL);
+    }
     gSPDisplayList(POLY_XLU_DISP++, Gfx_TwoTexScroll(globalCtx->state.gfxCtx, 0, scroll * 2, scroll * (-2), 32, 32, 1,
                                                      0, scroll * (-8), 32, 32));
     gSPDisplayList(POLY_XLU_DISP++, sCylinderModelDL);

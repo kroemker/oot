@@ -81,27 +81,39 @@ typedef enum {
     /* 0xFF */ SLOT_NONE = 0xFF
 } InventorySlot;
 
+/*
+new items:
+    ITEM_BOW_ARROW_SHADOW,
+    ITEM_BOW_ARROW_BOMB,
+    ITEM_BOW_ARROW_FOREST,
+    ITEM_MAGIC_WATER_SPOUT,
+    ITEM_LIGHT_BALL,
+    ITEM_MINISH_CAP,
+    ITEM_FEATHER,
+*/
 typedef enum {
     /* 0x00 */ ITEM_STICK = 0x00,
-    /* 0x00 */ ITEM_BOW_ARROW_BOMB = 0x00,
     /* 0x01 */ ITEM_NUT,
     /* 0x02 */ ITEM_BOMB,
     /* 0x03 */ ITEM_BOW,
     /* 0x04 */ ITEM_ARROW_FIRE,
     /* 0x05 */ ITEM_DINS_FIRE,
     /* 0x06 */ ITEM_SLINGSHOT,
-               ITEM_LIGHT_BALL = 0x06,
+               ITEM_BOW_ARROW_SHADOW = 0x06,
     /* 0x07 */ ITEM_OCARINA_FAIRY,
+               ITEM_BOW_ARROW_BOMB = 0x07,
     /* 0x08 */ ITEM_OCARINA_TIME,
+               ITEM_BOW_ARROW_FOREST = 0x08,
     /* 0x09 */ ITEM_BOMBCHU,
+               ITEM_MAGIC_WATER_SPOUT = 0x09,
     /* 0x0A */ ITEM_HOOKSHOT,
-               ITEM_MINISH_CAP = 0x0A,
+               ITEM_LIGHT_BALL = 0x0A,
     /* 0x0B */ ITEM_LONGSHOT,
     /* 0x0C */ ITEM_ARROW_ICE,
     /* 0x0D */ ITEM_FARORES_WIND,
     /* 0x0E */ ITEM_BOOMERANG,
     /* 0x0F */ ITEM_LENS,
-               ITEM_BOW_ARROW_TELEPORT = 0x0F,
+               ITEM_MINISH_CAP = 0x0F,
     /* 0x10 */ ITEM_BEAN,
                ITEM_FEATHER = 0x10,
     /* 0x11 */ ITEM_HAMMER,
@@ -243,8 +255,6 @@ typedef enum {
     /* 0x99 */ ITEM_STICK_UPGRADE_30,
     /* 0x9A */ ITEM_NUT_UPGRADE_30,
     /* 0x9B */ ITEM_NUT_UPGRADE_40,
-    /* 0x9C */ ITEM_BOW_ARROW_SHADOW,
-    /* 0x9D */ ITEM_MAGIC_WATER_SPOUT,
     /* 0xFC */ ITEM_LAST_USED = 0xFC,
     /* 0xFE */ ITEM_NONE_FE = 0xFE,
     /* 0xFF */ ITEM_NONE = 0xFF

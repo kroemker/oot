@@ -213,18 +213,18 @@ static SavePlayerData sDebugSavePlayerData = {
 };
 
 ItemEquips sDebugSaveEquips = {
-    { ITEM_SWORD_MASTER, ITEM_MAGIC_WATER_SPOUT, ITEM_BOW_ARROW_TELEPORT, ITEM_FEATHER }, // buttonItems
-    { SLOT_BOOMERANG, SLOT_BOMB, SLOT_BEAN },                          // cButtonSlots
+    { ITEM_SWORD_MASTER, ITEM_BOMB, ITEM_NUT, ITEM_LONGSHOT }, // buttonItems
+    { SLOT_BEAN, SLOT_BOMBCHU, SLOT_BOMB },                          // cButtonSlots
     0x1122,                                                         // equipment
 };
 
 Inventory
     sDebugSaveInventory =
         {
-            { ITEM_STICK,     ITEM_NUT,              ITEM_BOMB,               ITEM_BOW,            ITEM_ARROW_FIRE,  ITEM_DINS_FIRE,
-              ITEM_SLINGSHOT, ITEM_OCARINA_FAIRY,    ITEM_BOMBCHU,            ITEM_LONGSHOT,       ITEM_ARROW_ICE,   ITEM_FARORES_WIND, 
-              ITEM_BOOMERANG, ITEM_BOW_ARROW_SHADOW, ITEM_BEAN,               ITEM_HAMMER,         ITEM_ARROW_LIGHT, ITEM_MAGIC_WATER_SPOUT, 
-              ITEM_BOTTLE,    ITEM_LIGHT_BALL,       ITEM_BOW_ARROW_TELEPORT, ITEM_BOW_ARROW_BOMB, ITEM_POCKET_EGG,  ITEM_WEIRD_EGG }, // items
+            { ITEM_BOMB,           ITEM_NUT,           ITEM_FEATHER,           ITEM_LONGSHOT,         ITEM_HAMMER,          ITEM_STICK,
+              ITEM_BOW_ARROW_FIRE, ITEM_BOW_ARROW_ICE, ITEM_BOW_ARROW_FOREST,  ITEM_BOW_ARROW_SHADOW, ITEM_BOW_ARROW_LIGHT, ITEM_BOW_ARROW_BOMB, 
+              ITEM_NONE,           ITEM_NONE,          ITEM_MAGIC_WATER_SPOUT, ITEM_LIGHT_BALL,       ITEM_NONE,            ITEM_NONE, 
+              ITEM_BOTTLE,         ITEM_BOTTLE,        ITEM_BOTTLE,            ITEM_BOTTLE,           ITEM_BOOTS_IRON,      ITEM_BOOTS_HOVER }, // items
             { 50, 50, 10, 30, 1, 1, 30, 1, 50, 1, 1, 1, 1, 1, 1, 1 },                     // ammo
             0x7777,                                                                       // equipment
             0x125249,                                                                     // upgrades

@@ -4,11 +4,40 @@ void func_80110990(GlobalContext* globalCtx) {
     Map_Destroy(globalCtx);
 }
 
+u8 GetDPadItem(GlobalContext* globalCtx) {
+    if (gSaveContext.equips.buttonItems[0] == ITEM_SWORD_MASTER) {
+        return ITEM_SWORD_BGS;
+    }
+    else if (gSaveContext.equips.buttonItems[0] == ITEM_SWORD_BGS) {
+        return ITEM_SWORD_MASTER;
+    }
+    return ITEM_NONE;
+}
+
+void Interface_ReloadDynamicItemIcons(GlobalContext* globalCtx) {
+    u8 dpadItem = GetDPadItem(globalCtx);
+    InterfaceContext* interfaceCtx = &globalCtx->interfaceCtx;
+
+    if (gSaveContext.equips.buttonItems[0] != 0xFF) {
+        DmaMgr_SendRequest1(interfaceCtx->iconItemSegment,
+                            _icon_item_staticSegmentRomStart + gSaveContext.equips.buttonItems[0] * 0x1000, 0x1000,
+                            "../z_construct.c", 203);
+    }
+
+    if (dpadItem < 0xF0) {
+        DmaMgr_SendRequest1(interfaceCtx->iconItemSegment + 0x6000,
+                            _icon_item_staticSegmentRomStart + dpadItem * 0x1000, 0x1000,
+                            "../z_construct.c", 229);
+    }
+}
+
+// interface init
 void func_801109B0(GlobalContext* globalCtx) {
     InterfaceContext* interfaceCtx = &globalCtx->interfaceCtx;
     u32 parameterSize;
     u16 doActionOffset;
     u8 temp;
+    u8 dpadItem = GetDPadItem(globalCtx);
 
     gSaveContext.sunsSongState = SUNSSONG_INACTIVE;
     gSaveContext.unk_13E8 = gSaveContext.unk_13EA = 0;
@@ -69,10 +98,10 @@ void func_801109B0(GlobalContext* globalCtx) {
     DmaMgr_SendRequest1(interfaceCtx->doActionSegment + 0x300, (u32)_do_action_staticSegmentRomStart + doActionOffset,
                         0x180, "../z_construct.c", 178);
 
-    interfaceCtx->iconItemSegment = GameState_Alloc(&globalCtx->state, 0x4000, "../z_construct.c", 190);
+    interfaceCtx->iconItemSegment = GameState_Alloc(&globalCtx->state, 0x7000, "../z_construct.c", 190);
 
     // "Icon Item Texture Initialization = %x"
-    osSyncPrintf("アイコンアイテム テクスチャ初期=%x\n", 0x4000);
+    osSyncPrintf("アイコンアイテム テクスチャ初期=%x\n", 0x7000);
     osSyncPrintf("parameter->icon_itemSegment=%x\n", interfaceCtx->iconItemSegment);
 
     ASSERT(interfaceCtx->iconItemSegment != NULL, "parameter->icon_itemSegment != NULL", "../z_construct.c", 193);
@@ -107,6 +136,20 @@ void func_801109B0(GlobalContext* globalCtx) {
         DmaMgr_SendRequest1(interfaceCtx->iconItemSegment + 0x3000,
                             _icon_item_staticSegmentRomStart + gSaveContext.equips.buttonItems[3] * 0x1000, 0x1000,
                             "../z_construct.c", 219);
+    }
+
+    DmaMgr_SendRequest1(interfaceCtx->iconItemSegment + 0x4000,
+                        _icon_item_staticSegmentRomStart + ITEM_BOOTS_IRON * 0x1000, 0x1000,
+                        "../z_construct.c", 224);
+                        
+    DmaMgr_SendRequest1(interfaceCtx->iconItemSegment + 0x5000,
+                        _icon_item_staticSegmentRomStart + ITEM_BOOTS_HOVER * 0x1000, 0x1000,
+                        "../z_construct.c", 229);
+
+    if (dpadItem < 0xF0) {
+        DmaMgr_SendRequest1(interfaceCtx->iconItemSegment + 0x6000,
+                            _icon_item_staticSegmentRomStart + dpadItem * 0x1000, 0x1000,
+                            "../z_construct.c", 229);
     }
 
     osSyncPrintf("ＥＶＥＮＴ＝%d\n", ((void)0, gSaveContext.timer1State));

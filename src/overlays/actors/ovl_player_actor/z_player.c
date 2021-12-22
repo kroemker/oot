@@ -1781,6 +1781,7 @@ void func_80833984(GlobalContext* globalCtx, Player* this) {
     this->stateFlags1 |= 0x1000000;
 }
 
+// pull out item
 void func_8083399C(GlobalContext* globalCtx, Player* this, s8 actionParam) {
     this->unk_860 = 0;
     this->unk_85C = 0.0f;
@@ -1913,6 +1914,32 @@ void func_80833DF8(Player* this, GlobalContext* globalCtx) {
     }
 
     if (!(this->stateFlags1 & 0x20000000) && !func_8008F128(this)) {
+        if (CHECK_BTN_ALL(sControlInput->press.button, BTN_DLEFT) || CHECK_BTN_ALL(sControlInput->press.button, BTN_DRIGHT)) {
+            u16 boots = CHECK_BTN_ALL(sControlInput->press.button, BTN_DLEFT) ? PLAYER_BOOTS_IRON : PLAYER_BOOTS_HOVER;
+            if (CHECK_OWNED_EQUIP(EQUIP_BOOTS, boots)) {
+                if (CUR_EQUIP_VALUE(EQUIP_BOOTS) - 1 == boots) {
+                    gSaveContext.equips.equipment &= gEquipNegMasks[EQUIP_BOOTS];
+                    gSaveContext.equips.equipment |= (PLAYER_BOOTS_NORMAL + 1) << gEquipShifts[EQUIP_BOOTS];
+                }
+                else {
+                    gSaveContext.equips.equipment &= gEquipNegMasks[EQUIP_BOOTS];
+                    gSaveContext.equips.equipment |= (boots + 1) << gEquipShifts[EQUIP_BOOTS];
+                }
+                func_808328EC(this, NA_SE_PL_CHANGE_ARMS);
+                Player_SetEquipmentData(globalCtx, this);
+                return;
+            }
+        }
+        else if (CHECK_BTN_ALL(sControlInput->press.button, BTN_DUP)) {
+            u8 dpadItem = GetDPadItem(globalCtx);
+            if (dpadItem != ITEM_NONE) {
+                gSaveContext.equips.buttonItems[0] = dpadItem;
+                Player_SetEquipmentData(globalCtx, this);
+                Interface_ReloadDynamicItemIcons(globalCtx);
+                return;
+            }
+        }
+
         for (i = 0; i < ARRAY_COUNT(D_80854388); i++) {
             if (CHECK_BTN_ALL(sControlInput->press.button, D_80854388[i])) {
                 break;
@@ -9175,6 +9202,7 @@ void func_80846660(GlobalContext* globalCtx, Player* this) {
 
 static u8 D_808546F0[] = { ITEM_SWORD_MASTER, ITEM_SWORD_KOKIRI };
 
+// pull out sword?
 void func_80846720(GlobalContext* globalCtx, Player* this, s32 arg2) {
     s32 item = D_808546F0[(void)0, gSaveContext.linkAge];
     s32 actionParam = sItemActionParams[item];

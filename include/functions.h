@@ -2402,4 +2402,7 @@ void Opening_Destroy(GameState* thisx);
 void FileChoose_Init(GameState* thisx);
 void FileChoose_Destroy(GameState* thisx);
 
+u8 GetDPadItem(GlobalContext* globalCtx);
+void Interface_ReloadDynamicItemIcons(GlobalContext* globalCtx);
+
 #endif

@@ -647,6 +647,7 @@ u32 SurfaceType_GetSceneExitIndex(CollisionContext* colCtx, CollisionPoly* poly,
 u32 func_80041D4C(CollisionContext* colCtx, CollisionPoly* poly, s32 bgId);
 u32 func_80041D70(CollisionContext* colCtx, CollisionPoly* poly, s32 bgId);
 s32 func_80041DB8(CollisionContext* colCtx, CollisionPoly* poly, s32 bgId);
+s32 SurfaceType_IsSpinnerSurface(CollisionContext* colCtx, CollisionPoly* poly, s32 bgId);
 s32 func_80041DE4(CollisionContext* colCtx, CollisionPoly* poly, s32 bgId);
 s32 func_80041E18(CollisionContext* colCtx, CollisionPoly* poly, s32 bgId);
 s32 func_80041E4C(CollisionContext* colCtx, CollisionPoly* poly, s32 bgId);

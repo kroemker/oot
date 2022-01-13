@@ -26,7 +26,7 @@
 
 // func_80041DB8, SurfaceType wall properties
 s32 D_80119D90[32] = {
-    0, 1, 3, 5, 8, 16, 32, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 1, 3, 5, 8, 16, 32, 64, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
 // SurfaceType_GetSfx
@@ -4005,6 +4005,13 @@ s32 func_80041E18(CollisionContext* colCtx, CollisionPoly* poly, s32 bgId) {
  */
 s32 func_80041E4C(CollisionContext* colCtx, CollisionPoly* poly, s32 bgId) {
     return (func_80041DB8(colCtx, poly, bgId) & 4) ? true : false;
+}
+
+/**
+ * SurfaceType Is Wall Spinnerable (1 << 7) Set
+ */
+s32 SurfaceType_IsSpinnerSurface(CollisionContext* colCtx, CollisionPoly* poly, s32 bgId) {
+    return (func_80041DB8(colCtx, poly, bgId) & 128) ? true : false;
 }
 
 /**

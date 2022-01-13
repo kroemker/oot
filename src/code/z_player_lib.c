@@ -45,8 +45,11 @@ s16 sBootData[PLAYER_BOOTS_MAX][17] = {
 
 // Used to map action params to model groups
 u8 sActionModelGroups[] = {
-    3,  15, 10, 2,  2,  5,  10, 11, 6,  6, 6, 6, 6, 6, 6, 6, 9, 9, 7, 7, 8, 3, 3, 6, 3, 3, 3, 3, 12, 13, 14, 14, 14, 14,
-    14, 14, 14, 14, 14, 14, 14, 14, 14, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,  3,  3,  3,  3,
+     3, 15, 10,  2,  2,  5, 10, 11,  6,  6,  6, 6,  6,  6,  6,  6, //0x00 - 0x0F
+     9,  9,  7,  7,  8,  3,  3,  6,  3,  3,  3, 3, 12, 13, 14, 14, //0x10 - 0x1F
+    14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 3,  3,  3,  3,  3, //0x20 - 0x2F
+     3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3, 3,  3,  3,  3,  3, //0x30 - 0x3F
+     3,  3,  3,  3,  7                                             //0x40 - 0x44
 };
 
 TextTriggerEntry sTextTriggers[] = {
@@ -347,6 +350,7 @@ s32 Player_InCsMode(GlobalContext* globalCtx) {
     return Player_InBlockingCsMode(globalCtx, this) || (this->unk_6AD == 4);
 }
 
+// return (this->stateFlags1 & 0x10); locked onto enemy?
 s32 func_8008E9C4(Player* this) {
     return (this->stateFlags1 & 0x10);
 }
@@ -1267,6 +1271,7 @@ Gfx gDekuStickDL[41] = {
     gsSPEndDisplayList(),
 };
 
+// draws items in hands etc
 void func_80090D20(GlobalContext* globalCtx, s32 limbIndex, Gfx** dList, Vec3s* rot, void* thisx) {
     Player* this = (Player*)thisx;
 

@@ -3405,6 +3405,12 @@ beginseg
 endseg
 
 beginseg
+    name "ovl_Spinner"
+    include "build/src/overlays/actors/ovl_Spinner/z_spinner.o"
+    include "build/src/overlays/actors/ovl_Spinner/ovl_Spinner_reloc.o"
+endseg
+
+beginseg
     name "gameplay_keep"
     romalign 0x1000
     include "build/assets/objects/gameplay_keep/gameplay_keep.o"

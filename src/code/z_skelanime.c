@@ -1200,6 +1200,7 @@ void Animation_SetMorph(GlobalContext* globalCtx, SkelAnime* skelAnime, f32 morp
  */
 void LinkAnimation_Change(GlobalContext* globalCtx, SkelAnime* skelAnime, LinkAnimationHeader* animation, f32 playSpeed,
                           f32 startFrame, f32 endFrame, u8 mode, f32 morphFrames) {
+    osSyncPrintf("Change Link Animation to: %p\n", animation);
     skelAnime->mode = mode;
     if ((morphFrames != 0.0f) && ((animation != skelAnime->animation) || (startFrame != skelAnime->curFrame))) {
         if (morphFrames < 0) {

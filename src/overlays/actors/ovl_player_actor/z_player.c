@@ -137,7 +137,7 @@ void func_80833770(GlobalContext* globalCtx, Player* this);
 void func_80833790(GlobalContext* globalCtx, Player* this);
 void func_8083379C(GlobalContext* globalCtx, Player* this);
 void func_8083377C(GlobalContext* globalCtx, Player* this);
-void Player_SpawnExplosive(GlobalContext* globalCtx, Player* this);
+void Player_PullOutExplosive(GlobalContext* globalCtx, Player* this);
 void func_80833910(GlobalContext* globalCtx, Player* this);
 void func_80833984(GlobalContext* globalCtx, Player* this);
 void func_8083399C(GlobalContext* globalCtx, Player* this, s8 actionParam);
@@ -361,6 +361,8 @@ void func_80853148(GlobalContext* globalCtx, Actor* actor);
 Actor* Player_SpawnMagicSpell(GlobalContext* globalCtx, Player* this, s32 spell);
 void Player_FeatherJump(Player* this, GlobalContext* globalCtx, LinkAnimationHeader* anim);
 void Player_ConserveActor(Player* this, GlobalContext* globalCtx);
+void Player_SetupSpinnerAction(Player* this, GlobalContext* globalCtx);
+void Player_PullOutSpinner(GlobalContext* globalCtx, Player* this);
 
 // .bss part 1
 static s32 D_80858AA0;
@@ -1009,17 +1011,18 @@ static s32 (*D_80853EDC[])(Player* this, GlobalContext* globalCtx) = {
     func_8083485C, func_8083485C, func_8083485C, func_8083485C,
 };
 
+// item pull out functions?
 static void (*D_80853FE8[])(GlobalContext* globalCtx, Player* this) = {
-    func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_8083377C,
-    func_80833790, func_8083379C, func_8083379C, func_8083379C, func_8083379C, func_8083379C, func_8083379C,
-    func_8083379C, func_8083379C, func_80833910, func_80833910, Player_SpawnExplosive, Player_SpawnExplosive, func_80833984,
-    func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770,
-    func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770,
-    func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770,
-    func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770,
-    func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770,
-    func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770,
-    func_80833770, func_80833770, func_80833770, func_80833770,
+    func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_8083377C, //0x00 - 0x06
+    func_80833790, func_8083379C, func_8083379C, func_8083379C, func_8083379C, func_8083379C, func_8083379C, //0x07 - 0x0D
+    func_8083379C, func_8083379C, func_80833910, func_80833910, Player_PullOutExplosive, Player_PullOutExplosive, func_80833984, //0x0E - 0x14
+    func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, //0x15 - 0x1B
+    func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, //0x1C - 0x22
+    func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, //0x23 - 0x29
+    func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, //0x2A - 0x30
+    func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, //0x31 - 0x37
+    func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, //0x38 - 0x3E
+    func_80833770, func_80833770, func_80833770, func_80833770, func_80833770, Player_PullOutSpinner         //0x3F - 0x44
 };
 
 static struct_808540F4 D_808540F4[] = {
@@ -1666,6 +1669,7 @@ void func_80833638(Player* this, PlayerFunc82C arg1) {
     func_808326F0(this);
 }
 
+// pull out items, set animations?
 void func_80833664(GlobalContext* globalCtx, Player* this, s8 actionParam) {
     LinkAnimationHeader* current = this->skelAnime.animation;
     LinkAnimationHeader** iter = &D_80853914[this->modelAnimType];
@@ -1708,11 +1712,14 @@ s8 Player_ItemToActionParam(s32 item) {
         return PLAYER_AP_MINISH_CAP;
     } else if (item == ITEM_MAGIC_WATER_SPOUT) {
         return PLAYER_AP_MAGIC_WATER_SPOUT;
+    } else if (item == ITEM_SPINNER) {
+        return PLAYER_AP_SPINNER;
     } else {
         return sItemActionParams[item];
     }
 }
 
+//nop
 void func_80833770(GlobalContext* globalCtx, Player* this) {
 }
 
@@ -1720,6 +1727,7 @@ void func_8083377C(GlobalContext* globalCtx, Player* this) {
     this->unk_85C = 1.0f;
 }
 
+//nop
 void func_80833790(GlobalContext* globalCtx, Player* this) {
 }
 
@@ -1733,7 +1741,7 @@ void func_8083379C(GlobalContext* globalCtx, Player* this) {
     }
 }
 
-void Player_SpawnExplosive(GlobalContext* globalCtx, Player* this) {
+void Player_PullOutExplosive(GlobalContext* globalCtx, Player* this) {
     s32 explosiveType;
     ExplosiveInfo* explosiveInfo;
     Actor* spawnedActor;
@@ -1764,6 +1772,21 @@ void Player_SpawnExplosive(GlobalContext* globalCtx, Player* this) {
         this->getItemId = GI_NONE;
         this->unk_3BC.y = spawnedActor->shape.rot.y - this->actor.shape.rot.y;
         this->stateFlags1 |= 0x800;
+    }
+}
+
+void Player_PullOutSpinner(GlobalContext* globalCtx, Player* this) {
+    s32 explosiveType;
+    ExplosiveInfo* explosiveInfo;
+    Actor* spawnedActor;
+
+    spawnedActor = Actor_SpawnAsChild(&globalCtx->actorCtx, &this->actor, globalCtx, ACTOR_SPINNER,
+                                    this->actor.world.pos.x, this->actor.world.pos.y, this->actor.world.pos.z, 0,
+                                    this->actor.shape.rot.y, 0, 0);
+    if (spawnedActor != NULL) {
+        this->spinner = spawnedActor;
+        this->actor.parent = this->spinner;
+        Player_SetupSpinnerAction(this, globalCtx);
     }
 }
 
@@ -1831,6 +1854,7 @@ void func_80833A20(Player* this, s32 newSwordState) {
     this->swordState = newSwordState;
 }
 
+// camera locked targeted something?
 s32 func_80833B2C(Player* this) {
     if (this->stateFlags1 & 0x40030000) {
         return 1;
@@ -1839,6 +1863,7 @@ s32 func_80833B2C(Player* this) {
     }
 }
 
+// switch/set target lockon flags?, return 0 if no target to lockon, 1 if success
 s32 func_80833B54(Player* this) {
     if ((this->unk_664 != NULL) && ((this->unk_664->flags & 5) == 5)) {
         this->stateFlags1 |= 0x10;
@@ -1855,10 +1880,12 @@ s32 func_80833B54(Player* this) {
     return 0;
 }
 
+// locked on target 2?
 s32 func_80833BCC(Player* this) {
     return func_8008E9C4(this) || func_80833B2C(this);
 }
 
+// isLockedOntoTarget?
 s32 func_80833C04(Player* this) {
     return func_80833B54(this) || func_80833B2C(this);
 }
@@ -1952,6 +1979,7 @@ void func_80833DF8(Player* this, GlobalContext* globalCtx) {
             Player_ConserveActor(this, globalCtx);
             return;
         }
+
         if (this->stateFlags1 & 0x800) {
             return;
         }
@@ -2771,6 +2799,28 @@ void Player_DropHookshot(Player* this) {
     }
 }
 
+void Player_Action_Spinner(Player* this, GlobalContext* globalCtx) {
+    f32 spinnerScale;
+    if (this->spinner == NULL) {
+        this->actor.parent = NULL;
+        func_80839F90(this, globalCtx);
+        return;
+    }
+
+    LinkAnimation_Update(globalCtx, &this->skelAnime);
+
+    this->actor.shape.rot.y -= this->spinner->speedXZ * 50.0f;
+    spinnerScale = this->spinner->scale.y;
+    this->actor.world.pos.x = this->spinner->world.pos.x;
+    this->actor.world.pos.y = this->spinner->world.pos.y + 33.0f * (spinnerScale / 0.035f);
+    this->actor.world.pos.z = this->spinner->world.pos.z;
+}
+
+void Player_SetupSpinnerAction(Player* this, GlobalContext* globalCtx) {
+    func_80832B0C(globalCtx, this, &gPlayerAnim_0026D0);
+    SETUP_ACTION_WITH_LOG(globalCtx, this, Player_Action_Spinner, 0);
+}
+
 // item action executer
 void Player_ExecuteItemAction(GlobalContext* globalCtx, Player* this, s32 item) {
     s8 actionParam;
@@ -2801,12 +2851,19 @@ void Player_ExecuteItemAction(GlobalContext* globalCtx, Player* this, s32 item) 
 
             if (actionParam == PLAYER_AP_FEATHER) {
                 if (this->actor.bgCheckFlags & 1) {
-                    Player_FeatherJump(this, globalCtx, (LinkAnimationHeader*)0x04003148);
+                    Player_FeatherJump(this, globalCtx, &gPlayerAnim_003148);
                     this->doubleJumpTimer = 10;
                 }
                 else if (this->doubleJumpTimer == 0) {
-                    Player_FeatherJump(this, globalCtx, (LinkAnimationHeader*)0x040029D0);
+                    Player_FeatherJump(this, globalCtx, &gPlayerAnim_0029D0);
                     this->doubleJumpTimer = -10;
+                }
+                return;
+            }
+
+            if (actionParam == PLAYER_AP_SPINNER) {
+                if (this->spinner == NULL) {
+                    Player_PullOutSpinner(globalCtx, this);
                 }
                 return;
             }
@@ -2893,7 +2950,7 @@ void Player_ExecuteItemAction(GlobalContext* globalCtx, Player* this, s32 item) 
         }
     }
 }
-
+// action game over?
 void func_80836448(GlobalContext* globalCtx, Player* this, LinkAnimationHeader* anim) {
     s32 cond = Player_IsSwimming(this);
 
@@ -4406,6 +4463,7 @@ void func_80839F90(Player* this, GlobalContext* globalCtx) {
     }
 }
 
+// setup standing/zpressed/ztargeted action
 void func_80839FFC(Player* this, GlobalContext* globalCtx) {
     PlayerFunc674 func;
     const char* funcAddressString;
@@ -4644,6 +4702,7 @@ void func_8083A9B8(Player* this, LinkAnimationHeader* anim, GlobalContext* globa
 
 static Vec3f D_8085451C = { 0.0f, 0.0f, 100.0f };
 
+// handle falling
 void func_8083AA10(Player* this, GlobalContext* globalCtx) {
     s32 sp5C;
     CollisionPoly* sp58;
@@ -5154,6 +5213,7 @@ s32 func_8083BDBC(Player* this, GlobalContext* globalCtx) {
     return 0;
 }
 
+// set new link animation based on speed?
 void func_8083BF50(Player* this, GlobalContext* globalCtx) {
     LinkAnimationHeader* anim;
     f32 sp30;
@@ -5184,6 +5244,7 @@ void func_8083BF50(Player* this, GlobalContext* globalCtx) {
     this->currentYaw = this->actor.shape.rot.y;
 }
 
+// moving -> standing transition
 void func_8083C0B8(Player* this, GlobalContext* globalCtx) {
     func_80839FFC(this, globalCtx);
     func_8083BF50(this, globalCtx);
@@ -5311,6 +5372,7 @@ s32 func_8083C544(Player* this, GlobalContext* globalCtx) {
     return 0;
 }
 
+// setup action throw deku nut
 s32 func_8083C61C(GlobalContext* globalCtx, Player* this) {
     if ((globalCtx->roomCtx.curRoom.unk_03 != 2) && (this->actor.bgCheckFlags & 1) && (AMMO(ITEM_NUT) != 0)) {
         SETUP_ACTION_WITH_LOG(globalCtx, this, Player_Action_ThrowDekuNut, 0);
@@ -5368,6 +5430,7 @@ s32 func_8083C6B8(GlobalContext* globalCtx, Player* this) {
     return 0;
 }
 
+// setup action running(zpressed)
 void func_8083C858(Player* this, GlobalContext* globalCtx) {
     PlayerFunc674 func;
     const char* funcAddressString;
@@ -5847,6 +5910,7 @@ void func_8083DDC8(Player* this, GlobalContext* globalCtx) {
     }
 }
 
+// interpolateVelocityAndYaw(Player* this, f32 targetVelocity, f32 targetYaw)
 void func_8083DF68(Player* this, f32 arg1, s16 arg2) {
     Math_AsymStepToF(&this->linearVelocity, arg1, REG(19) / 100.0f, 1.5f);
     Math_ScaledStepToS(&this->currentYaw, arg2, REG(27));
@@ -5927,6 +5991,7 @@ void func_8083E298(CollisionPoly* arg0, Vec3f* arg1, s16* arg2) {
     *arg2 = Math_Atan2S(arg1->z, arg1->x);
 }
 
+// link slope animations
 static LinkAnimationHeader* D_80854590[] = {
     &gPlayerAnim_002EE0,
     &gPlayerAnim_0031D0,
@@ -6637,7 +6702,7 @@ void func_8083FB7C(Player* this, GlobalContext* globalCtx) {
 
 void Player_JumpFromVinesLadder(Player* this, GlobalContext* globalCtx) {
     this->stateFlags1 &= ~0x8200000;
-    func_80838940(this, (LinkAnimationHeader*)0x04003148, 10.0f, globalCtx, NA_SE_VO_LI_AUTO_JUMP);
+    func_80838940(this, &gPlayerAnim_003148, 10.0f, globalCtx, NA_SE_VO_LI_AUTO_JUMP);
     this->actor.shape.rot.y += 0x8000;
     this->currentYaw = this->actor.shape.rot.y;
     this->linearVelocity = 4.0f;
@@ -7464,6 +7529,7 @@ void func_80841CC4(Player* this, s32 arg1, GlobalContext* globalCtx) {
     }
 }
 
+// main movement function?
 void func_80841EE4(Player* this, GlobalContext* globalCtx) {
     f32 temp1;
     f32 temp2;
@@ -9356,6 +9422,7 @@ void Player_Init(Actor* thisx, GlobalContext* globalCtx2) {
     this->ageProperties = &sAgeProperties[gSaveContext.linkAge];
     this->itemActionParam = this->heldItemActionParam = -1;
     this->heldItemId = ITEM_NONE;
+    this->spinner = NULL;
 
     Player_ExecuteItemAction(globalCtx, this, ITEM_NONE);
     Player_SetEquipmentData(globalCtx, this);
@@ -9653,7 +9720,7 @@ s32 func_80847A78(Player* this) {
 }
 
 static Vec3f D_80854798 = { 0.0f, 18.0f, 0.0f };
-
+// update collision and state
 void func_80847BA0(GlobalContext* globalCtx, Player* this) {
     u8 spC7 = 0;
     CollisionPoly* spC0;
@@ -10515,7 +10582,7 @@ void Player_UpdateCommon(Player* this, GlobalContext* globalCtx, Input* input) {
         Collider_UpdateCylinder(&this->actor, &this->cylinder);
 
         if (!(this->stateFlags2 & 0x4000)) {
-            if (!(this->stateFlags1 & 0x806080)) {
+            if (!(this->stateFlags1 & 0x806080) && (this->spinner == NULL)) {
                 CollisionCheck_SetOC(globalCtx, &globalCtx->colChkCtx, &this->cylinder.base);
             }
 

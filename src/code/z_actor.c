@@ -2618,6 +2618,8 @@ Actor* Actor_Spawn(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId
     char* name;
     u32 overlaySize;
 
+    osSyncPrintf("Actor_Spawn: actorId=0x%x, params=0x%x\n", actorId, params);
+
     overlayEntry = &gActorOverlayTable[actorId];
     ASSERT(actorId < ACTOR_ID_MAX, "profile < ACTOR_DLF_MAX", "../z_actor.c", 6883);
 

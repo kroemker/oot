@@ -473,5 +473,6 @@ extern ActorInit Bg_Jya_Block_InitVars;
 extern ActorInit Obj_Warp2block_InitVars;
 extern ActorInit Ice_Block_InitVars;
 extern ActorInit Vine_Spot_InitVars;
+extern ActorInit Spinner_InitVars;
 
 #endif

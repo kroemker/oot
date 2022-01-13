@@ -10,8 +10,8 @@ void EffectSs_InitInfo(GlobalContext* globalCtx, s32 tableSize) {
 
     for (i = 0; i < ARRAY_COUNT(gEffectSsOverlayTable); i++) {
         overlay = &gEffectSsOverlayTable[i];
-        osSyncPrintf("effect index %3d:size=%6dbyte romsize=%6dbyte\n", i,
-                     (u32)overlay->vramEnd - (u32)overlay->vramStart, overlay->vromEnd - overlay->vromStart);
+        //osSyncPrintf("effect index %3d:size=%6dbyte romsize=%6dbyte\n", i,
+        //             (u32)overlay->vramEnd - (u32)overlay->vramStart, overlay->vromEnd - overlay->vromStart);
     }
 
     sEffectSsInfo.table =

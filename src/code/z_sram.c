@@ -712,10 +712,10 @@ void Sram_InitSave(FileChooseContext* fileChooseCtx, SramContext* sramCtx) {
     checksum = 0;
 
     for (offset = 0; offset < CHECKSUM_SIZE; offset++) {
-        osSyncPrintf("%x ", *ptr);
+        //osSyncPrintf("%x ", *ptr);
         checksum += *ptr++;
         if (++j == 0x20) {
-            osSyncPrintf("\n");
+            //osSyncPrintf("\n");
             j = 0;
         }
     }

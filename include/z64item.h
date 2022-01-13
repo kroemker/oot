@@ -94,6 +94,7 @@ new items:
 typedef enum {
     /* 0x00 */ ITEM_STICK = 0x00,
     /* 0x01 */ ITEM_NUT,
+               ITEM_SPINNER = 0x01,
     /* 0x02 */ ITEM_BOMB,
     /* 0x03 */ ITEM_BOW,
     /* 0x04 */ ITEM_ARROW_FIRE,

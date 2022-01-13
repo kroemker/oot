@@ -404,7 +404,7 @@ void Graph_ThreadEntry(void* arg0) {
     GameStateOverlay* ovl;
     char faultMsg[0x50];
 
-    nextOvl = &gGameStateOverlayTable[0];
+    nextOvl = &gGameStateOverlayTable[5];
 
     osSyncPrintf("グラフィックスレッド実行開始\n"); // "Start graphic thread execution"
     Graph_Init(&gfxCtx);

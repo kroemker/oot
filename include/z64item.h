@@ -113,6 +113,7 @@ typedef enum {
     /* 0x0C */ ITEM_ARROW_ICE,
     /* 0x0D */ ITEM_FARORES_WIND,
     /* 0x0E */ ITEM_BOOMERANG,
+               ITEM_HAMMERANG = 0x0E,
     /* 0x0F */ ITEM_LENS,
                ITEM_MINISH_CAP = 0x0F,
     /* 0x10 */ ITEM_BEAN,

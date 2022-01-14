@@ -91,7 +91,7 @@ void func_800C4344(GameState* gameState) {
     D_80009460 = HREG(60);
     gDmaMgrDmaBuffSize = SREG(21) != 0 ? ALIGN16(SREG(21)) : 0x2000;
     gSystemArenaLogSeverity = HREG(61);
-    gZeldaArenaLogSeverity = HREG(62);
+    gZeldaArenaLogSeverity = 2; //HREG(62);
     if (HREG(80) == 8) {
         if (HREG(94) != 8) {
             HREG(94) = 8;

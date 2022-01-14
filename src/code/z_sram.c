@@ -221,7 +221,7 @@ ItemEquips sDebugSaveEquips = {
 Inventory
     sDebugSaveInventory =
         {
-            { ITEM_BOMB,           ITEM_NUT,           ITEM_FEATHER,           ITEM_LONGSHOT,         ITEM_HAMMER,          ITEM_STICK,
+            { ITEM_BOMB,           ITEM_NUT,           ITEM_FEATHER,           ITEM_LONGSHOT,         ITEM_HAMMERANG,       ITEM_STICK,
               ITEM_BOW_ARROW_FIRE, ITEM_BOW_ARROW_ICE, ITEM_BOW_ARROW_FOREST,  ITEM_BOW_ARROW_SHADOW, ITEM_BOW_ARROW_LIGHT, ITEM_BOW_ARROW_BOMB, 
               ITEM_NONE,           ITEM_NONE,          ITEM_MAGIC_WATER_SPOUT, ITEM_LIGHT_BALL,       ITEM_NONE,            ITEM_NONE, 
               ITEM_BOTTLE,         ITEM_BOTTLE,        ITEM_BOTTLE,            ITEM_BOTTLE,           ITEM_BOOTS_IRON,      ITEM_BOOTS_HOVER }, // items

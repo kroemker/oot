@@ -2809,7 +2809,6 @@ void Player_Action_Spinner(Player* this, GlobalContext* globalCtx) {
 
     LinkAnimation_Update(globalCtx, &this->skelAnime);
 
-    this->actor.shape.rot.y -= this->spinner->speedXZ * 50.0f;
     spinnerScale = this->spinner->scale.y;
     this->actor.world.pos.x = this->spinner->world.pos.x;
     this->actor.world.pos.y = this->spinner->world.pos.y + 33.0f * (spinnerScale / 0.035f);

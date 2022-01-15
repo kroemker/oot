@@ -68,6 +68,7 @@ void Spinner_Init(Actor* thisx, GlobalContext* globalCtx) {
     Collider_InitCylinder(globalCtx, &this->collider);
     Collider_SetCylinder(globalCtx, &this->collider, thisx, &sCylinderInit);
 
+    this->actor.room = -1;
     this->timer = 0;
     this->scale = 0;
     this->actionFunc = Spinner_Action_PullOut;
@@ -140,7 +141,7 @@ void Spinner_Action_FreeCruising(Spinner* this, GlobalContext* globalCtx) {
     }
 
     if (this->actor.bgCheckFlags & 8) {
-        if (SurfaceType_IsSpinnerSurface(&globalCtx->colCtx, this->actor.wallPoly, this->actor.wallBgId)) {
+        if (1) { // (SurfaceType_IsSpinnerSurface(&globalCtx->colCtx, this->actor.wallPoly, this->actor.wallBgId)) {
             this->actionFunc = Spinner_Action_SpinAlongSurface;
         }
         else {
@@ -176,7 +177,29 @@ void Spinner_Action_SpinJump(Spinner* this, GlobalContext* globalCtx) {
 }
 
 void Spinner_Action_SpinAlongSurface(Spinner* this, GlobalContext* globalCtx) {
-    osSyncPrintf("WE ATTACHED TO THE WALL\n");
+    if ((this->actor.bgCheckFlags & 8) == 0) {
+        this->actionFunc = Spinner_Action_FreeCruising;
+        return;
+    }
+
+    if ((CHECK_BTN_ALL(globalCtx->state.input[0].press.button, BTN_CLEFT) && (C_BTN_ITEM(0) == ITEM_SPINNER)) ||
+        (CHECK_BTN_ALL(globalCtx->state.input[0].press.button, BTN_CDOWN) && (C_BTN_ITEM(1) == ITEM_SPINNER)) ||
+        (CHECK_BTN_ALL(globalCtx->state.input[0].press.button, BTN_CRIGHT) && (C_BTN_ITEM(2) == ITEM_SPINNER))) {
+        this->timer = 0;
+        this->actor.world.rot.y = this->actor.wallYaw;
+        this->actionFunc = Spinner_Action_SpinJump;
+        return;
+    }
+
+    if (((s16)(this->actor.wallYaw - this->actor.world.rot.y)) < 0) {
+        this->actor.world.rot.y = this->actor.wallYaw + 0x4700;
+    }
+    else {
+        this->actor.world.rot.y = this->actor.wallYaw - 0x4700;
+    }
+
+    Math_StepToF(&this->actor.speedXZ, 8.0f, 0.8f);
+    Actor_MoveForward(&this->actor);
 }
 
 void Spinner_Draw(Actor* thisx, GlobalContext* globalCtx) {

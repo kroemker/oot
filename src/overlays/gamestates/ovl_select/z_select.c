@@ -583,8 +583,8 @@ void Select_Init(GameState* thisx) {
     this->state.main = Select_Main;
     this->state.destroy = Select_Destroy;
     this->scenes = sScenes;
-    this->topDisplayedScene = 0;
-    this->currentScene = 0;
+    this->topDisplayedScene = 117;
+    this->currentScene = 117;
     this->pageDownStops[0] = 0;  // Hyrule Field
     this->pageDownStops[1] = 19; // Temple Of Time
     this->pageDownStops[2] = 37; // Treasure Chest Game
@@ -617,5 +617,5 @@ void Select_Init(GameState* thisx) {
     this->staticSegment = GameState_Alloc(&this->state, size, "../z_select.c", 1114);
     DmaMgr_SendRequest1(this->staticSegment, _z_select_staticSegmentRomStart, size, "../z_select.c", 1115);
     gSaveContext.cutsceneIndex = 0x8000;
-    gSaveContext.linkAge = 1;
+    gSaveContext.linkAge = 0;
 }

@@ -7836,7 +7836,7 @@ void func_80842D20(GlobalContext* globalCtx, Player* this) {
     this->linearVelocity = -18.0f;
     func_80842CF0(globalCtx, this);
 }
-
+// check sword collision
 s32 func_80842DF4(GlobalContext* globalCtx, Player* this) {
     f32 phi_f2;
     CollisionPoly* sp78;

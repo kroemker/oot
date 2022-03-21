@@ -141,7 +141,7 @@ void Spinner_Action_FreeCruising(Spinner* this, GlobalContext* globalCtx) {
     }
 
     if (this->actor.bgCheckFlags & 8) {
-        if (1) { // (SurfaceType_IsSpinnerSurface(&globalCtx->colCtx, this->actor.wallPoly, this->actor.wallBgId)) {
+        if (SurfaceType_IsSpinnerSurface(&globalCtx->colCtx, this->actor.wallPoly, this->actor.wallBgId)) {
             this->actionFunc = Spinner_Action_SpinAlongSurface;
         }
         else {
@@ -177,7 +177,7 @@ void Spinner_Action_SpinJump(Spinner* this, GlobalContext* globalCtx) {
 }
 
 void Spinner_Action_SpinAlongSurface(Spinner* this, GlobalContext* globalCtx) {
-    if ((this->actor.bgCheckFlags & 8) == 0) {
+    if (((this->actor.bgCheckFlags & 8) == 0) || (!SurfaceType_IsSpinnerSurface(&globalCtx->colCtx, this->actor.wallPoly, this->actor.wallBgId))) {
         this->actionFunc = Spinner_Action_FreeCruising;
         return;
     }
@@ -197,6 +197,8 @@ void Spinner_Action_SpinAlongSurface(Spinner* this, GlobalContext* globalCtx) {
     else {
         this->actor.world.rot.y = this->actor.wallYaw - 0x4700;
     }
+
+    this->actor.velocity.y = 10.0f * (f32)(SurfaceType_GetEcho(&globalCtx->colCtx, this->actor.wallPoly, this->actor.wallBgId));
 
     Math_StepToF(&this->actor.speedXZ, 8.0f, 0.8f);
     Actor_MoveForward(&this->actor);

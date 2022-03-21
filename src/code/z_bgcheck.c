@@ -4011,6 +4011,9 @@ s32 func_80041E4C(CollisionContext* colCtx, CollisionPoly* poly, s32 bgId) {
  * SurfaceType Is Wall Spinnerable (1 << 7) Set
  */
 s32 SurfaceType_IsSpinnerSurface(CollisionContext* colCtx, CollisionPoly* poly, s32 bgId) {
+    s32 k = func_80041DB8(colCtx, poly, bgId);
+    s32 si = func_80041D94(colCtx, poly, bgId);
+    osSyncPrintf("surface index = %d (%x), surface flags = %d (%x)\n", si, si, k, k);
     return (func_80041DB8(colCtx, poly, bgId) & 128) ? true : false;
 }
 

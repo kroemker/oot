@@ -59,7 +59,7 @@ EntranceCutscene sEntranceCutsceneTable[] = {
     { 0x0138, 1, 0xA5, gHyruleCastleIntroCs },
     { 0x014D, 2, 0xA6, gGoronCityIntroCs },
     { 0x0053, 2, 0xA7, gTempleOfTimeIntroCs },
-    { 0x0000, 2, 0xA8, gDekuTreeIntroCs },
+    //{ 0x0000, 2, 0xA8, gDekuTreeIntroCs },
     { 0x028A, 0, 0x18, gHyruleFieldSouthEponaJumpCs },
     { 0x0292, 0, 0x18, gHyruleFieldEastEponaJumpCs },
     { 0x028E, 0, 0x18, gHyruleFieldWestEponaJumpCs },
@@ -90,7 +90,7 @@ EntranceCutscene sEntranceCutsceneTable[] = {
 
 // Unused, seems to be an early list of dungeon entrance cutscene locations
 void* D_8011E304[] = {
-    gDekuTreeIntroCs, gJabuJabuIntroCs, gDcOpeningCs, gMinuetCs, gIceCavernSerenadeCs, gTowerBarrierCs,
+    gJabuJabuIntroCs, gDcOpeningCs, gMinuetCs, gIceCavernSerenadeCs, gTowerBarrierCs,
 };
 
 u16 D_8015FCC0;

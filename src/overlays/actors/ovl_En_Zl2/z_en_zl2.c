@@ -11,9 +11,7 @@
 #include "objects/object_zl2/object_zl2.h"
 #include "objects/object_zl2_anime1/object_zl2_anime1.h"
 
-#define FLAGS 0x00000010
-
-#define THIS ((EnZl2*)thisx)
+#define FLAGS ACTOR_FLAG_4
 
 void EnZl2_Init(Actor* thisx, GlobalContext* globalCtx);
 void EnZl2_Destroy(Actor* thisx, GlobalContext* globalCtx);
@@ -100,7 +98,7 @@ const ActorInit En_Zl2_InitVars = {
 };
 
 void EnZl2_Destroy(Actor* thisx, GlobalContext* globalCtx) {
-    EnZl2* this = THIS;
+    EnZl2* this = (EnZl2*)thisx;
 
     SkelAnime_Free(&this->skelAnime, globalCtx);
 }
@@ -205,7 +203,8 @@ void EnZl2_setMouthIndex(EnZl2* this, s16 index) {
 }
 
 void func_80B4ED2C(EnZl2* this, GlobalContext* globalCtx) {
-    Actor_UpdateBgCheckInfo(globalCtx, &this->actor, 75.0f, 30.0f, 30.0f, 5);
+    Actor_UpdateBgCheckInfo(globalCtx, &this->actor, 75.0f, 30.0f, 30.0f,
+                            UPDBGCHECKINFO_FLAG_0 | UPDBGCHECKINFO_FLAG_2);
 }
 
 s32 EnZl2_UpdateSkelAnime(EnZl2* this) {
@@ -437,7 +436,7 @@ void func_80B4F230(EnZl2* this, s16 arg1, s32 arg2) {
 s32 func_80B4F45C(GlobalContext* globalCtx, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, void* thisx,
                   Gfx** gfx) {
     s32 pad;
-    EnZl2* this = THIS;
+    EnZl2* this = (EnZl2*)thisx;
     Mtx* sp74;
     MtxF sp34;
     Vec3s sp2C;
@@ -535,25 +534,25 @@ s32 func_80B4F45C(GlobalContext* globalCtx, s32 limbIndex, Gfx** dList, Vec3f* p
 }
 
 void EnZl2_PostLimbDraw(GlobalContext* globalCtx, s32 limbIndex, Gfx** dList, Vec3s* rot, void* thisx, Gfx** gfx) {
-    EnZl2* this = THIS;
+    EnZl2* this = (EnZl2*)thisx;
     s32 pad[2];
 
     if (limbIndex == 10) {
         if ((this->unk_254 != 0) && (globalCtx->csCtx.frames >= 900)) {
-            gSPDisplayList((*gfx)++, &gZelda2OcarinaDL);
+            gSPDisplayList((*gfx)++, gZelda2OcarinaDL);
         }
 
         {
             Player* player = GET_PLAYER(globalCtx);
             Matrix_Push();
-            if (player->rightHandType == 0xFF) {
+            if (player->rightHandType == PLAYER_MODELTYPE_RH_FF) {
                 Matrix_Put(&player->shieldMf);
                 Matrix_Translate(180.0f, 979.0f, -375.0f, MTXMODE_APPLY);
                 Matrix_RotateZYX(-0x5DE7, -0x53E9, 0x3333, MTXMODE_APPLY);
                 Matrix_Scale(1.2f, 1.2f, 1.2f, MTXMODE_APPLY);
                 gSPMatrix((*gfx)++, Matrix_NewMtx(globalCtx->state.gfxCtx, "../z_en_zl2.c", 1253),
                           G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-                gSPDisplayList((*gfx)++, &gZelda2OcarinaDL);
+                gSPDisplayList((*gfx)++, gZelda2OcarinaDL);
             }
             Matrix_Pop();
         }
@@ -566,7 +565,7 @@ void func_80B4FCCC(EnZl2* this, GlobalContext* globalCtx) {
     gSegments[6] = VIRTUAL_TO_PHYSICAL(globalCtx->objectCtx.status[unk_274].segment);
 }
 
-void func_80B4FD00(EnZl2* this, AnimationHeader* animation, u8 arg2, f32 transitionRate, s32 arg4) {
+void func_80B4FD00(EnZl2* this, AnimationHeader* animation, u8 arg2, f32 morphFrames, s32 arg4) {
     f32 frameCount = Animation_GetLastFrame(animation);
     f32 playbackSpeed;
     f32 unk0;
@@ -582,7 +581,7 @@ void func_80B4FD00(EnZl2* this, AnimationHeader* animation, u8 arg2, f32 transit
         playbackSpeed = -1.0f;
     }
 
-    Animation_Change(&this->skelAnime, animation, playbackSpeed, unk0, fc, arg2, transitionRate);
+    Animation_Change(&this->skelAnime, animation, playbackSpeed, unk0, fc, arg2, morphFrames);
 }
 
 void func_80B4FD90(EnZl2* this, GlobalContext* globalCtx) {
@@ -755,7 +754,7 @@ void func_80B50304(EnZl2* this, GlobalContext* globalCtx) {
     this->drawConfig = 1;
     this->unk_23C = 0.0f;
     shape->shadowAlpha = 255;
-    this->actor.world.rot.y = shape->rot.y = Math_FAtan2F(actionXDelta, actionZDelta) * (0x8000 / M_PI);
+    this->actor.world.rot.y = shape->rot.y = RADF_TO_BINANG(Math_FAtan2F(actionXDelta, actionZDelta));
 }
 
 void func_80B503DC(EnZl2* this, GlobalContext* globalCtx) {
@@ -1439,7 +1438,7 @@ void func_80B51D24(EnZl2* this, GlobalContext* globalCtx) {
     SkelAnime* skelAnime = &this->skelAnime;
 
     if (Animation_OnFrame(skelAnime, 6.0f) || Animation_OnFrame(skelAnime, 0.0f)) {
-        if (this->actor.bgCheckFlags & 1) {
+        if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
             sfxId = SFX_FLAG;
             sfxId += SurfaceType_GetSfx(&globalCtx->colCtx, this->actor.floorPoly, this->actor.floorBgId);
             func_80078914(&this->actor.projectedPos, sfxId);
@@ -1588,7 +1587,7 @@ void func_80B521A0(EnZl2* this, GlobalContext* globalCtx) {
 }
 
 void EnZl2_Update(Actor* thisx, GlobalContext* globalCtx) {
-    EnZl2* this = THIS;
+    EnZl2* this = (EnZl2*)thisx;
 
     if (this->action < 0 || this->action >= 0x24 || sActionFuncs[this->action] == NULL) {
         osSyncPrintf(VT_FGCOL(RED) "メインモードがおかしい!!!!!!!!!!!!!!!!!!!!!!!!!\n" VT_RST);
@@ -1598,7 +1597,7 @@ void EnZl2_Update(Actor* thisx, GlobalContext* globalCtx) {
 }
 
 void EnZl2_Init(Actor* thisx, GlobalContext* globalCtx) {
-    EnZl2* this = THIS;
+    EnZl2* this = (EnZl2*)thisx;
     ActorShape* shape = &thisx->shape;
     s32 pad;
 
@@ -1618,7 +1617,7 @@ void EnZl2_Init(Actor* thisx, GlobalContext* globalCtx) {
 
 s32 EnZl2_OverrideLimbDraw(GlobalContext* globalCtx, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, void* thisx,
                            Gfx** gfx) {
-    EnZl2* this = THIS;
+    EnZl2* this = (EnZl2*)thisx;
 
     if (this->overrideLimbDrawConfig < 0 || this->overrideLimbDrawConfig > 0 ||
         sOverrideLimbDrawFuncs[this->overrideLimbDrawConfig] == NULL) {
@@ -1684,7 +1683,7 @@ void func_80B525D4(EnZl2* this, GlobalContext* globalCtx) {
 }
 
 void EnZl2_Draw(Actor* thisx, GlobalContext* globalCtx) {
-    EnZl2* this = THIS;
+    EnZl2* this = (EnZl2*)thisx;
 
     if ((this->drawConfig < 0) || (this->drawConfig >= 3) || (sDrawFuncs[this->drawConfig] == NULL)) {
         osSyncPrintf(VT_FGCOL(RED) "描画モードがおかしい!!!!!!!!!!!!!!!!!!!!!!!!!\n" VT_RST);

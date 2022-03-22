@@ -12,9 +12,7 @@
 #include "objects/object_zl2/object_zl2.h"
 #include "objects/object_zl2_anime2/object_zl2_anime2.h"
 
-#define FLAGS 0x00000010
-
-#define THIS ((EnZl3*)thisx)
+#define FLAGS ACTOR_FLAG_4
 
 void EnZl3_Init(Actor* thisx, GlobalContext* globalCtx);
 void EnZl3_Destroy(Actor* thisx, GlobalContext* globalCtx);
@@ -67,7 +65,7 @@ static Vec3f D_80B5A4B0 = { 42.0f, 260.0f, 13.0f };
 static u32 D_80B5A4BC = 0;
 
 void func_80B533B0(Actor* thisx, GlobalContext* globalCtx) {
-    EnZl3* this = THIS;
+    EnZl3* this = (EnZl3*)thisx;
 
     Collider_InitCylinder(globalCtx, &this->collider);
     Collider_SetCylinderType1(globalCtx, &this->collider, &this->actor, &sCylinderInit);
@@ -82,13 +80,13 @@ void func_80B533FC(EnZl3* this, GlobalContext* globalCtx) {
 }
 
 void EnZl3_Destroy(Actor* thisx, GlobalContext* globalCtx) {
-    EnZl3* this = THIS;
+    EnZl3* this = (EnZl3*)thisx;
 
     Collider_DestroyCylinder(globalCtx, &this->collider);
 }
 
 void func_80B53468(void) {
-    Audio_QueueSeqCmd(NA_BGM_ESCAPE);
+    Audio_QueueSeqCmd(SEQ_PLAYER_BGM_MAIN << 24 | NA_BGM_ESCAPE);
 }
 
 BossGanon2* func_80B53488(EnZl3* this, GlobalContext* globalCtx) {
@@ -143,11 +141,12 @@ void func_80B53614(EnZl3* this, GlobalContext* globalCtx) {
 }
 
 void func_80B5366C(EnZl3* this, GlobalContext* globalCtx) {
-    Actor_UpdateBgCheckInfo(globalCtx, &this->actor, 75.0f, 30.0f, 30.0f, 5);
+    Actor_UpdateBgCheckInfo(globalCtx, &this->actor, 75.0f, 30.0f, 30.0f,
+                            UPDBGCHECKINFO_FLAG_0 | UPDBGCHECKINFO_FLAG_2);
 }
 
 void func_80B536B4(EnZl3* this) {
-    this->actor.bgCheckFlags &= ~0x9;
+    this->actor.bgCheckFlags &= ~(BGCHECKFLAG_GROUND | BGCHECKFLAG_WALL);
 }
 
 void func_80B536C4(EnZl3* this) {
@@ -212,7 +211,7 @@ void func_80B53974(EnZl3* this, u8 arg1) {
 }
 
 void func_80B53980(EnZl3* thisx, s16 y, s32 idx) {
-    EnZl3* this = THIS; // this function might take thisx
+    EnZl3* this = (EnZl3*)thisx; // this function might take thisx
     s32 action = this->action;
     s16 y2 = y;
     s32 yTemp;
@@ -600,7 +599,7 @@ void func_80B54360(EnZl3* this, s16 arg1, s32 arg2) {
 s32 func_80B5458C(GlobalContext* globalCtx, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, void* thisx,
                   Gfx** gfx) {
     s32 pad[3];
-    EnZl3* this = THIS;
+    EnZl3* this = (EnZl3*)thisx;
     s16* unk_28C = this->unk_28C;
     Mtx* sp78;
     MtxF sp38;
@@ -702,7 +701,7 @@ s32 func_80B5458C(GlobalContext* globalCtx, s32 limbIndex, Gfx** dList, Vec3f* p
 }
 
 void EnZl3_PostLimbDraw(GlobalContext* globalCtx, s32 limbIndex, Gfx** dList, Vec3s* rot, void* thisx, Gfx** gfx) {
-    EnZl3* this = THIS;
+    EnZl3* this = (EnZl3*)thisx;
     s32 pad;
     Vec3f sp34;
     s32 pad2;
@@ -748,7 +747,7 @@ void func_80B54DE0(EnZl3* this, GlobalContext* globalCtx) {
     gSegments[6] = VIRTUAL_TO_PHYSICAL(globalCtx->objectCtx.status[idx].segment);
 }
 
-void func_80B54E14(EnZl3* this, AnimationHeader* animation, u8 arg2, f32 transitionRate, s32 arg4) {
+void func_80B54E14(EnZl3* this, AnimationHeader* animation, u8 arg2, f32 morphFrames, s32 arg4) {
     f32 frameCount = Animation_GetLastFrame(animation);
     f32 playbackSpeed;
     f32 unk0;
@@ -764,7 +763,7 @@ void func_80B54E14(EnZl3* this, AnimationHeader* animation, u8 arg2, f32 transit
         playbackSpeed = -1.0f;
     }
 
-    Animation_Change(&this->skelAnime, animation, playbackSpeed, unk0, fc, arg2, transitionRate);
+    Animation_Change(&this->skelAnime, animation, playbackSpeed, unk0, fc, arg2, morphFrames);
 }
 
 void func_80B54EA4(EnZl3* this, GlobalContext* globalCtx) {
@@ -1010,7 +1009,7 @@ void func_80B55780(EnZl3* this, GlobalContext* globalCtx) {
     this->drawConfig = 1;
     osSyncPrintf("ゼルダ姫のEn_Zl3_Actor_inFinal2_Initは通った!!!!!!!!!!!!!!!!!!!!!!!!!\n");
     EnZl3_setMouthIndex(this, 1);
-    this->actor.flags &= ~1;
+    this->actor.flags &= ~ACTOR_FLAG_0;
 }
 
 void func_80B55808(EnZl3* this) {
@@ -1107,8 +1106,8 @@ void func_80B55C4C(EnZl3* this, s32 arg1) {
 void func_80B55C70(EnZl3* this) {
     func_80B54E14(this, &gZelda2Anime2Anim_008684, 2, -8.0f, 0);
     this->action = 12;
-    this->actor.flags &= ~0x9;
-    this->actor.flags &= ~0x1;
+    this->actor.flags &= ~(ACTOR_FLAG_0 | ACTOR_FLAG_3);
+    this->actor.flags &= ~ACTOR_FLAG_0;
 }
 
 void func_80B55CCC(EnZl3* this, s32 arg1) {
@@ -1121,20 +1120,20 @@ void func_80B55D00(EnZl3* this, GlobalContext* globalCtx) {
     if (Actor_ProcessTalkRequest(&this->actor, globalCtx)) {
         this->action = 13;
     } else if (ABS((s16)(this->actor.yawTowardsPlayer - this->actor.shape.rot.y)) <= 0x4300) {
-        this->actor.flags |= 9;
-        this->actor.flags |= 1;
+        this->actor.flags |= ACTOR_FLAG_0 | ACTOR_FLAG_3;
+        this->actor.flags |= ACTOR_FLAG_0;
         this->actor.textId = 0x70D5;
         func_8002F2F4(&this->actor, globalCtx);
     } else {
-        this->actor.flags &= ~9;
-        this->actor.flags &= ~1;
+        this->actor.flags &= ~(ACTOR_FLAG_0 | ACTOR_FLAG_3);
+        this->actor.flags &= ~ACTOR_FLAG_0;
     }
 }
 
 void func_80B55DB0(EnZl3* this, GlobalContext* globalCtx) {
     if (Message_GetState(&globalCtx->msgCtx) == TEXT_STATE_CLOSING) {
-        this->actor.flags &= ~0x9;
-        this->actor.flags &= ~0x1;
+        this->actor.flags &= ~(ACTOR_FLAG_0 | ACTOR_FLAG_3);
+        this->actor.flags &= ~ACTOR_FLAG_0;
         this->action = 12;
     }
 }
@@ -1180,14 +1179,14 @@ void func_80B55F6C(EnZl3* this, GlobalContext* globalCtx) {
         BossGanon2* bossGanon2 = func_80B53488(this, globalCtx);
 
         if ((bossGanon2 != NULL) && (bossGanon2->unk_324 <= (10.0f / 81.0f))) {
-            this->actor.flags |= 9;
-            this->actor.flags |= 1;
+            this->actor.flags |= ACTOR_FLAG_0 | ACTOR_FLAG_3;
+            this->actor.flags |= ACTOR_FLAG_0;
             this->actor.textId = 0x7059;
             func_8002F2F4(&this->actor, globalCtx);
         }
     } else {
-        this->actor.flags &= ~9;
-        this->actor.flags &= ~1;
+        this->actor.flags &= ~(ACTOR_FLAG_0 | ACTOR_FLAG_3);
+        this->actor.flags &= ~ACTOR_FLAG_0;
     }
 }
 
@@ -1212,8 +1211,8 @@ void func_80B56090(EnZl3* this, s32 arg1) {
 
 void func_80B56108(EnZl3* this, GlobalContext* globalCtx) {
     if (Message_GetState(&globalCtx->msgCtx) == TEXT_STATE_CLOSING) {
-        this->actor.flags &= ~0x9;
-        this->actor.flags &= ~0x1;
+        this->actor.flags &= ~(ACTOR_FLAG_0 | ACTOR_FLAG_3);
+        this->actor.flags &= ~ACTOR_FLAG_0;
         this->action = 16;
     }
 }
@@ -1242,22 +1241,22 @@ void func_80B56214(EnZl3* this, GlobalContext* globalCtx) {
 
         if (bossGanon2 != NULL) {
             if (bossGanon2->unk_324 <= (10.0f / 81.0f)) {
-                this->actor.flags |= 9;
-                this->actor.flags |= 1;
+                this->actor.flags |= ACTOR_FLAG_0 | ACTOR_FLAG_3;
+                this->actor.flags |= ACTOR_FLAG_0;
                 this->actor.textId = 0x7059;
                 func_8002F2F4(&this->actor, globalCtx);
             }
         }
     } else {
-        this->actor.flags &= ~9;
-        this->actor.flags &= ~1;
+        this->actor.flags &= ~(ACTOR_FLAG_0 | ACTOR_FLAG_3);
+        this->actor.flags &= ~ACTOR_FLAG_0;
     }
 }
 
 void func_80B562F4(EnZl3* this, GlobalContext* globalCtx) {
     if (Message_GetState(&globalCtx->msgCtx) == TEXT_STATE_CLOSING) {
-        this->actor.flags &= ~0x9;
-        this->actor.flags &= ~0x1;
+        this->actor.flags &= ~(ACTOR_FLAG_0 | ACTOR_FLAG_3);
+        this->actor.flags &= ~ACTOR_FLAG_0;
         this->action = 20;
     }
 }
@@ -1556,7 +1555,8 @@ void func_80B56E38(EnZl3* this, GlobalContext* globalCtx) {
     s32 sfxId;
     SkelAnime* sp20 = &this->skelAnime;
 
-    if ((Animation_OnFrame(sp20, 6.0f) || Animation_OnFrame(sp20, 0.0f)) && (this->actor.bgCheckFlags & 1)) {
+    if ((Animation_OnFrame(sp20, 6.0f) || Animation_OnFrame(sp20, 0.0f)) &&
+        (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND)) {
         sfxId = 0x800;
         sfxId += SurfaceType_GetSfx(&globalCtx->colCtx, this->actor.floorPoly, this->actor.floorBgId);
         func_80078914(&this->actor.projectedPos, sfxId);
@@ -1614,7 +1614,7 @@ s32 func_80B57034(EnZl3* this, s32 arg1, s32 arg2) {
         f32 xDiff = vec2->x - vec1->x;
         f32 zDiff = vec2->z - vec1->z;
 
-        return ((xDiff == 0.0f) && (zDiff == 0.0f)) ? 0 : (s16)(Math_FAtan2F(xDiff, zDiff) * (0x8000 / M_PI));
+        return ((xDiff == 0.0f) && (zDiff == 0.0f)) ? 0 : RADF_TO_BINANG(Math_FAtan2F(xDiff, zDiff));
     }
     return 0;
 }
@@ -1627,7 +1627,7 @@ s16 func_80B57104(EnZl3* this, s32 arg1) {
         f32 zDiff = point->z - this->actor.world.pos.z;
 
         if ((xDiff != 0.0f) || (zDiff != 0.0f)) {
-            return Math_FAtan2F(xDiff, zDiff) * (0x8000 / M_PI);
+            return RADF_TO_BINANG(Math_FAtan2F(xDiff, zDiff));
         }
     }
     return 0;
@@ -1697,7 +1697,7 @@ void func_80B57350(EnZl3* this, GlobalContext* globalCtx) {
     s16 temp_v0 = this->actor.yawTowardsPlayer - this->actor.shape.rot.y;
 
     if (ABS(temp_v0) <= 0x4300) {
-        this->actor.flags |= 9;
+        this->actor.flags |= ACTOR_FLAG_0 | ACTOR_FLAG_3;
         this->actor.textId = func_80B572F0(globalCtx);
         func_8002F2F4(&this->actor, globalCtx);
     }
@@ -1741,7 +1741,7 @@ s32 func_80B57458(EnZl3* this, GlobalContext* globalCtx) {
         return 1;
     }
 
-    temp_v0 = (s16)(temp_v1 - (s16)(Math_FAtan2F(temp_f12, temp_f13) * (0x8000 / M_PI)));
+    temp_v0 = (s16)(temp_v1 - RADF_TO_BINANG(Math_FAtan2F(temp_f12, temp_f13)));
 
     if (temp_v0 < 0x1555) {
         return 1;
@@ -1828,7 +1828,7 @@ void func_80B577BC(GlobalContext* globalCtx, Vec3f* vec) {
     f32 posZ = vec->z;
 
     Actor_Spawn(&globalCtx->actorCtx, globalCtx, ACTOR_EN_TEST, posX, posY, posZ, 0,
-                (Math_FAtan2F(playerPos->x - posX, playerPos->z - posZ) * (0x8000 / M_PI)), 0, 5);
+                RADF_TO_BINANG(Math_FAtan2F(playerPos->x - posX, playerPos->z - posZ)), 0, 5);
 }
 
 void func_80B57858(GlobalContext* globalCtx) {
@@ -2200,7 +2200,7 @@ s32 func_80B58938(EnZl3* this, GlobalContext* globalCtx) {
 }
 
 s32 func_80B5899C(EnZl3* this, GlobalContext* globalCtx) {
-    if ((this->actor.bgCheckFlags & 1)) {
+    if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
         Player* player = GET_PLAYER(globalCtx);
         s8 invincibilityTimer = player->invincibilityTimer;
 
@@ -2449,7 +2449,7 @@ s32 func_80B5944C(GlobalContext* globalCtx, s32 limbIndex, Gfx** dList, Vec3f* p
                   Gfx** gfx) {
     if (limbIndex == 14) {
         Mtx* mtx = Graph_Alloc(globalCtx->state.gfxCtx, sizeof(Mtx) * 7);
-        EnZl3* this = THIS;
+        EnZl3* this = (EnZl3*)thisx;
         Vec3s* vec = &this->unk_3F8.unk_08;
 
         gSPSegment(gfx[0]++, 0x0C, mtx);
@@ -2491,6 +2491,7 @@ s32 func_80B59698(EnZl3* this, GlobalContext* globalCtx) {
 
     if (cond) {
         u8 curSpawn = globalCtx->curSpawn;
+
         if ((func_80B54DB4(this) == 0x20) && (curSpawn == 0) &&
             ((gSaveContext.timer2Value <= 0) || (gSaveContext.timer2State == 0))) {
             return 1;
@@ -2519,7 +2520,7 @@ void func_80B59828(EnZl3* this, GlobalContext* globalCtx) {
         s16 newRotY;
 
         func_80B54E14(this, &gZelda2Anime2Anim_009FBC, 0, 0.0f, 0);
-        this->actor.flags |= 9;
+        this->actor.flags |= ACTOR_FLAG_0 | ACTOR_FLAG_3;
         func_80B56F10(this, globalCtx);
         newRotY = func_80B571A8(this);
         this->actor.shape.rot.y = newRotY;
@@ -2644,7 +2645,7 @@ static EnZl3ActionFunc sActionFuncs[] = {
 };
 
 void EnZl3_Update(Actor* thisx, GlobalContext* globalCtx) {
-    EnZl3* this = THIS;
+    EnZl3* this = (EnZl3*)thisx;
 
     if (this->action < 0 || this->action >= ARRAY_COUNT(sActionFuncs) || sActionFuncs[this->action] == NULL) {
         osSyncPrintf(VT_FGCOL(RED) "メインモードがおかしい!!!!!!!!!!!!!!!!!!!!!!!!!\n" VT_RST);
@@ -2654,7 +2655,7 @@ void EnZl3_Update(Actor* thisx, GlobalContext* globalCtx) {
 }
 
 void EnZl3_Init(Actor* thisx, GlobalContext* globalCtx) {
-    EnZl3* this = THIS;
+    EnZl3* this = (EnZl3*)thisx;
     ActorShape* shape = &this->actor.shape;
     s32 pad;
 
@@ -2683,7 +2684,7 @@ static OverrideLimbDraw sOverrideLimbDrawFuncs[] = {
 
 s32 EnZl3_OverrideLimbDraw(GlobalContext* globalCtx, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, void* thisx,
                            Gfx** gfx) {
-    EnZl3* this = THIS;
+    EnZl3* this = (EnZl3*)thisx;
 
     if (this->unk_308 < 0 || this->unk_308 >= ARRAY_COUNT(sOverrideLimbDrawFuncs) ||
         sOverrideLimbDrawFuncs[this->unk_308] == NULL) {
@@ -2753,7 +2754,7 @@ static EnZl3DrawFunc sDrawFuncs[] = {
 };
 
 void EnZl3_Draw(Actor* thisx, GlobalContext* globalCtx) {
-    EnZl3* this = THIS;
+    EnZl3* this = (EnZl3*)thisx;
 
     if (this->drawConfig < 0 || this->drawConfig >= 3 || sDrawFuncs[this->drawConfig] == NULL) {
         osSyncPrintf(VT_FGCOL(RED) "描画モードがおかしい!!!!!!!!!!!!!!!!!!!!!!!!!\n" VT_RST);

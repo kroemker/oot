@@ -11,9 +11,7 @@
 
 #include "vt.h"
 
-#define FLAGS 0x00000010
-
-#define THIS ((DemoSa*)thisx)
+#define FLAGS ACTOR_FLAG_4
 
 void DemoSa_Init(Actor* thisx, GlobalContext* globalCtx);
 void DemoSa_Destroy(Actor* thisx, GlobalContext* globalCtx);
@@ -100,7 +98,7 @@ const ActorInit Demo_Sa_InitVars = {
 };
 
 void DemoSa_Destroy(Actor* thisx, GlobalContext* globalCtx) {
-    DemoSa* this = THIS;
+    DemoSa* this = (DemoSa*)thisx;
 
     SkelAnime_Free(&this->skelAnime, globalCtx);
 }
@@ -153,7 +151,8 @@ void func_8098E554(DemoSa* this, GlobalContext* globalCtx) {
 }
 
 void func_8098E5C8(DemoSa* this, GlobalContext* globalCtx) {
-    Actor_UpdateBgCheckInfo(globalCtx, &this->actor, 75.0f, 30.0f, 30.0f, 5);
+    Actor_UpdateBgCheckInfo(globalCtx, &this->actor, 75.0f, 30.0f, 30.0f,
+                            UPDBGCHECKINFO_FLAG_0 | UPDBGCHECKINFO_FLAG_2);
 }
 
 s32 DemoSa_UpdateSkelAnime(DemoSa* this) {
@@ -196,7 +195,7 @@ void func_8098E6EC(DemoSa* this, GlobalContext* globalCtx, s32 actionIdx) {
     }
 }
 
-void func_8098E76C(DemoSa* this, AnimationHeader* animHeaderSeg, u8 arg2, f32 transitionRate, s32 arg4) {
+void func_8098E76C(DemoSa* this, AnimationHeader* animHeaderSeg, u8 arg2, f32 morphFrames, s32 arg4) {
     s32 pad[2];
     f32 frameCount = Animation_GetLastFrame(animHeaderSeg);
     f32 playbackSpeed;
@@ -213,7 +212,7 @@ void func_8098E76C(DemoSa* this, AnimationHeader* animHeaderSeg, u8 arg2, f32 tr
         playbackSpeed = -1.0f;
     }
 
-    Animation_Change(&this->skelAnime, animHeaderSeg, playbackSpeed, unk0, fc, arg2, transitionRate);
+    Animation_Change(&this->skelAnime, animHeaderSeg, playbackSpeed, unk0, fc, arg2, morphFrames);
 }
 
 void func_8098E7FC(DemoSa* this, GlobalContext* globalCtx) {
@@ -750,7 +749,7 @@ void func_8098FD0C(DemoSa* this, GlobalContext* globalCtx) {
 }
 
 void DemoSa_Update(Actor* thisx, GlobalContext* globalCtx) {
-    DemoSa* this = THIS;
+    DemoSa* this = (DemoSa*)thisx;
 
     if (this->action < 0 || this->action >= 21 || sActionFuncs[this->action] == NULL) {
         osSyncPrintf(VT_FGCOL(RED) "メインモードがおかしい!!!!!!!!!!!!!!!!!!!!!!!!!\n" VT_RST);
@@ -760,7 +759,7 @@ void DemoSa_Update(Actor* thisx, GlobalContext* globalCtx) {
 }
 
 void DemoSa_Init(Actor* thisx, GlobalContext* globalCtx) {
-    DemoSa* this = THIS;
+    DemoSa* this = (DemoSa*)thisx;
 
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 30.0f);
 
@@ -783,7 +782,7 @@ void DemoSa_Init(Actor* thisx, GlobalContext* globalCtx) {
 }
 
 s32 DemoSa_OverrideLimbDraw(GlobalContext* globalCtx, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, void* thisx) {
-    DemoSa* this = THIS;
+    DemoSa* this = (DemoSa*)thisx;
 
     if ((limbIndex == 15) && (this->unk_1B0 != 0)) {
         *dList = gSariaRightHandAndOcarinaDL;
@@ -820,7 +819,7 @@ void DemoSa_DrawOpa(DemoSa* this, GlobalContext* globalCtx) {
 }
 
 void DemoSa_Draw(Actor* thisx, GlobalContext* globalCtx) {
-    DemoSa* this = THIS;
+    DemoSa* this = (DemoSa*)thisx;
 
     if (this->drawConfig < 0 || this->drawConfig >= 3 || sDrawFuncs[this->drawConfig] == NULL) {
         osSyncPrintf(VT_FGCOL(RED) "描画モードがおかしい!!!!!!!!!!!!!!!!!!!!!!!!!\n" VT_RST);

@@ -8,9 +8,7 @@
 #include "objects/object_niw/object_niw.h"
 #include "vt.h"
 
-#define FLAGS 0x00000010
-
-#define THIS ((EnSyatekiNiw*)thisx)
+#define FLAGS ACTOR_FLAG_4
 
 void EnSyatekiNiw_Init(Actor* thisx, GlobalContext* globalCtx);
 void EnSyatekiNiw_Destroy(Actor* thisx, GlobalContext* globalCtx);
@@ -67,10 +65,10 @@ static InitChainEntry sInitChain[] = {
 };
 
 void EnSyatekiNiw_Init(Actor* thisx, GlobalContext* globalCtx) {
-    EnSyatekiNiw* this = THIS;
+    EnSyatekiNiw* this = (EnSyatekiNiw*)thisx;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
-    this->actor.flags &= ~1;
+    this->actor.flags &= ~ACTOR_FLAG_0;
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 25.0f);
     SkelAnime_InitFlex(globalCtx, &this->skelAnime, &gCuccoSkel, &gCuccoAnim, this->jointTable, this->morphTable, 16);
 
@@ -100,7 +98,7 @@ void EnSyatekiNiw_Init(Actor* thisx, GlobalContext* globalCtx) {
 }
 
 void EnSyatekiNiw_Destroy(Actor* thisx, GlobalContext* globalCtx) {
-    EnSyatekiNiw* this = THIS;
+    EnSyatekiNiw* this = (EnSyatekiNiw*)thisx;
 
     Collider_DestroyCylinder(globalCtx, &this->collider);
 }
@@ -230,7 +228,7 @@ void func_80B11E78(EnSyatekiNiw* this, GlobalContext* globalCtx) {
     f32 tmpf1;
     s16 sp4A;
 
-    if ((this->unk_29C != 0) && (this->unk_29E == 0) && (this->actor.bgCheckFlags & 1)) {
+    if ((this->unk_29C != 0) && (this->unk_29E == 0) && (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND)) {
         this->unk_29C = 0;
         this->actionFunc = func_80B123A8;
         return;
@@ -300,7 +298,7 @@ void func_80B11E78(EnSyatekiNiw* this, GlobalContext* globalCtx) {
             }
         } else {
             this->unk_25C = 4;
-            if (this->actor.bgCheckFlags & 1) {
+            if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
                 this->actor.velocity.y = 2.5f;
                 if ((Rand_ZeroFloat(10.0f) < 1.0f) && (this->unk_29E == 0)) {
                     this->unk_25C = 0xC;
@@ -330,8 +328,7 @@ void func_80B11E78(EnSyatekiNiw* this, GlobalContext* globalCtx) {
             this->unk_294 = 7;
         }
 
-        Math_SmoothStepToS(&this->actor.world.rot.y, Math_FAtan2F(tmpf1, tmpf2) * (0x8000 / M_PI), 3, this->unk_2C8.z,
-                           0);
+        Math_SmoothStepToS(&this->actor.world.rot.y, RADF_TO_BINANG(Math_FAtan2F(tmpf1, tmpf2)), 3, this->unk_2C8.z, 0);
         Math_ApproachF(&this->unk_2C8.z, 10000.0f, 1.0f, 1000.0f);
     }
 
@@ -404,7 +401,7 @@ void func_80B12460(EnSyatekiNiw* this, GlobalContext* globalCtx) {
                 this->actor.speedXZ = 0.0f;
             }
 
-            if ((this->actor.bgCheckFlags & 1) && (this->actor.world.pos.z > 110.0f)) {
+            if ((this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && (this->actor.world.pos.z > 110.0f)) {
                 this->actor.velocity.y = 0.0f;
                 this->actor.gravity = 0.0f;
                 this->unk_284 = 0.0f;
@@ -477,9 +474,8 @@ void func_80B12460(EnSyatekiNiw* this, GlobalContext* globalCtx) {
     }
 
     Math_SmoothStepToS(&this->actor.world.rot.y,
-                       (s16)(Math_FAtan2F(player->actor.world.pos.x - this->actor.world.pos.x,
-                                          player->actor.world.pos.z - this->actor.world.pos.z) *
-                             (0x8000 / M_PI)) +
+                       RADF_TO_BINANG(Math_FAtan2F(player->actor.world.pos.x - this->actor.world.pos.x,
+                                                   player->actor.world.pos.z - this->actor.world.pos.z)) +
                            phi_f16,
                        5, this->unk_2C8.y, 0);
     Math_ApproachF(&this->unk_2C8.y, 3000.0f, 1.0f, 500.0f);
@@ -534,7 +530,7 @@ void func_80B129EC(EnSyatekiNiw* this, GlobalContext* globalCtx) {
         this->unk_298++;
         this->unk_298 &= 1;
         this->unk_25C = (s16)Rand_CenteredFloat(4.0f) + 5;
-        if ((Rand_ZeroFloat(5.0f) < 1.0f) && (this->actor.bgCheckFlags & 1)) {
+        if ((Rand_ZeroFloat(5.0f) < 1.0f) && (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND)) {
             this->actor.velocity.y = 4.0f;
         }
     }
@@ -574,7 +570,7 @@ void func_80B12BA4(EnSyatekiNiw* this, GlobalContext* globalCtx) {
 }
 
 void EnSyatekiNiw_Update(Actor* thisx, GlobalContext* globalCtx) {
-    EnSyatekiNiw* this = THIS;
+    EnSyatekiNiw* this = (EnSyatekiNiw*)thisx;
     s32 pad;
     s16 i;
     Vec3f sp90 = { 0.0f, 0.0f, 0.0f };
@@ -622,7 +618,9 @@ void EnSyatekiNiw_Update(Actor* thisx, GlobalContext* globalCtx) {
 
     this->actionFunc(this, globalCtx);
     Actor_MoveForward(&this->actor);
-    Actor_UpdateBgCheckInfo(globalCtx, &this->actor, 20.0f, 20.0f, 60.0f, 0x1D);
+    Actor_UpdateBgCheckInfo(globalCtx, &this->actor, 20.0f, 20.0f, 60.0f,
+                            UPDBGCHECKINFO_FLAG_0 | UPDBGCHECKINFO_FLAG_2 | UPDBGCHECKINFO_FLAG_3 |
+                                UPDBGCHECKINFO_FLAG_4);
 
     if (this->unk_2A0 != 0) {
         for (i = 0; i < 20; i++) {
@@ -673,7 +671,7 @@ void EnSyatekiNiw_Update(Actor* thisx, GlobalContext* globalCtx) {
 
 s32 SyatekiNiw_OverrideLimbDraw(GlobalContext* globalCtx, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot,
                                 void* thisx) {
-    EnSyatekiNiw* this = THIS;
+    EnSyatekiNiw* this = (EnSyatekiNiw*)thisx;
     Vec3f sp0 = { 0.0f, 0.0f, 0.0f };
 
     if (limbIndex == 13) {
@@ -696,7 +694,7 @@ s32 SyatekiNiw_OverrideLimbDraw(GlobalContext* globalCtx, s32 limbIndex, Gfx** d
 }
 
 void EnSyatekiNiw_Draw(Actor* thisx, GlobalContext* globalCtx) {
-    EnSyatekiNiw* this = THIS;
+    EnSyatekiNiw* this = (EnSyatekiNiw*)thisx;
     Color_RGBA8 sp30 = { 0, 0, 0, 255 };
 
     if (this->actionFunc != func_80B128F8) {
@@ -779,7 +777,7 @@ void func_80B13464(EnSyatekiNiw* this, GlobalContext* globalCtx) {
             }
 
             Matrix_Translate(ptr->unk_04.x, ptr->unk_04.y, ptr->unk_04.z, MTXMODE_NEW);
-            func_800D1FD4(&globalCtx->mf_11DA0);
+            Matrix_ReplaceRotation(&globalCtx->billboardMtxF);
             Matrix_Scale(ptr->unk_2C, ptr->unk_2C, 1.0f, MTXMODE_APPLY);
             Matrix_RotateZ(ptr->unk_30, MTXMODE_APPLY);
             Matrix_Translate(0.0f, -1000.0f, 0.0f, MTXMODE_APPLY);

@@ -8,9 +8,7 @@
 
 #include "overlays/actors/ovl_En_Arrow/z_en_arrow.h"
 
-#define FLAGS 0x02000010
-
-#define THIS ((ArrowLight*)thisx)
+#define FLAGS (ACTOR_FLAG_4 | ACTOR_FLAG_25)
 
 void ArrowLight_Init(Actor* thisx, GlobalContext* globalCtx);
 void ArrowLight_Destroy(Actor* thisx, GlobalContext* globalCtx);
@@ -44,7 +42,7 @@ void ArrowLight_SetupAction(ArrowLight* this, ArrowLightActionFunc actionFunc) {
 }
 
 void ArrowLight_Init(Actor* thisx, GlobalContext* globalCtx) {
-    ArrowLight* this = THIS;
+    ArrowLight* this = (ArrowLight*)thisx;
 
     Actor* actor = globalCtx->actorCtx.actorLists[ACTORCAT_ENEMY].head;
     while (actor != NULL) {
@@ -186,7 +184,7 @@ void ArrowLight_Fly(ArrowLight* this, GlobalContext* globalCtx) {
 }
 
 void ArrowLight_Update(Actor* thisx, GlobalContext* globalCtx) {
-    ArrowLight* this = THIS;
+    ArrowLight* this = (ArrowLight*)thisx;
 
     if (globalCtx->msgCtx.msgMode == MSGMODE_OCARINA_CORRECT_PLAYBACK ||
         globalCtx->msgCtx.msgMode == MSGMODE_SONG_PLAYED) {
@@ -197,7 +195,7 @@ void ArrowLight_Update(Actor* thisx, GlobalContext* globalCtx) {
 }
 
 void ArrowLight_Draw(Actor* thisx, GlobalContext* globalCtx) {
-    ArrowLight* this = THIS;
+    ArrowLight* this = (ArrowLight*)thisx;
     s32 pad;
     u32 stateFrames = globalCtx->state.frames;
     EnArrow* arrow = (EnArrow*)this->actor.parent;
@@ -212,9 +210,9 @@ void ArrowLight_Draw(Actor* thisx, GlobalContext* globalCtx) {
         OPEN_DISPS(globalCtx->state.gfxCtx, "../z_arrow_light.c", 598);
 
         Matrix_Translate(tranform->world.pos.x, tranform->world.pos.y, tranform->world.pos.z, MTXMODE_NEW);
-        Matrix_RotateY(tranform->shape.rot.y * (M_PI / 0x8000), MTXMODE_APPLY);
-        Matrix_RotateX(tranform->shape.rot.x * (M_PI / 0x8000), MTXMODE_APPLY);
-        Matrix_RotateZ(tranform->shape.rot.z * (M_PI / 0x8000), MTXMODE_APPLY);
+        Matrix_RotateY(BINANG_TO_RAD(tranform->shape.rot.y), MTXMODE_APPLY);
+        Matrix_RotateX(BINANG_TO_RAD(tranform->shape.rot.x), MTXMODE_APPLY);
+        Matrix_RotateZ(BINANG_TO_RAD(tranform->shape.rot.z), MTXMODE_APPLY);
         Matrix_Scale(0.01f, 0.01f, 0.01f, MTXMODE_APPLY);
 
         // Draw yellow effect over the screen when arrow hits

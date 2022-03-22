@@ -8,9 +8,7 @@
 #include "objects/object_sd/object_sd.h"
 #include "vt.h"
 
-#define FLAGS 0x00000000
-
-#define THIS ((EnHeishi3*)thisx)
+#define FLAGS 0
 
 void EnHeishi3_Init(Actor* thisx, GlobalContext* globalCtx);
 void EnHeishi3_Destroy(Actor* thisx, GlobalContext* globalCtx);
@@ -60,7 +58,7 @@ static ColliderCylinderInit sCylinderInit = {
 };
 
 void EnHeishi3_Init(Actor* thisx, GlobalContext* globalCtx) {
-    EnHeishi3* this = THIS;
+    EnHeishi3* this = (EnHeishi3*)thisx;
 
     sPlayerCaught = 0;
     if (this->actor.params <= 0) {
@@ -88,7 +86,7 @@ void EnHeishi3_Init(Actor* thisx, GlobalContext* globalCtx) {
 }
 
 void EnHeishi3_Destroy(Actor* thisx, GlobalContext* globalCtx) {
-    EnHeishi3* this = THIS;
+    EnHeishi3* this = (EnHeishi3*)thisx;
 
     Collider_DestroyCylinder(globalCtx, &this->collider);
 }
@@ -214,7 +212,7 @@ void func_80A55D00(EnHeishi3* this, GlobalContext* globalCtx) {
 }
 
 void EnHeishi3_Update(Actor* thisx, GlobalContext* globalCtx) {
-    EnHeishi3* this = THIS;
+    EnHeishi3* this = (EnHeishi3*)thisx;
     s32 pad;
 
     Actor_SetFocus(&this->actor, 60.0f);
@@ -225,14 +223,15 @@ void EnHeishi3_Update(Actor* thisx, GlobalContext* globalCtx) {
     this->actionFunc(this, globalCtx);
     this->actor.shape.rot = this->actor.world.rot;
     Actor_MoveForward(&this->actor);
-    Actor_UpdateBgCheckInfo(globalCtx, &this->actor, 20.0f, 20.0f, 50.0f, 0x1C);
+    Actor_UpdateBgCheckInfo(globalCtx, &this->actor, 20.0f, 20.0f, 50.0f,
+                            UPDBGCHECKINFO_FLAG_2 | UPDBGCHECKINFO_FLAG_3 | UPDBGCHECKINFO_FLAG_4);
     Collider_UpdateCylinder(&this->actor, &this->collider);
     CollisionCheck_SetOC(globalCtx, &globalCtx->colChkCtx, &this->collider.base);
 }
 
 s32 EnHeishi3_OverrideLimbDraw(GlobalContext* globalCtx, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot,
                                void* thisx) {
-    EnHeishi3* this = THIS;
+    EnHeishi3* this = (EnHeishi3*)thisx;
 
     if (limbIndex == 9) {
         rot->x += this->unk_26E;
@@ -247,7 +246,7 @@ s32 EnHeishi3_OverrideLimbDraw(GlobalContext* globalCtx, s32 limbIndex, Gfx** dL
 }
 
 void EnHeishi3_Draw(Actor* thisx, GlobalContext* globalCtx) {
-    EnHeishi3* this = THIS;
+    EnHeishi3* this = (EnHeishi3*)thisx;
 
     func_80093D18(globalCtx->state.gfxCtx);
     SkelAnime_DrawOpa(globalCtx, this->skelAnime.skeleton, this->skelAnime.jointTable, EnHeishi3_OverrideLimbDraw, NULL,

@@ -7,9 +7,7 @@
 #include "z_arrow_fire.h"
 #include "overlays/actors/ovl_En_Arrow/z_en_arrow.h"
 
-#define FLAGS 0x02000010
-
-#define THIS ((ArrowFire*)thisx)
+#define FLAGS (ACTOR_FLAG_4 | ACTOR_FLAG_25)
 
 void ArrowFire_Init(Actor* thisx, GlobalContext* globalCtx);
 void ArrowFire_Destroy(Actor* thisx, GlobalContext* globalCtx);
@@ -43,7 +41,7 @@ void ArrowFire_SetupAction(ArrowFire* this, ArrowFireActionFunc actionFunc) {
 }
 
 void ArrowFire_Init(Actor* thisx, GlobalContext* globalCtx) {
-    ArrowFire* this = THIS;
+    ArrowFire* this = (ArrowFire*)thisx;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
     this->radius = 0;
@@ -180,7 +178,7 @@ void ArrowFire_Fly(ArrowFire* this, GlobalContext* globalCtx) {
 }
 
 void ArrowFire_Update(Actor* thisx, GlobalContext* globalCtx) {
-    ArrowFire* this = THIS;
+    ArrowFire* this = (ArrowFire*)thisx;
 
     if (globalCtx->msgCtx.msgMode == MSGMODE_OCARINA_CORRECT_PLAYBACK ||
         globalCtx->msgCtx.msgMode == MSGMODE_SONG_PLAYED) {
@@ -191,7 +189,7 @@ void ArrowFire_Update(Actor* thisx, GlobalContext* globalCtx) {
 }
 
 void ArrowFire_Draw(Actor* thisx, GlobalContext* globalCtx2) {
-    ArrowFire* this = THIS;
+    ArrowFire* this = (ArrowFire*)thisx;
     GlobalContext* globalCtx = globalCtx2;
     u32 stateFrames;
     EnArrow* arrow;
@@ -208,9 +206,9 @@ void ArrowFire_Draw(Actor* thisx, GlobalContext* globalCtx2) {
         OPEN_DISPS(globalCtx->state.gfxCtx, "../z_arrow_fire.c", 618);
 
         Matrix_Translate(tranform->world.pos.x, tranform->world.pos.y, tranform->world.pos.z, MTXMODE_NEW);
-        Matrix_RotateY(tranform->shape.rot.y * (M_PI / 0x8000), MTXMODE_APPLY);
-        Matrix_RotateX(tranform->shape.rot.x * (M_PI / 0x8000), MTXMODE_APPLY);
-        Matrix_RotateZ(tranform->shape.rot.z * (M_PI / 0x8000), MTXMODE_APPLY);
+        Matrix_RotateY(BINANG_TO_RAD(tranform->shape.rot.y), MTXMODE_APPLY);
+        Matrix_RotateX(BINANG_TO_RAD(tranform->shape.rot.x), MTXMODE_APPLY);
+        Matrix_RotateZ(BINANG_TO_RAD(tranform->shape.rot.z), MTXMODE_APPLY);
         Matrix_Scale(0.01f, 0.01f, 0.01f, MTXMODE_APPLY);
 
         // Draw red effect over the screen when arrow hits

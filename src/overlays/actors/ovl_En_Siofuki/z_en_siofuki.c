@@ -7,9 +7,7 @@
 #include "z_en_siofuki.h"
 #include "objects/object_siofuki/object_siofuki.h"
 
-#define FLAGS 0x00000030
-
-#define THIS ((EnSiofuki*)thisx)
+#define FLAGS (ACTOR_FLAG_4 | ACTOR_FLAG_5)
 
 void EnSiofuki_Init(Actor* thisx, GlobalContext* globalCtx);
 void EnSiofuki_Destroy(Actor* thisx, GlobalContext* globalCtx);
@@ -39,7 +37,7 @@ static InitChainEntry sInitChain[] = {
 };
 
 void EnSiofuki_Init(Actor* thisx, GlobalContext* globalCtx) {
-    EnSiofuki* this = THIS;
+    EnSiofuki* this = (EnSiofuki*)thisx;
     s32 type;
     CollisionHeader* colHeader = NULL;
     s32 pad;
@@ -108,7 +106,7 @@ void EnSiofuki_Init(Actor* thisx, GlobalContext* globalCtx) {
 }
 
 void EnSiofuki_Destroy(Actor* thisx, GlobalContext* globalCtx) {
-    EnSiofuki* this = THIS;
+    EnSiofuki* this = (EnSiofuki*)thisx;
     DynaPoly_DeleteBgActor(globalCtx, &globalCtx->colCtx.dyna, this->dyna.bgId);
 }
 
@@ -150,7 +148,7 @@ void func_80AFBE8C(EnSiofuki* this, GlobalContext* globalCtx) {
             dist2d = sqrtf(SQ(dX) + SQ(dZ));
             this->applySpeed = true;
             this->splashTimer = 0;
-            angle = Math_FAtan2F(dX, dZ) * (0x8000 / M_PI);
+            angle = RADF_TO_BINANG(Math_FAtan2F(dX, dZ));
             dAngle = (player->actor.world.rot.y ^ 0x8000) - angle;
             player->actor.gravity = 0.0f;
             player->actor.velocity.y = 0.0f;
@@ -323,13 +321,13 @@ void func_80AFC544(EnSiofuki* this, GlobalContext* globalCtx) {
 }
 
 void EnSiofuki_Update(Actor* thisx, GlobalContext* globalCtx) {
-    EnSiofuki* this = THIS;
+    EnSiofuki* this = (EnSiofuki*)thisx;
 
     this->actionFunc(this, globalCtx);
 }
 
 void EnSiofuki_Draw(Actor* thisx, GlobalContext* globalCtx) {
-    EnSiofuki* this = THIS;
+    EnSiofuki* this = (EnSiofuki*)thisx;
     u32 x;
     u32 y;
     u32 gameplayFrames = globalCtx->gameplayFrames;

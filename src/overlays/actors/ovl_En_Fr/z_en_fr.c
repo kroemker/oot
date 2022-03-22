@@ -3,9 +3,7 @@
 #include "vt.h"
 #include "objects/object_fr/object_fr.h"
 
-#define FLAGS 0x02000019
-
-#define THIS ((EnFr*)thisx)
+#define FLAGS (ACTOR_FLAG_0 | ACTOR_FLAG_3 | ACTOR_FLAG_4 | ACTOR_FLAG_25)
 
 void EnFr_Init(Actor* thisx, GlobalContext* globalCtx);
 void EnFr_Destroy(Actor* thisx, GlobalContext* globalCtx);
@@ -212,20 +210,20 @@ void EnFr_OrientUnderwater(EnFr* this) {
     this->actor.world.pos.z = this->posLogSpot.z + vec2.z;
     this->actor.world.pos.y = sLogSpotToFromWater[this->actor.params].yDist + this->posLogSpot.y;
     this->actor.world.rot.y = this->actor.shape.rot.y =
-        (s16)(sLogSpotToFromWater[this->actor.params].yaw * ((f32)0x8000 / M_PI)) + 0x8000;
+        RADF_TO_BINANG(sLogSpotToFromWater[this->actor.params].yaw) + 0x8000;
     this->actor.speedXZ = 0.0f;
     this->actor.velocity.y = 0.0f;
     this->actor.gravity = 0.0f;
 }
 
 void EnFr_Init(Actor* thisx, GlobalContext* globalCtx) {
-    EnFr* this = THIS;
+    EnFr* this = (EnFr*)thisx;
 
     if (this->actor.params == 0) {
         this->actor.destroy = NULL;
         this->actor.draw = NULL;
         this->actor.update = EnFr_UpdateIdle;
-        this->actor.flags &= ~0x11;
+        this->actor.flags &= ~(ACTOR_FLAG_0 | ACTOR_FLAG_4);
         this->actor.flags &= ~0;
         Actor_ChangeCategory(globalCtx, &globalCtx->actorCtx, &this->actor, ACTORCAT_PROP);
         this->actor.textId = 0x40AC;
@@ -261,13 +259,13 @@ void EnFr_DrawActive(EnFr* this) {
 }
 
 void EnFr_Update(Actor* thisx, GlobalContext* globalCtx) {
-    EnFr* this = THIS;
+    EnFr* this = (EnFr*)thisx;
     s32 pad;
     s32 frogIndex;
     s32 pad2;
 
     if (Object_IsLoaded(&globalCtx->objectCtx, this->objBankIndex)) {
-        this->actor.flags &= ~0x10;
+        this->actor.flags &= ~ACTOR_FLAG_4;
         frogIndex = this->actor.params - 1;
         sEnFrPointers.frogs[frogIndex] = this;
         Actor_ProcessInitChain(&this->actor, sInitChain);
@@ -310,12 +308,12 @@ void EnFr_Update(Actor* thisx, GlobalContext* globalCtx) {
         this->posButterflyLight.x = this->posButterfly.x = this->posLogSpot.x;
         this->posButterflyLight.y = this->posButterfly.y = this->posLogSpot.y + 50.0f;
         this->posButterflyLight.z = this->posButterfly.z = this->posLogSpot.z;
-        this->actor.flags &= ~1;
+        this->actor.flags &= ~ACTOR_FLAG_0;
     }
 }
 
 void EnFr_Destroy(Actor* thisx, GlobalContext* globalCtx) {
-    EnFr* this = THIS;
+    EnFr* this = (EnFr*)thisx;
 
     LightContext_RemoveLight(globalCtx, &globalCtx->lightCtx, this->lightNode);
 }
@@ -413,7 +411,7 @@ void EnFr_JumpingOutOfWater(EnFr* this, GlobalContext* globalCtx) {
 
     vec1.x = vec1.y = 0.0f;
     vec1.z = this->xzDistToLogSpot;
-    Matrix_RotateY(((this->actor.world.rot.y + 0x8000) / (f32)0x8000) * M_PI, MTXMODE_NEW);
+    Matrix_RotateY(BINANG_TO_RAD_ALT(this->actor.world.rot.y + 0x8000), MTXMODE_NEW);
     Matrix_MultVec3f(&vec1, &vec2);
     this->actor.world.pos.x = this->posLogSpot.x + vec2.x;
     this->actor.world.pos.z = this->posLogSpot.z + vec2.z;
@@ -447,7 +445,7 @@ void EnFr_OrientOnLogSpot(EnFr* this, GlobalContext* globalCtx) {
 
 void EnFr_ChooseJumpFromLogSpot(EnFr* this, GlobalContext* globalCtx) {
     if (sEnFrPointers.flags == 12) {
-        this->actor.world.rot.y = ((f32)0x8000 / M_PI) * sLogSpotToFromWater[this->actor.params].yaw;
+        this->actor.world.rot.y = RADF_TO_BINANG(sLogSpotToFromWater[this->actor.params].yaw);
         Animation_Change(&this->skelAnime, &object_fr_Anim_0007BC, 1.0f, 0.0f,
                          Animation_GetLastFrame(&object_fr_Anim_0007BC), ANIMMODE_ONCE, 0.0f);
         this->actionFunc = EnFr_JumpingBackIntoWater;
@@ -559,7 +557,7 @@ void EnFr_ButterflyPath(EnFr* this, GlobalContext* globalCtx) {
 }
 
 void EnFr_UpdateActive(Actor* thisx, GlobalContext* globalCtx) {
-    EnFr* this = THIS;
+    EnFr* this = (EnFr*)thisx;
 
     this->jumpCounter++;
     Actor_SetScale(&this->actor, this->scale * 0.0001f);
@@ -599,7 +597,7 @@ s32 EnFr_SetupJumpingUp(EnFr* this, s32 frogIndex) {
 void EnFr_Idle(EnFr* this, GlobalContext* globalCtx) {
     Player* player = GET_PLAYER(globalCtx);
 
-    if (player->stateFlags2 & 0x2000000) {
+    if (player->stateFlags2 & PLAYER_STATE2_25) {
         if (globalCtx->msgCtx.ocarinaMode == OCARINA_MODE_04) {
             globalCtx->msgCtx.ocarinaMode = OCARINA_MODE_00;
         }
@@ -746,6 +744,7 @@ void EnFr_ChildSong(EnFr* this, GlobalContext* globalCtx) {
 
 void EnFr_ChildSongFirstTime(EnFr* this, GlobalContext* globalCtx) {
     EnFr* frog = sEnFrPointers.frogs[sSongToFrog[this->songIndex]];
+
     if (frog->isActive == false) {
         this->actor.textId = 0x40A9;
         EnFr_SetupReward(this, globalCtx, true);
@@ -1024,7 +1023,7 @@ void EnFr_SetIdle(EnFr* this, GlobalContext* globalCtx) {
 }
 
 void EnFr_UpdateIdle(Actor* thisx, GlobalContext* globalCtx) {
-    EnFr* this = THIS;
+    EnFr* this = (EnFr*)thisx;
 
     if (BREG(0)) {
         DebugDisplay_AddObject(this->actor.world.pos.x, this->actor.world.pos.y, this->actor.world.pos.z,
@@ -1043,12 +1042,12 @@ s32 EnFr_OverrideLimbDraw(GlobalContext* globalCtx, s32 limbIndex, Gfx** dList, 
 }
 
 void EnFr_PostLimbDraw(GlobalContext* globalCtx, s32 limbIndex, Gfx** dList, Vec3s* rot, void* thisx) {
-    EnFr* this = THIS;
+    EnFr* this = (EnFr*)thisx;
 
     if ((limbIndex == 7) || (limbIndex == 8)) {
         OPEN_DISPS(globalCtx->state.gfxCtx, "../z_en_fr.c", 1735);
         Matrix_Push();
-        func_800D1FD4(&globalCtx->mf_11DA0);
+        Matrix_ReplaceRotation(&globalCtx->billboardMtxF);
         gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(globalCtx->state.gfxCtx, "../z_en_fr.c", 1738),
                   G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         gSPDisplayList(POLY_OPA_DISP++, *dList);
@@ -1058,9 +1057,12 @@ void EnFr_PostLimbDraw(GlobalContext* globalCtx, s32 limbIndex, Gfx** dList, Vec
 }
 
 void EnFr_Draw(Actor* thisx, GlobalContext* globalCtx) {
-    static void* eyeTextures[] = { 0x060059A0, 0x06005BA0 };
+    static void* eyeTextures[] = {
+        object_fr_Tex_0059A0,
+        object_fr_Tex_005BA0,
+    };
     s16 lightRadius;
-    EnFr* this = THIS;
+    EnFr* this = (EnFr*)thisx;
     s16 frogIndex = this->actor.params - 1;
 
     OPEN_DISPS(globalCtx->state.gfxCtx, "../z_en_fr.c", 1754);

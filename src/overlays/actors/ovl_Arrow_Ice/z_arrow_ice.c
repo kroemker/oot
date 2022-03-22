@@ -8,9 +8,7 @@
 
 #include "overlays/actors/ovl_En_Arrow/z_en_arrow.h"
 
-#define FLAGS 0x02000010
-
-#define THIS ((ArrowIce*)thisx)
+#define FLAGS (ACTOR_FLAG_4 | ACTOR_FLAG_25)
 
 void ArrowIce_Init(Actor* thisx, GlobalContext* globalCtx);
 void ArrowIce_Destroy(Actor* thisx, GlobalContext* globalCtx);
@@ -44,7 +42,7 @@ void ArrowIce_SetupAction(ArrowIce* this, ArrowIceActionFunc actionFunc) {
 }
 
 void ArrowIce_Init(Actor* thisx, GlobalContext* globalCtx) {
-    ArrowIce* this = THIS;
+    ArrowIce* this = (ArrowIce*)thisx;
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
     this->radius = 0;
@@ -196,7 +194,7 @@ void ArrowIce_Fly(ArrowIce* this, GlobalContext* globalCtx) {
 }
 
 void ArrowIce_Update(Actor* thisx, GlobalContext* globalCtx) {
-    ArrowIce* this = THIS;
+    ArrowIce* this = (ArrowIce*)thisx;
 
     if (globalCtx->msgCtx.msgMode == MSGMODE_OCARINA_CORRECT_PLAYBACK ||
         globalCtx->msgCtx.msgMode == MSGMODE_SONG_PLAYED) {
@@ -207,7 +205,7 @@ void ArrowIce_Update(Actor* thisx, GlobalContext* globalCtx) {
 }
 
 void ArrowIce_Draw(Actor* thisx, GlobalContext* globalCtx) {
-    ArrowIce* this = THIS;
+    ArrowIce* this = (ArrowIce*)thisx;
     s32 pad;
     Actor* tranform;
     u32 stateFrames = globalCtx->state.frames;
@@ -222,9 +220,9 @@ void ArrowIce_Draw(Actor* thisx, GlobalContext* globalCtx) {
         OPEN_DISPS(globalCtx->state.gfxCtx, "../z_arrow_ice.c", 610);
 
         Matrix_Translate(tranform->world.pos.x, tranform->world.pos.y, tranform->world.pos.z, MTXMODE_NEW);
-        Matrix_RotateY(tranform->shape.rot.y * (M_PI / 0x8000), MTXMODE_APPLY);
-        Matrix_RotateX(tranform->shape.rot.x * (M_PI / 0x8000), MTXMODE_APPLY);
-        Matrix_RotateZ(tranform->shape.rot.z * (M_PI / 0x8000), MTXMODE_APPLY);
+        Matrix_RotateY(BINANG_TO_RAD(tranform->shape.rot.y), MTXMODE_APPLY);
+        Matrix_RotateX(BINANG_TO_RAD(tranform->shape.rot.x), MTXMODE_APPLY);
+        Matrix_RotateZ(BINANG_TO_RAD(tranform->shape.rot.z), MTXMODE_APPLY);
         Matrix_Scale(0.01f, 0.01f, 0.01f, MTXMODE_APPLY);
 
         // Draw blue effect over the screen when arrow hits

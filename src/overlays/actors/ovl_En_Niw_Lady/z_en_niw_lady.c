@@ -4,9 +4,7 @@
 #include "overlays/actors/ovl_En_Niw/z_en_niw.h"
 #include "vt.h"
 
-#define FLAGS 0x00000019
-
-#define THIS ((EnNiwLady*)thisx)
+#define FLAGS (ACTOR_FLAG_0 | ACTOR_FLAG_3 | ACTOR_FLAG_4)
 
 void EnNiwLady_Init(Actor* thisx, GlobalContext* globalCtx);
 void EnNiwLady_Destroy(Actor* thisx, GlobalContext* globalCtx);
@@ -69,7 +67,7 @@ static ColliderCylinderInit sCylinderInit = {
 
 void EnNiwLady_Init(Actor* thisx, GlobalContext* globalCtx) {
     s32 pad;
-    EnNiwLady* this = THIS;
+    EnNiwLady* this = (EnNiwLady*)thisx;
 
     this->objectAneIndex = Object_GetIndex(&globalCtx->objectCtx, OBJECT_ANE);
     this->objectOsAnimeIndex = Object_GetIndex(&globalCtx->objectCtx, OBJECT_OS_ANIME);
@@ -92,7 +90,7 @@ void EnNiwLady_Init(Actor* thisx, GlobalContext* globalCtx) {
 }
 
 void EnNiwLady_Destroy(Actor* thisx, GlobalContext* globalCtx) {
-    EnNiwLady* this = THIS;
+    EnNiwLady* this = (EnNiwLady*)thisx;
 
     Collider_DestroyCylinder(globalCtx, &this->collider);
 }
@@ -161,7 +159,7 @@ void func_80AB9F24(EnNiwLady* this, GlobalContext* globalCtx) {
         this->unk_27E = 1;
         this->actor.gravity = -3.0f;
         Actor_SetScale(&this->actor, 0.01f);
-        ActorShape_Init(&this->actor.shape, 0.0f, &ActorShadow_DrawCircle, 20.0f);
+        ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 20.0f);
         Collider_InitCylinder(globalCtx, &this->collider);
         Collider_SetCylinder(globalCtx, &this->collider, &this->actor, &sCylinderInit);
         this->unk_272 = 0;
@@ -490,7 +488,7 @@ void func_80ABAD7C(EnNiwLady* this, GlobalContext* globalCtx) {
 
 void EnNiwLady_Update(Actor* thisx, GlobalContext* globalCtx) {
     s32 pad;
-    EnNiwLady* this = THIS;
+    EnNiwLady* this = (EnNiwLady*)thisx;
     Player* player = GET_PLAYER(globalCtx);
 
     Actor_SetFocus(thisx, 60.0f);
@@ -531,7 +529,9 @@ void EnNiwLady_Update(Actor* thisx, GlobalContext* globalCtx) {
                     this->unusedRandomTimer = ((s16)Rand_ZeroFloat(60.0f) + 0x14);
                 }
             }
-            Actor_UpdateBgCheckInfo(globalCtx, thisx, 20.0f, 20.0f, 60.0f, 0x1D);
+            Actor_UpdateBgCheckInfo(globalCtx, thisx, 20.0f, 20.0f, 60.0f,
+                                    UPDBGCHECKINFO_FLAG_0 | UPDBGCHECKINFO_FLAG_2 | UPDBGCHECKINFO_FLAG_3 |
+                                        UPDBGCHECKINFO_FLAG_4);
             Collider_UpdateCylinder(thisx, &this->collider);
             if (1) {}
             CollisionCheck_SetOC(globalCtx, &globalCtx->colChkCtx, &this->collider.base);
@@ -539,7 +539,7 @@ void EnNiwLady_Update(Actor* thisx, GlobalContext* globalCtx) {
     }
 }
 
-Gfx* func_80ABB0A0(GraphicsContext* gfxCtx) {
+Gfx* EnNiwLady_EmptyDList(GraphicsContext* gfxCtx) {
     Gfx* dList;
 
     dList = Graph_Alloc(gfxCtx, sizeof(Gfx));
@@ -549,7 +549,7 @@ Gfx* func_80ABB0A0(GraphicsContext* gfxCtx) {
 
 s32 EnNiwLady_OverrideLimbDraw(GlobalContext* globalCtx, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot,
                                void* thisx) {
-    EnNiwLady* this = THIS;
+    EnNiwLady* this = (EnNiwLady*)thisx;
     s32 pad;
 
     if (limbIndex == 15) {
@@ -570,7 +570,7 @@ s32 EnNiwLady_OverrideLimbDraw(GlobalContext* globalCtx, s32 limbIndex, Gfx** dL
 
 void EnNiwLady_Draw(Actor* thisx, GlobalContext* globalCtx) {
     static void* sEyeTextures[] = { gCuccoLadyEyeOpenTex, gCuccoLadyEyeHalfTex, gCuccoLadyEyeClosedTex };
-    EnNiwLady* this = THIS;
+    EnNiwLady* this = (EnNiwLady*)thisx;
     s32 pad;
 
     OPEN_DISPS(globalCtx->state.gfxCtx, "../z_en_niw_lady.c", 1347);
@@ -578,7 +578,7 @@ void EnNiwLady_Draw(Actor* thisx, GlobalContext* globalCtx) {
         func_80093D18(globalCtx->state.gfxCtx);
         gDPSetEnvColor(POLY_OPA_DISP++, 0, 0, 0, 255);
         gSPSegment(POLY_OPA_DISP++, 0x08, SEGMENTED_TO_VIRTUAL(sEyeTextures[this->faceState]));
-        gSPSegment(POLY_OPA_DISP++, 0x0C, func_80ABB0A0(globalCtx->state.gfxCtx));
+        gSPSegment(POLY_OPA_DISP++, 0x0C, EnNiwLady_EmptyDList(globalCtx->state.gfxCtx));
         SkelAnime_DrawFlexOpa(globalCtx, this->skelAnime.skeleton, this->skelAnime.jointTable,
                               this->skelAnime.dListCount, EnNiwLady_OverrideLimbDraw, NULL, this);
     }

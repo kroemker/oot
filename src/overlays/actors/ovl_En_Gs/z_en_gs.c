@@ -9,9 +9,7 @@
 #include "overlays/actors/ovl_En_Elf/z_en_elf.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
 
-#define FLAGS 0x02000009
-
-#define THIS ((EnGs*)thisx)
+#define FLAGS (ACTOR_FLAG_0 | ACTOR_FLAG_3 | ACTOR_FLAG_25)
 
 void EnGs_Init(Actor* thisx, GlobalContext* globalCtx);
 void EnGs_Destroy(Actor* thisx, GlobalContext* globalCtx);
@@ -97,7 +95,7 @@ static InitChainEntry sInitChain[] = {
 };
 
 void EnGs_Init(Actor* thisx, GlobalContext* globalCtx) {
-    EnGs* this = THIS;
+    EnGs* this = (EnGs*)thisx;
 
     Actor_ProcessInitChain(thisx, sInitChain);
     Collider_InitCylinder(globalCtx, &this->collider);
@@ -145,8 +143,8 @@ void func_80A4E470(EnGs* this, GlobalContext* globalCtx) {
     if (this->actor.xzDistToPlayer <= 100.0f) {
         bREG(15) = 1;
         if (this->unk_19D == 0) {
-            player->stateFlags2 |= 0x800000;
-            if (player->stateFlags2 & 0x1000000) {
+            player->stateFlags2 |= PLAYER_STATE2_23;
+            if (player->stateFlags2 & PLAYER_STATE2_24) {
                 func_8010BD58(globalCtx, OCARINA_ACTION_FREE_PLAY);
                 this->unk_19D |= 1;
             }
@@ -169,7 +167,7 @@ void func_80A4E470(EnGs* this, GlobalContext* globalCtx) {
                 this->unk_19D = 0;
                 Flags_SetSwitch(globalCtx, (this->actor.params >> 8) & 0x3F);
             } else if (globalCtx->msgCtx.ocarinaMode == OCARINA_MODE_01) {
-                player->stateFlags2 |= 0x800000;
+                player->stateFlags2 |= PLAYER_STATE2_23;
             }
         }
     }
@@ -206,8 +204,8 @@ f32 func_80A4E754(EnGs* this, GlobalContext* globalCtx, f32* arg2, f32* arg3, u1
 
     if (arg9 == 0) {
         sp2C = Math_SmoothStepToF(arg2, *arg3, arg5, arg6, arg7);
-        this->unk_1B4[0].x = 1.0f + (sinf((((*arg4 % arg8) * (1.0f / arg8)) * 360.0f) * (M_PI / 180.0f)) * *arg2);
-        this->unk_1B4[0].y = 1.0f - (sinf((((*arg4 % arg8) * (1.0f / arg8)) * 360.0f) * (M_PI / 180.0f)) * *arg2);
+        this->unk_1B4[0].x = 1.0f + (sinf(DEG_TO_RAD(((*arg4 % arg8) * (1.0f / arg8)) * 360.0f)) * *arg2);
+        this->unk_1B4[0].y = 1.0f - (sinf(DEG_TO_RAD(((*arg4 % arg8) * (1.0f / arg8)) * 360.0f)) * *arg2);
         *arg4 += 1;
     }
     return sp2C;
@@ -355,7 +353,7 @@ void func_80A4ED34(EnGs* this, GlobalContext* globalCtx) {
         func_8002F974(&this->actor, NA_SE_EV_FIRE_PILLAR - SFX_FLAG);
         if (this->unk_200++ >= 40) {
             this->unk_19E |= 0x10;
-            this->actor.flags |= 0x10;
+            this->actor.flags |= ACTOR_FLAG_4;
             this->actor.uncullZoneForward = 12000.0f;
 
             this->actor.gravity = 0.3f;
@@ -364,8 +362,9 @@ void func_80A4ED34(EnGs* this, GlobalContext* globalCtx) {
     }
 
     if (this->unk_19F == 4) {
-        Actor_UpdateBgCheckInfo(globalCtx, &this->actor, 20.0f, 20.0f, 60.0f, 3);
-        if (this->actor.bgCheckFlags & 0x18) {
+        Actor_UpdateBgCheckInfo(globalCtx, &this->actor, 20.0f, 20.0f, 60.0f,
+                                UPDBGCHECKINFO_FLAG_0 | UPDBGCHECKINFO_FLAG_1);
+        if (this->actor.bgCheckFlags & (BGCHECKFLAG_WALL | BGCHECKFLAG_CEILING)) {
             bomb2Pos.x = this->actor.world.pos.x;
             bomb2Pos.y = this->actor.world.pos.y;
             bomb2Pos.z = this->actor.world.pos.z;
@@ -474,8 +473,8 @@ void func_80A4F13C(EnGs* this, GlobalContext* globalCtx) {
         tmpf3 = Math_SmoothStepToF(&this->unk_1F8, this->unk_1FC, 0.8f, 0.02f, 0.001f);
         this->unk_1B4[0].x = this->unk_1F0 + 1.0f;
         this->unk_1B4[0].y = this->unk_1E8 + 1.0f;
-        this->unk_1B4[0].x += sinf((((this->unk_200 % 10) * 0.1f) * 360.0f) * (M_PI / 180.0f)) * this->unk_1F8;
-        this->unk_1B4[0].y += sinf((((this->unk_200 % 10) * 0.1f) * 360.0f) * (M_PI / 180.0f)) * this->unk_1F8;
+        this->unk_1B4[0].x += sinf(DEG_TO_RAD(((this->unk_200 % 10) * 0.1f) * 360.0f)) * this->unk_1F8;
+        this->unk_1B4[0].y += sinf(DEG_TO_RAD(((this->unk_200 % 10) * 0.1f) * 360.0f)) * this->unk_1F8;
         this->unk_200++;
         if ((tmpf1 == 0.0f) && (tmpf2 == 0.0f) && (tmpf3 == 0.0f)) {
             this->unk_19C = 0;
@@ -517,7 +516,7 @@ void func_80A4F77C(EnGs* this) {
 
 void EnGs_Update(Actor* thisx, GlobalContext* globalCtx2) {
     GlobalContext* globalCtx = globalCtx2;
-    EnGs* this = THIS;
+    EnGs* this = (EnGs*)thisx;
 
     Actor_SetFocus(&this->actor, 23.0f);
     if (!(this->unk_19E & 0x10)) {
@@ -562,7 +561,7 @@ void EnGs_Update(Actor* thisx, GlobalContext* globalCtx2) {
 }
 
 void EnGs_Draw(Actor* thisx, GlobalContext* globalCtx) {
-    EnGs* this = THIS;
+    EnGs* this = (EnGs*)thisx;
     s32 tmp;
     u32 frames;
 
@@ -573,13 +572,13 @@ void EnGs_Draw(Actor* thisx, GlobalContext* globalCtx) {
         func_80093D18(globalCtx->state.gfxCtx);
         Matrix_Push();
         if (this->unk_19E & 1) {
-            Matrix_RotateY(this->unk_1A0[0].y * (M_PI / 0x8000), MTXMODE_APPLY);
-            Matrix_RotateX(this->unk_1A0[0].x * (M_PI / 0x8000), MTXMODE_APPLY);
-            Matrix_RotateZ(this->unk_1A0[0].z * (M_PI / 0x8000), MTXMODE_APPLY);
+            Matrix_RotateY(BINANG_TO_RAD(this->unk_1A0[0].y), MTXMODE_APPLY);
+            Matrix_RotateX(BINANG_TO_RAD(this->unk_1A0[0].x), MTXMODE_APPLY);
+            Matrix_RotateZ(BINANG_TO_RAD(this->unk_1A0[0].z), MTXMODE_APPLY);
             Matrix_Scale(this->unk_1B4[0].x, this->unk_1B4[0].y, this->unk_1B4[0].z, MTXMODE_APPLY);
-            Matrix_RotateY(this->unk_1A0[1].y * (M_PI / 0x8000), MTXMODE_APPLY);
-            Matrix_RotateX(this->unk_1A0[1].x * (M_PI / 0x8000), MTXMODE_APPLY);
-            Matrix_RotateZ(this->unk_1A0[1].z * (M_PI / 0x8000), MTXMODE_APPLY);
+            Matrix_RotateY(BINANG_TO_RAD(this->unk_1A0[1].y), MTXMODE_APPLY);
+            Matrix_RotateX(BINANG_TO_RAD(this->unk_1A0[1].x), MTXMODE_APPLY);
+            Matrix_RotateZ(BINANG_TO_RAD(this->unk_1A0[1].z), MTXMODE_APPLY);
         }
 
         gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(globalCtx->state.gfxCtx, "../z_en_gs.c", 1064),
@@ -599,7 +598,7 @@ void EnGs_Draw(Actor* thisx, GlobalContext* globalCtx) {
         Matrix_Pop();
         if (this->unk_19E & 2) {
             func_80093D84(globalCtx->state.gfxCtx);
-            func_800D1FD4(&globalCtx->mf_11DA0);
+            Matrix_ReplaceRotation(&globalCtx->billboardMtxF);
             Matrix_Scale(0.05f, -0.05f, 1.0f, MTXMODE_APPLY);
 
             gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(globalCtx->state.gfxCtx, "../z_en_gs.c", 1087),

@@ -7,9 +7,7 @@
 #include "z_en_ms.h"
 #include "objects/object_ms/object_ms.h"
 
-#define FLAGS 0x00000009
-
-#define THIS ((EnMs*)thisx)
+#define FLAGS (ACTOR_FLAG_0 | ACTOR_FLAG_3)
 
 void EnMs_Init(Actor* thisx, GlobalContext* globalCtx);
 void EnMs_Destroy(Actor* thisx, GlobalContext* globalCtx);
@@ -71,7 +69,7 @@ void EnMs_SetOfferText(EnMs* this, GlobalContext* globalCtx) {
 }
 
 void EnMs_Init(Actor* thisx, GlobalContext* globalCtx) {
-    EnMs* this = THIS;
+    EnMs* this = (EnMs*)thisx;
     s32 pad;
 
     if (LINK_AGE_IN_YEARS != YEARS_CHILD) {
@@ -97,7 +95,7 @@ void EnMs_Init(Actor* thisx, GlobalContext* globalCtx) {
 }
 
 void EnMs_Destroy(Actor* thisx, GlobalContext* globalCtx) {
-    EnMs* this = THIS;
+    EnMs* this = (EnMs*)thisx;
 
     Collider_DestroyCylinder(globalCtx, &this->collider);
 }
@@ -160,7 +158,7 @@ void EnMs_TalkAfterPurchase(EnMs* this, GlobalContext* globalCtx) {
 }
 
 void EnMs_Update(Actor* thisx, GlobalContext* globalCtx) {
-    EnMs* this = THIS;
+    EnMs* this = (EnMs*)thisx;
     s32 pad;
 
     this->activeTimer += 1;
@@ -173,14 +171,14 @@ void EnMs_Update(Actor* thisx, GlobalContext* globalCtx) {
     if (gSaveContext.entranceIndex == 0x157 && gSaveContext.sceneSetupIndex == 8) { // ride carpet if in credits
         Actor_MoveForward(&this->actor);
         osSyncPrintf("OOOHHHHHH %f\n", this->actor.velocity.y);
-        Actor_UpdateBgCheckInfo(globalCtx, &this->actor, 0.0f, 0.0f, 0.0f, 4);
+        Actor_UpdateBgCheckInfo(globalCtx, &this->actor, 0.0f, 0.0f, 0.0f, UPDBGCHECKINFO_FLAG_2);
     }
     Collider_UpdateCylinder(&this->actor, &this->collider);
     CollisionCheck_SetOC(globalCtx, &globalCtx->colChkCtx, &this->collider.base);
 }
 
 void EnMs_Draw(Actor* thisx, GlobalContext* globalCtx) {
-    EnMs* this = THIS;
+    EnMs* this = (EnMs*)thisx;
 
     func_80093D18(globalCtx->state.gfxCtx);
     SkelAnime_DrawFlexOpa(globalCtx, this->skelAnime.skeleton, this->skelAnime.jointTable, this->skelAnime.dListCount,

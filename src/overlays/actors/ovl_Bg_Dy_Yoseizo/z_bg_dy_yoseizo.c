@@ -11,9 +11,7 @@
 #include "scenes/indoors/yousei_izumi_yoko/yousei_izumi_yoko_scene.h"
 #include "scenes/indoors/daiyousei_izumi/daiyousei_izumi_scene.h"
 
-#define FLAGS 0x02000030
-
-#define THIS ((BgDyYoseizo*)thisx)
+#define FLAGS (ACTOR_FLAG_4 | ACTOR_FLAG_5 | ACTOR_FLAG_25)
 
 typedef enum {
     /* 0 */ FAIRY_UPGRADE_MAGIC,
@@ -70,7 +68,7 @@ const ActorInit Bg_Dy_Yoseizo_InitVars = {
 
 void BgDyYoseizo_Init(Actor* thisx, GlobalContext* globalCtx2) {
     GlobalContext* globalCtx = globalCtx2;
-    BgDyYoseizo* this = THIS;
+    BgDyYoseizo* this = (BgDyYoseizo*)thisx;
 
     this->fountainType = globalCtx->curSpawn;
 
@@ -246,7 +244,7 @@ void BgDyYoseizo_ChooseType(BgDyYoseizo* this, GlobalContext* globalCtx) {
             case FAIRY_UPGRADE_HALF_DAMAGE:
                 if (!gSaveContext.doubleDefense) {
                     // "Damage halved"
-                    osSyncPrintf(VT_FGCOL(PURPLE) " ☆☆☆☆☆ ダメージ半減 ☆☆☆☆☆ \n" VT_RST);
+                    osSyncPrintf(VT_FGCOL(MAGENTA) " ☆☆☆☆☆ ダメージ半減 ☆☆☆☆☆ \n" VT_RST);
                     this->givingSpell = true;
                     givingReward = true;
                 }
@@ -804,8 +802,8 @@ void BgDyYoseizo_Give_Reward(BgDyYoseizo* this, GlobalContext* globalCtx) {
 
 void BgDyYoseizo_Update(Actor* thisx, GlobalContext* globalCtx2) {
     GlobalContext* globalCtx = globalCtx2;
-    BgDyYoseizo* this = THIS;
-    s32 phi_v1;
+    BgDyYoseizo* this = (BgDyYoseizo*)thisx;
+    s32 sfx;
 
     this->absoluteTimer++;
 
@@ -822,29 +820,29 @@ void BgDyYoseizo_Update(Actor* thisx, GlobalContext* globalCtx2) {
     this->actionFunc(this, globalCtx);
 
     if (globalCtx->csCtx.state != CS_STATE_IDLE) {
-        phi_v1 = 0;
+        sfx = 0;
         if (globalCtx->sceneNum == SCENE_DAIYOUSEI_IZUMI) {
             if ((globalCtx->csCtx.frames == 32) || (globalCtx->csCtx.frames == 291) ||
                 (globalCtx->csCtx.frames == 426) || (globalCtx->csCtx.frames == 851)) {
-                phi_v1 = 1;
+                sfx = 1;
             }
             if (globalCtx->csCtx.frames == 101) {
-                phi_v1 = 2;
+                sfx = 2;
             }
         } else {
             if ((globalCtx->csCtx.frames == 35) || (globalCtx->csCtx.frames == 181) ||
                 (globalCtx->csCtx.frames == 462) || (globalCtx->csCtx.frames == 795)) {
-                phi_v1 = 1;
+                sfx = 1;
             }
             if (globalCtx->csCtx.frames == 90) {
-                phi_v1 = 2;
+                sfx = 2;
             }
         }
 
-        if (phi_v1 == 1) {
+        if (sfx == 1) {
             Audio_PlayActorSound2(&this->actor, NA_SE_VO_FR_SMILE_0);
         }
-        if (phi_v1 == 2) {
+        if (sfx == 2) {
             Audio_PlayActorSound2(&this->actor, NA_SE_VO_FR_LAUGH_0);
         }
     }
@@ -869,7 +867,7 @@ void BgDyYoseizo_Update(Actor* thisx, GlobalContext* globalCtx2) {
 
 s32 BgDyYoseizo_OverrideLimbDraw(GlobalContext* globalCtx, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot,
                                  void* thisx) {
-    BgDyYoseizo* this = THIS;
+    BgDyYoseizo* this = (BgDyYoseizo*)thisx;
 
     if (limbIndex == 8) { // Torso
         rot->x += this->torsoRot.y;
@@ -882,18 +880,18 @@ s32 BgDyYoseizo_OverrideLimbDraw(GlobalContext* globalCtx, s32 limbIndex, Gfx** 
 }
 
 static void* sEyeTextures[] = {
-    &gGreatFairyEyeOpenTex,   // Open
-    &gGreatFairyEyeHalfTex,   // Half
-    &gGreatFairyEyeClosedTex, // Closed
+    gGreatFairyEyeOpenTex,   // Open
+    gGreatFairyEyeHalfTex,   // Half
+    gGreatFairyEyeClosedTex, // Closed
 };
 
 static void* sMouthTextures[] = {
-    &gGreatFairyMouthClosedTex, // Closed
-    &gGreatFairyMouthOpenTex,   // Open
+    gGreatFairyMouthClosedTex, // Closed
+    gGreatFairyMouthOpenTex,   // Open
 };
 
 void BgDyYoseizo_Draw(Actor* thisx, GlobalContext* globalCtx) {
-    BgDyYoseizo* this = THIS;
+    BgDyYoseizo* this = (BgDyYoseizo*)thisx;
 
     OPEN_DISPS(globalCtx->state.gfxCtx, "../z_bg_dy_yoseizo.c", 1609);
     if (this->actionFunc != BgDyYoseizo_Vanish) {
@@ -974,8 +972,8 @@ void BgDyYoseizo_ParticleUpdate(BgDyYoseizo* this, GlobalContext* globalCtx) {
                 Math_ApproachF(&particle->pitch, goalPitch, 0.9f, 5000.0f);
                 Math_ApproachF(&particle->yaw, goalYaw, 0.9f, 5000.0f);
                 Matrix_Push();
-                Matrix_RotateY(BINANG_TO_RAD(particle->yaw), MTXMODE_NEW);
-                Matrix_RotateX(BINANG_TO_RAD(particle->pitch), MTXMODE_APPLY);
+                Matrix_RotateY(BINANG_TO_RAD_ALT(particle->yaw), MTXMODE_NEW);
+                Matrix_RotateX(BINANG_TO_RAD_ALT(particle->pitch), MTXMODE_APPLY);
 
                 sp94.x = sp94.y = sp94.z = 3.0f;
 
@@ -1017,7 +1015,7 @@ void BgDyYoseizo_ParticleDraw(BgDyYoseizo* this, GlobalContext* globalCtx) {
     for (i = 0; i < 200; i++, particle++) {
         if (particle->alive == 1) {
             if (phi_s3 == 0) {
-                gSPDisplayList(POLY_XLU_DISP++, SEGMENTED_TO_VIRTUAL(gGreatFairyParticleAppearDL));
+                gSPDisplayList(POLY_XLU_DISP++, SEGMENTED_TO_VIRTUAL(gGreatFairyParticleMaterialDL));
                 gDPPipeSync(POLY_XLU_DISP++);
 
                 phi_s3++;
@@ -1028,13 +1026,13 @@ void BgDyYoseizo_ParticleDraw(BgDyYoseizo* this, GlobalContext* globalCtx) {
             gDPSetEnvColor(POLY_XLU_DISP++, particle->envColor.r, particle->envColor.g, particle->envColor.b, 0);
 
             Matrix_Translate(particle->pos.x, particle->pos.y, particle->pos.z, MTXMODE_NEW);
-            func_800D1FD4(&globalCtx->mf_11DA0);
+            Matrix_ReplaceRotation(&globalCtx->billboardMtxF);
             Matrix_Scale(particle->scale, particle->scale, 1.0f, MTXMODE_APPLY);
             Matrix_RotateZ(particle->roll, MTXMODE_APPLY);
 
             gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(gfxCtx, "../z_bg_dy_yoseizo.c", 1810),
                       G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-            gSPDisplayList(POLY_XLU_DISP++, SEGMENTED_TO_VIRTUAL(&gGreatFairyParticleAliveDL));
+            gSPDisplayList(POLY_XLU_DISP++, SEGMENTED_TO_VIRTUAL(gGreatFairyParticleModelDL));
         }
     }
 

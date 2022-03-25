@@ -104,7 +104,7 @@ void IceBlock_Update(Actor* thisx, GlobalContext* globalCtx) {
     }
 
     if (this->status == 0) {
-        Audio_PlaySoundAtPosition(globalCtx, &this->dyna.actor.world.pos, 0x3C, NA_SE_EV_ICE_FREEZE);
+        SoundSource_PlaySfxAtFixedWorldPos(globalCtx, &this->dyna.actor.world.pos, 0x3C, NA_SE_EV_ICE_FREEZE);
         this->status = 1;
     }
 
@@ -124,7 +124,7 @@ void IceBlock_Update(Actor* thisx, GlobalContext* globalCtx) {
 
     if (this->lifetime >= maxLifetime) {
         if (this->status == 1) {
-            Audio_PlaySoundAtPosition(globalCtx, &this->dyna.actor.world.pos, 0x3C, NA_SE_EV_ICE_MELT);
+            SoundSource_PlaySfxAtFixedWorldPos(globalCtx, &this->dyna.actor.world.pos, 0x3C, NA_SE_EV_ICE_MELT);
             this->status = 2;
         }
 

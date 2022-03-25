@@ -185,7 +185,7 @@ void OceffSpot_Draw(Actor* thisx, GlobalContext* globalCtx) {
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     if (this->actor.params == 0x0005) {
         u8 alpha = (u8)CLAMP(this->unk_174 * 0.35f * 255.0f, 0.0f, 255.0f);
-        gSPDisplayList(POLY_XLU_DISP++, sCylinderMaterialBlueDL);
+        gSPDisplayList(POLY_XLU_DISP++, sCylinderMaterialDL);
         gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 200, 255, 255, alpha);
         gDPSetEnvColor(POLY_XLU_DISP++, 0, 0, 255, alpha);
     }

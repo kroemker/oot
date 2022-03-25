@@ -306,7 +306,7 @@ typedef union {
 
 typedef enum {
     #include "tables/scene_table.h"
-    /* 0x6E */ SCENE_ID_MAX
+	/* 0x01 */ SCENE_ID_MAX
 } SceneID;
 
 #undef DEFINE_SCENE

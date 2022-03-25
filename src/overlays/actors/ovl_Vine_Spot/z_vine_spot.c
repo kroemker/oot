@@ -98,7 +98,7 @@ void VineSpot_Update(Actor* thisx, GlobalContext* globalCtx) {
     Actor_UpdateBgCheckInfo(globalCtx, &this->dyna.actor, 0, 0, 0, 0x3F);
     
     if (this->status == 0) {
-        Audio_PlaySoundAtPosition(globalCtx, &this->dyna.actor.world.pos, 0x3C, NA_SE_EV_DEKU_DEATH);
+        SoundSource_PlaySfxAtFixedWorldPos(globalCtx, &this->dyna.actor.world.pos, 0x3C, NA_SE_EV_DEKU_DEATH);
         this->status = 1;
     }
 

@@ -2501,7 +2501,7 @@ s32 func_80834D2C(Player* this, GlobalContext* globalCtx) {
     if (this->stateFlags1 & PLAYER_STATE1_23) {
         Player_PlayAnimationLoop(globalCtx, this, &gPlayerAnim_003380);
     } else if ((this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && !func_80833B54(this)) {
-        Player_PlayAnimationLoop(globalCtx, this, GET_PLAYER_ANIM(PLAYER_ANIMGROUP_0, this->modelAnimType)]);
+        Player_PlayAnimationLoop(globalCtx, this, GET_PLAYER_ANIM(PLAYER_ANIMGROUP_0, this->modelAnimType));
     }
 
     return 1;
@@ -5693,7 +5693,7 @@ void func_8083CB2C(Player* this, s16 yaw, GlobalContext* globalCtx) {
 
 void func_8083CB94(Player* this, GlobalContext* globalCtx) {
     SETUP_ACTION_WITH_LOG(globalCtx, this, Player_Action_StrafeSlow, 1);
-    func_80832BE8(globalCtx, this, GET_PLAYER_ANIM(PLAYER_ANIMGROUP_1, this->modelAnimType);
+    func_80832BE8(globalCtx, this, GET_PLAYER_ANIM(PLAYER_ANIMGROUP_1, this->modelAnimType));
 }
 
 void func_8083CBF0(Player* this, s16 yaw, GlobalContext* globalCtx) {

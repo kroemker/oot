@@ -378,10 +378,14 @@ Gfx* D_80125EE8[] = {
 
 // boomerang dlists?
 Gfx* D_80125EF8[] = {
+    gLinkAdultLeftHandHoldingHammerNearDL,
+    gLinkChildLeftHandNearDL,
+    gLinkAdultLeftHandHoldingHammerFarDL,
+    gLinkChildLeftHandFarDL,/*
     gLinkAdultLeftHandNearDL,
     gLinkChildLeftFistAndBoomerangNearDL,
     gLinkAdultLeftHandFarDL,
-    gLinkChildLeftFistAndBoomerangFarDL,
+    gLinkChildLeftFistAndBoomerangFarDL,*/
 };
 
 Gfx* D_80125F08[] = {

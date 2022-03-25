@@ -132,7 +132,7 @@ CameraModeValue sSetNormal0ModeHookshotData[] = {
 };
 
 CameraModeValue sSetNormal0ModeBoomerangData[] = {
-    CAM_FUNCDATA_SUBJ3(5, 50, 50, 10, 0, 0, 0, 45, 0x2000),
+    CAM_FUNCDATA_SUBJ3(5, 80, 80, 10, 0, 80, 0, 45, 0x2000),
 };
 
 CameraModeValue sSetNormal0ModeSlingshotData[] = {

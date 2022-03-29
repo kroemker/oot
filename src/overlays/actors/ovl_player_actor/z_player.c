@@ -266,7 +266,7 @@ s32 func_8084FCAC(Player* this, GlobalContext* globalCtx);
 void func_8084FF7C(Player* this);
 void func_8085002C(Player* this);
 s32 func_80850224(Player* this, GlobalContext* globalCtx);
-void Player_Action_SwordHammerSlash(Player* this, GlobalContext* globalCtx);
+void Player_Action_MeleeWeaponSlash(Player* this, GlobalContext* globalCtx);
 void func_808505DC(Player* this, GlobalContext* globalCtx);
 void func_8085063C(Player* this, GlobalContext* globalCtx);
 void func_8085076C(Player* this, GlobalContext* globalCtx);
@@ -1723,6 +1723,7 @@ void func_8083315C(GlobalContext* globalCtx, Player* this) {
     this->unk_84B[this->unk_846] = phi_v0;
 }
 
+// play link anim once with defaul speed (= 1)
 void func_8083328C(GlobalContext* globalCtx, Player* this, LinkAnimationHeader* linkAnim) {
     LinkAnimation_PlayOnceSetSpeed(globalCtx, &this->skelAnime, linkAnim, D_808535E8);
 }
@@ -3663,30 +3664,30 @@ static u32 D_80854488[][2] = {
     { 0x00000002, 0x08000000 }, { 0x00000040, 0x40000000 },
 };
 
-void func_80837948(GlobalContext* globalCtx, Player* this, s32 swordAnimation) {
+void func_80837948(GlobalContext* globalCtx, Player* this, s32 meleeWeaponAnimation) {
     s32 pad;
     u32 flags;
     s32 temp;
 
-    SETUP_ACTION_WITH_LOG(globalCtx, this, Player_Action_SwordHammerSlash, 0);
+    SETUP_ACTION_WITH_LOG(globalCtx, this, Player_Action_MeleeWeaponSlash, 0);
     this->unk_844 = 8;
-    if (!((swordAnimation >= PLAYER_MWA_FLIPSLASH_FINISH) && (swordAnimation <= PLAYER_MWA_JUMPSLASH_FINISH))) {
+    if (!((meleeWeaponAnimation >= PLAYER_MWA_FLIPSLASH_FINISH) && (meleeWeaponAnimation <= PLAYER_MWA_JUMPSLASH_FINISH))) {
         func_80832318(this);
     }
 
-    if ((swordAnimation != this->meleeWeaponAnimation) || !(this->unk_845 < 3)) {
+    if ((meleeWeaponAnimation != this->meleeWeaponAnimation) || !(this->unk_845 < 3)) {
         this->unk_845 = 0;
     }
 
     this->unk_845++;
     if (this->unk_845 >= 3) {
-        swordAnimation += 2;
+        meleeWeaponAnimation += 2;
     }
 
-    this->meleeWeaponAnimation = swordAnimation;
+    this->meleeWeaponAnimation = meleeWeaponAnimation;
 
-    Player_PlayAnimationOnceTwoThirdSpeed(globalCtx, this, D_80854190[swordAnimation].unk_00);
-    if ((swordAnimation != PLAYER_MWA_FLIPSLASH_START) && (swordAnimation != PLAYER_MWA_JUMPSLASH_START)) {
+    Player_PlayAnimationOnceTwoThirdSpeed(globalCtx, this, D_80854190[meleeWeaponAnimation].unk_00);
+    if ((meleeWeaponAnimation != PLAYER_MWA_FLIPSLASH_START) && (meleeWeaponAnimation != PLAYER_MWA_JUMPSLASH_START)) {
         func_80832F54(globalCtx, this, 0x209);
     }
 
@@ -3698,7 +3699,7 @@ void func_80837948(GlobalContext* globalCtx, Player* this, s32 swordAnimation) {
         temp = Player_GetMeleeWeaponHeld(this) - 1;
     }
 
-    if ((swordAnimation >= PLAYER_MWA_FLIPSLASH_START) && (swordAnimation <= PLAYER_MWA_JUMPSLASH_FINISH)) {
+    if ((meleeWeaponAnimation >= PLAYER_MWA_FLIPSLASH_START) && (meleeWeaponAnimation <= PLAYER_MWA_JUMPSLASH_FINISH)) {
         flags = D_80854488[temp][1];
     } else {
         flags = D_80854488[temp][0];
@@ -6490,14 +6491,29 @@ void Player_ConserveActor(Player* this, GlobalContext* globalCtx) {
     }
 }
 
+static s8 sButtonPressFrames = 0;
+static f32 sThrowRange = 0;
+static f32 maxThrowRange[] = { 0, 0, 6.0f, 10.0f };
 // action func for holding object?
 s32 func_8083EB44(Player* this, GlobalContext* globalCtx) {
     s32 item;
     s32 i;
 
-    if ((this->stateFlags1 & PLAYER_STATE1_11) && (this->heldActor != NULL) &&
-        CHECK_BTN_ANY(sControlInput->press.button, BTN_A | BTN_B | BTN_CLEFT | BTN_CRIGHT | BTN_CDOWN)) {
-            
+    if (!((this->stateFlags1 & PLAYER_STATE1_11) && (this->heldActor != NULL))) {
+        return 0;
+    }
+
+    if ((sButtonPressFrames == 0) && CHECK_BTN_ANY(sControlInput->press.button, BTN_A | BTN_B | BTN_CLEFT | BTN_CRIGHT | BTN_CDOWN)) {
+        sButtonPressFrames++;
+    }
+
+    if ((sButtonPressFrames > 0) && (((sControlInput->cur.button & (BTN_A | BTN_B | BTN_CLEFT | BTN_CRIGHT | BTN_CDOWN)) == 0) || (CUR_UPG_VALUE(UPG_STRENGTH) < 2))) {
+        f32 throwRange = maxThrowRange[CUR_UPG_VALUE(UPG_STRENGTH)];
+        sThrowRange = ((f32)sButtonPressFrames) / 2.0f;
+        if (sThrowRange > throwRange) {
+            sThrowRange = throwRange;
+        }
+        sButtonPressFrames = 0;
         if (!func_80835644(globalCtx, this, this->heldActor)) {
             if (!func_8083EAF0(this, this->heldActor)) {
                 SETUP_ACTION_WITH_LOG(globalCtx, this, func_808464B0, 1);
@@ -6508,7 +6524,9 @@ s32 func_8083EB44(Player* this, GlobalContext* globalCtx) {
         }
         return 1;
     }
-
+    else if ((sButtonPressFrames > 0) && ((sControlInput->cur.button & (BTN_A | BTN_B | BTN_CLEFT | BTN_CRIGHT | BTN_CDOWN)) != 0)) {
+        sButtonPressFrames++;
+    }
     return 0;
 }
 
@@ -8486,6 +8504,7 @@ s32 func_80843E64(GlobalContext* globalCtx, Player* this) {
     return 0;
 }
 
+// throw held actor
 void func_8084409C(GlobalContext* globalCtx, Player* this, f32 speedXZ, f32 velocityY) {
     Actor* heldActor = this->heldActor;
 
@@ -9383,7 +9402,7 @@ void Player_Action_Throwing(Player* this, GlobalContext* globalCtx) {
     }
 
     if (LinkAnimation_OnFrame(&this->skelAnime, 3.0f)) {
-        func_8084409C(globalCtx, this, this->linearVelocity + 8.0f, 12.0f);
+        func_8084409C(globalCtx, this, this->linearVelocity + 9.0f + sThrowRange, 12.0f + sThrowRange);
     }
 }
 
@@ -10852,17 +10871,17 @@ void Player_Update(Actor* thisx, GlobalContext* globalCtx) {
     if (func_8084FCAC(this, globalCtx)) {
         if (gSaveContext.dogParams < 0) {
             if (Object_GetIndex(&globalCtx->objectCtx, OBJECT_DOG) < 0) {
-                gSaveContext.dogParams = 0;
-            } else {
-                gSaveContext.dogParams &= 0x7FFF;
-                func_808395DC(this, &this->actor.world.pos, &D_80854838, &sDogSpawnPos);
-                dogParams = gSaveContext.dogParams;
+                //gSaveContext.dogParams = 0;
+                Object_Spawn(&globalCtx->objectCtx, OBJECT_DOG);
+            } 
+            gSaveContext.dogParams &= 0x7FFF;
+            func_808395DC(this, &this->actor.world.pos, &D_80854838, &sDogSpawnPos);
+            dogParams = gSaveContext.dogParams;
 
-                dog = Actor_Spawn(&globalCtx->actorCtx, globalCtx, ACTOR_EN_DOG, sDogSpawnPos.x, sDogSpawnPos.y,
-                                  sDogSpawnPos.z, 0, this->actor.shape.rot.y, 0, dogParams | 0x8000);
-                if (dog != NULL) {
-                    dog->room = 0;
-                }
+            dog = Actor_Spawn(&globalCtx->actorCtx, globalCtx, ACTOR_EN_DOG, sDogSpawnPos.x, sDogSpawnPos.y,
+                                sDogSpawnPos.z, 0, this->actor.shape.rot.y, 0, dogParams | 0x8000);
+            if (dog != NULL) {
+                dog->room = -1;
             }
         }
 
@@ -13259,7 +13278,7 @@ s32 func_80850224(Player* this, GlobalContext* globalCtx) {
 
 static Vec3f D_80854A40 = { 0.0f, 40.0f, 45.0f };
 
-void Player_Action_SwordHammerSlash(Player* this, GlobalContext* globalCtx) {
+void Player_Action_MeleeWeaponSlash(Player* this, GlobalContext* globalCtx) {
     struct_80854190* sp44 = &D_80854190[this->meleeWeaponAnimation];
 
     this->stateFlags2 |= PLAYER_STATE2_5;
@@ -13323,6 +13342,11 @@ void Player_Action_SwordHammerSlash(Player* this, GlobalContext* globalCtx) {
                     (sp2C > -40.0f) && (sp2C < 40.0f)) {
                     func_80842A28(globalCtx, this);
                     EffectSsBlast_SpawnWhiteShockwave(globalCtx, &shockwavePos, &zeroVec, &zeroVec);
+                }
+            } else if (this->heldItemActionParam == PLAYER_AP_AXE) {
+                if ((this->meleeWeaponAnimation == PLAYER_MWA_JUMPSLASH_FINISH) &&
+                      LinkAnimation_OnFrame(&this->skelAnime, 2.0f)) {
+                    func_8002F7DC(&this->actor, NA_SE_EN_IRONNACK_HIT_GND);
                 }
             }
         }

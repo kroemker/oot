@@ -353,8 +353,8 @@ void EnIshi_Wait(EnIshi* this, GlobalContext* globalCtx) {
         if ((this->actor.params >> 4) & 1) {
             EnIshi_SpawnBugs(this, globalCtx);
         }
-    } else if ((this->collider.base.acFlags & AC_HIT) && (type == ROCK_SMALL) &&
-               this->collider.info.acHitInfo->toucher.dmgFlags & 0x40000048) {
+    } else if ((this->collider.base.acFlags & AC_HIT) && ((type == ROCK_SMALL) &&
+               this->collider.info.acHitInfo->toucher.dmgFlags & 0x40000048) || (this->collider.info.acHitInfo->toucher.dmgFlags & 0x02000100)) {
         EnIshi_DropCollectible(this, globalCtx);
         SoundSource_PlaySfxAtFixedWorldPos(globalCtx, &this->actor.world.pos, sBreakSoundDurations[type],
                                            sBreakSounds[type]);

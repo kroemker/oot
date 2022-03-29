@@ -122,12 +122,16 @@ void BgHidanDalm_Destroy(Actor* thisx, GlobalContext* globalCtx) {
     Collider_DestroyTris(globalCtx, &this->collider);
 }
 
+s32 BgHidanDalm_HitByHammerang(BgHidanDalm* this, GlobalContext* globalCtx) {
+    return this->collider.base.ac != NULL && this->collider.base.ac->id == ACTOR_EN_BOOM;
+}
+
 void BgHidanDalm_Wait(BgHidanDalm* this, GlobalContext* globalCtx) {
     Player* player = GET_PLAYER(globalCtx);
 
-    if ((this->collider.base.acFlags & AC_HIT) && !Player_InCsMode(globalCtx) &&
-        (player->meleeWeaponAnimation == PLAYER_MWA_HAMMER_FORWARD ||
-         player->meleeWeaponAnimation == PLAYER_MWA_HAMMER_SIDE)) {
+    if ((this->collider.base.acFlags & AC_HIT) && !Player_InCsMode(globalCtx) && BgHidanDalm_HitByHammerang(this, globalCtx)) {
+        //(player->meleeWeaponAnimation == PLAYER_MWA_HAMMER_FORWARD ||
+        // player->meleeWeaponAnimation == PLAYER_MWA_HAMMER_SIDE)) {
         this->collider.base.acFlags &= ~AC_HIT;
         if ((this->collider.elements[0].info.bumperFlags & BUMP_HIT) ||
             (this->collider.elements[1].info.bumperFlags & BUMP_HIT)) {

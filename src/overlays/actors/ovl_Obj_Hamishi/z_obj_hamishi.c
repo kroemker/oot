@@ -170,7 +170,7 @@ void ObjHamishi_Update(Actor* thisx, GlobalContext* globalCtx) {
 
     ObjHamishi_Shake(this);
 
-    if ((this->collider.base.acFlags & AC_HIT) && (this->collider.info.acHitInfo->toucher.dmgFlags & 0x40000040)) {
+    if ((this->collider.base.acFlags & AC_HIT) && (this->collider.info.acHitInfo->toucher.dmgFlags & 0x42000140)) {
         this->collider.base.acFlags &= ~AC_HIT;
         this->hitCount++;
         if (this->hitCount < 2) {

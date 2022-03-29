@@ -44,8 +44,8 @@ static ColliderCylinderInit D_80AA0420 = {
     { 200, 200, 0, { 0, 0, 0 } },
 };
 
-static u32 D_80AA044C[] = { 0x01000000, 0x00400000, 0x00800000 };
-static u32 D_80AA0458[] = { 0x08000000, 0x02000000, 0x04000000 };
+static u32 D_80AA044C[] = { 0x01000000, 0x00400000, 0x00800000 }; // damage flags 1
+static u32 D_80AA0458[] = { 0x08000000, 0x02000000, 0x04000000 }; // damage flags 2
 
 static u16 sSfxIds[] = {
     NA_SE_IT_ROLLING_CUT_LV2,
@@ -339,12 +339,22 @@ void EnMThunder_Draw(Actor* thisx, GlobalContext* globalCtx2) {
 
     switch (this->unk_1C6) {
         case 0:
-            gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, 255, 255, 170, (u8)(this->unk_1B0 * 255));
+            if (this->unk_1C7 == 1) {
+                gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, 255, 170, 255, (u8)(this->unk_1B0 * 255));
+            }
+            else {
+                gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, 255, 255, 170, (u8)(this->unk_1B0 * 255));
+            }
             gSPDisplayList(POLY_XLU_DISP++, gSpinAttack3DL);
             gSPDisplayList(POLY_XLU_DISP++, gSpinAttack4DL);
             break;
         case 1:
-            gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, 170, 255, 255, (u8)(this->unk_1B0 * 255));
+            if (this->unk_1C7 == 1) {
+                gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, 255, 170, 170, (u8)(this->unk_1B0 * 255));
+            }
+            else {
+                gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, 170, 255, 255, (u8)(this->unk_1B0 * 255));
+            }
             gSPDisplayList(POLY_XLU_DISP++, gSpinAttack1DL);
             gSPDisplayList(POLY_XLU_DISP++, gSpinAttack2DL);
             break;
@@ -354,8 +364,12 @@ void EnMThunder_Draw(Actor* thisx, GlobalContext* globalCtx2) {
 
     switch (this->unk_1C7) {
         case 1:
-            Matrix_Translate(0.0f, 220.0f, 0.0f, MTXMODE_APPLY);
+            /*Matrix_Translate(0.0f, 220.0f, 0.0f, MTXMODE_APPLY);
             Matrix_Scale(-0.7f, -0.6f, -0.4f, MTXMODE_APPLY);
+            Matrix_RotateX(16384.0f, MTXMODE_APPLY);
+            */
+            Matrix_Translate(200.0f, 350.0f, 0.0f, MTXMODE_APPLY);
+            Matrix_Scale(-1.9f, -2.4f, -2.0f, MTXMODE_APPLY);
             Matrix_RotateX(16384.0f, MTXMODE_APPLY);
             break;
         case 0:
@@ -370,17 +384,33 @@ void EnMThunder_Draw(Actor* thisx, GlobalContext* globalCtx2) {
             break;
     }
 
-    if (this->unk_1B8 >= 0.85f) {
-        phi_f14 = (D_80AA046C[(globalCtx->gameplayFrames & 7)] * 6.0f) + 1.0f;
-        gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, 255, 255, 170, this->unk_1C8);
-        gDPSetEnvColor(POLY_XLU_DISP++, 255, 100, 0, 128);
-        phi_t1 = 0x28;
-    } else {
-        phi_f14 = (D_80AA046C[globalCtx->gameplayFrames & 7] * 2.0f) + 1.0f;
-        gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, 170, 255, 255, this->unk_1C8);
-        gDPSetEnvColor(POLY_XLU_DISP++, 0, 100, 255, 128);
-        phi_t1 = 0x14;
+    if (this->unk_1C7 == 1) {
+        if (this->unk_1B8 >= 0.85f) {
+            phi_f14 = (D_80AA046C[(globalCtx->gameplayFrames & 7)] * 6.0f) + 1.0f;
+            gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, 255, 170, 255, this->unk_1C8);
+            gDPSetEnvColor(POLY_XLU_DISP++, 0, 0, 0, 128);
+            phi_t1 = 0x28;
+        } else {
+            phi_f14 = (D_80AA046C[globalCtx->gameplayFrames & 7] * 2.0f) + 1.0f;
+            gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, 255, 170, 170, this->unk_1C8);
+            gDPSetEnvColor(POLY_XLU_DISP++, 0, 0, 0, 128);
+            phi_t1 = 0x14;
+        }
     }
+    else {
+        if (this->unk_1B8 >= 0.85f) {
+            phi_f14 = (D_80AA046C[(globalCtx->gameplayFrames & 7)] * 6.0f) + 1.0f;
+            gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, 255, 255, 170, this->unk_1C8);
+            gDPSetEnvColor(POLY_XLU_DISP++, 255, 100, 0, 128);
+            phi_t1 = 0x28;
+        } else {
+            phi_f14 = (D_80AA046C[globalCtx->gameplayFrames & 7] * 2.0f) + 1.0f;
+            gDPSetPrimColor(POLY_XLU_DISP++, 0, 0x80, 170, 255, 255, this->unk_1C8);
+            gDPSetEnvColor(POLY_XLU_DISP++, 0, 100, 255, 128);
+            phi_t1 = 0x14;
+        }
+    }
+
     Matrix_Scale(1.0f, phi_f14, phi_f14, MTXMODE_APPLY);
     gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(globalCtx->state.gfxCtx, "../z_en_m_thunder.c", 960),
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);

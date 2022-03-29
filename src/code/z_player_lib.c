@@ -2,7 +2,6 @@
 #include "objects/gameplay_keep/gameplay_keep.h"
 #include "objects/object_link_boy/object_link_boy.h"
 #include "objects/object_link_child/object_link_child.h"
-#include "objects/object_link_boy/object_link_boy.h"
 
 typedef struct {
     /* 0x00 */ u8 flag;
@@ -50,7 +49,7 @@ u8 sActionModelGroups[PLAYER_AP_MAX] = {
     /* PLAYER_AP_LAST_USED */ PLAYER_MODELGROUP_15,
     /* PLAYER_AP_FISHING_POLE */ PLAYER_MODELGROUP_10,
     /* PLAYER_AP_SWORD_MASTER */ PLAYER_MODELGROUP_SWORD,
-    /* PLAYER_AP_SWORD_KOKIRI */ PLAYER_MODELGROUP_SWORD,
+    /* PLAYER_AP_SWORD_KOKIRI */ PLAYER_MODELGROUP_AXE,
     /* PLAYER_AP_SWORD_BGS */ PLAYER_MODELGROUP_BGS,
     /* PLAYER_AP_STICK */ PLAYER_MODELGROUP_10,
     /* PLAYER_AP_HAMMER */ PLAYER_MODELGROUP_HAMMER,
@@ -171,6 +170,9 @@ u8 gPlayerModelTypes[PLAYER_MODELGROUP_MAX][PLAYER_MODELGROUPENTRY_MAX] = {
       PLAYER_MODELTYPE_WAIST },
     /* PLAYER_MODELGROUP_15 */
     { PLAYER_ANIMTYPE_0, PLAYER_MODELTYPE_LH_SWORD, PLAYER_MODELTYPE_RH_OPEN, PLAYER_MODELTYPE_SHEATH_19,
+      PLAYER_MODELTYPE_WAIST },
+    /* PLAYER_MODELGROUP_AXE */
+    { PLAYER_ANIMTYPE_3, PLAYER_MODELTYPE_LH_AXE, PLAYER_MODELTYPE_RH_CLOSED, PLAYER_MODELTYPE_SHEATH_19,
       PLAYER_MODELTYPE_WAIST },
 };
 
@@ -368,7 +370,7 @@ Gfx* D_80125ED8[] = {
     gLinkChildRightHandFarDL,
 };
 
-// hammer dlists?
+// hammer dlists
 Gfx* D_80125EE8[] = {
     gLinkAdultLeftHandHoldingHammerNearDL,
     gLinkChildLeftHandNearDL,
@@ -376,7 +378,15 @@ Gfx* D_80125EE8[] = {
     gLinkChildLeftHandFarDL,
 };
 
-// boomerang dlists?
+
+Gfx* leftHandAxeDL[] = {
+    gLinkAdultLeftHandIronAxe,
+    gLinkChildLeftHandNearDL,
+    gLinkAdultLeftHandIronAxe,
+    gLinkChildLeftHandFarDL,
+};
+
+// boomerang dlists
 Gfx* D_80125EF8[] = {
     gLinkAdultLeftHandHoldingHammerNearDL,
     gLinkChildLeftHandNearDL,
@@ -427,6 +437,7 @@ Gfx** sPlayerDListGroups[PLAYER_MODELTYPE_MAX] = {
     /* PLAYER_MODELTYPE_LH_SWORD */ D_80125E38,
     /* PLAYER_MODELTYPE_3 */ D_80125E28,
     /* PLAYER_MODELTYPE_LH_BGS */ D_80125DE8,
+    /* PLAYER_MODELTYPE_LH_AXE */ leftHandAxeDL,
     /* PLAYER_MODELTYPE_LH_HAMMER */ D_80125EE8,
     /* PLAYER_MODELTYPE_LH_BOOMERANG */ D_80125EF8,
     /* PLAYER_MODELTYPE_LH_BOTTLE */ D_80125F08,
@@ -747,7 +758,7 @@ s32 Player_GetMeleeWeaponHeld(Player* this) {
 }
 
 s32 Player_HoldsTwoHandedWeapon(Player* this) {
-    if ((this->heldItemActionParam >= PLAYER_AP_SWORD_BGS) && (this->heldItemActionParam <= PLAYER_AP_HAMMER)) {
+    if ((this->heldItemActionParam >= PLAYER_AP_SWORD_KOKIRI) && (this->heldItemActionParam <= PLAYER_AP_HAMMER)) {
         return 1;
     } else {
         return 0;
@@ -1404,7 +1415,7 @@ void Player_DrawHookshotReticle(GlobalContext* globalCtx, Player* this, f32 arg2
 Vec3f D_801260D4 = { 1100.0f, -700.0f, 0.0f };
 
 f32 sMeleeWeaponLengths[] = {
-    0.0f, 4000.0f, 3000.0f, 5500.0f, 0.0f, 2500.0f,
+    0.0f, 4000.0f, 5500.0f, 5500.0f, 0.0f, 2500.0f,
 };
 
 Gfx* sBottleDLists[] = { gLinkAdultBottleDL, gLinkChildBottleDL };

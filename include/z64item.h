@@ -90,6 +90,7 @@ new items:
     ITEM_LIGHT_BALL,
     ITEM_MINISH_CAP,
     ITEM_FEATHER,
+    ITEM_AXE
 */
 typedef enum {
     /* 0x00 */ ITEM_STICK = 0x00,
@@ -161,6 +162,7 @@ typedef enum {
     /* 0x39 */ ITEM_BOW_ARROW_ICE,
     /* 0x3A */ ITEM_BOW_ARROW_LIGHT,
     /* 0x3B */ ITEM_SWORD_KOKIRI,
+               ITEM_AXE = 0x3B,
     /* 0x3C */ ITEM_SWORD_MASTER,
     /* 0x3D */ ITEM_SWORD_BGS,
     /* 0x3E */ ITEM_SHIELD_DEKU,

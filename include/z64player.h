@@ -72,6 +72,7 @@ typedef enum {
     /* 0x02 */ PLAYER_AP_FISHING_POLE,
     /* 0x03 */ PLAYER_AP_SWORD_MASTER,
     /* 0x04 */ PLAYER_AP_SWORD_KOKIRI,
+               PLAYER_AP_AXE = 0x04,
     /* 0x05 */ PLAYER_AP_SWORD_BGS,
     /* 0x06 */ PLAYER_AP_STICK,
     /* 0x07 */ PLAYER_AP_HAMMER,
@@ -247,6 +248,7 @@ typedef enum {
     /* 0x0D */ PLAYER_MODELGROUP_OOT, // ocarina of time
     /* 0x0E */ PLAYER_MODELGROUP_BOTTLE, // bottles (drawn separately)
     /* 0x0F */ PLAYER_MODELGROUP_15, // "last used"
+    PLAYER_MODELGROUP_AXE,
     /* 0x10 */ PLAYER_MODELGROUP_MAX
 } PlayerModelGroup;
 
@@ -266,6 +268,7 @@ typedef enum {
     /* 0x02 */ PLAYER_MODELTYPE_LH_SWORD, // holding kokiri/master sword
     /* 0x03 */ PLAYER_MODELTYPE_3, // unused, same as PLAYER_MODELTYPE_LH_SWORD
     /* 0x04 */ PLAYER_MODELTYPE_LH_BGS, // holding bgs/broken giant knife (child: master sword)
+    PLAYER_MODELTYPE_LH_AXE,
     /* 0x05 */ PLAYER_MODELTYPE_LH_HAMMER, // holding hammer (child: empty hand)
     /* 0x06 */ PLAYER_MODELTYPE_LH_BOOMERANG, // holding boomerang (adult: empty hand)
     /* 0x07 */ PLAYER_MODELTYPE_LH_BOTTLE, // holding bottle (bottle drawn separately)
@@ -585,7 +588,7 @@ typedef struct Player {
     /* 0x0842 */ s8         meleeWeaponAnimation;
     /* 0x0843 */ s8         meleeWeaponState;
     /* 0x0844 */ s8         unk_844;
-    /* 0x0845 */ u8         unk_845;
+    /* 0x0845 */ u8         unk_845; // weapon combo counter
     /* 0x0846 */ u8         unk_846;
     /* 0x0847 */ s8         unk_847[4];
     /* 0x084B */ s8         unk_84B[4];

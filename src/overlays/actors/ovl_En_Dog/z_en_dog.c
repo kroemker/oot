@@ -7,7 +7,7 @@
 #include "z_en_dog.h"
 #include "objects/object_dog/object_dog.h"
 
-#define FLAGS 0
+#define FLAGS (ACTOR_FLAG_4 | ACTOR_FLAG_23 | ACTOR_FLAG_26)
 
 void EnDog_Init(Actor* thisx, GlobalContext* globalCtx);
 void EnDog_Destroy(Actor* thisx, GlobalContext* globalCtx);
@@ -263,10 +263,10 @@ void EnDog_Init(Actor* thisx, GlobalContext* globalCtx) {
     CollisionCheck_SetInfo2(&this->actor.colChkInfo, 0, &sColChkInfoInit);
     Actor_SetScale(&this->actor, 0.0075f);
     this->waypoint = 0;
-    this->actor.gravity = -1.0f;
+    this->actor.gravity = -2.0f;
     this->path = Path_GetByIndex(globalCtx, (this->actor.params & 0x00F0) >> 4, 0xF);
 
-    switch (globalCtx->sceneNum) {
+    /*switch (globalCtx->sceneNum) {
         case SCENE_MARKET_NIGHT:
             if ((!gSaveContext.dogIsLost) && (((this->actor.params & 0x0F00) >> 8) == 1)) {
                 Actor_Kill(&this->actor);
@@ -285,7 +285,9 @@ void EnDog_Init(Actor* thisx, GlobalContext* globalCtx) {
                 }
             }
             break;
-    }
+    }*/
+
+    osSyncPrintf("Dog Actor Params, Save Context Params: %04x, %04x\n", this->actor.params, gSaveContext.dogParams);
 
     if (this->actor.params & 0x8000) {
         this->nextBehavior = DOG_WALK;
@@ -321,8 +323,8 @@ void EnDog_FollowPath(EnDog* this, GlobalContext* globalCtx) {
         EnDog_Orient(this, globalCtx);
         this->actor.shape.rot = this->actor.world.rot;
 
-        // Used to change between two text boxes for Richard's owner in the Market Day scene
-        // depending on where he is on his path. En_Hy checks these event flags.
+        // Used to change between two text boxes for Richachecksrd's owner in the Market Day scene
+        // depending on where he is on his path. En_Hy  these event flags.
         if (this->waypoint < 9) {
             // Richard is close to her, text says something about his coat
             gSaveContext.eventInf[3] |= 1;
@@ -360,6 +362,19 @@ void EnDog_ChooseMovement(EnDog* this, GlobalContext* globalCtx) {
     Math_SmoothStepToF(&this->actor.speedXZ, 0.0f, 0.4f, 1.0f, 0.0f);
 }
 
+void EnDog_Thrown(EnDog* this, GlobalContext* globalCtx) {
+    if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
+        this->actionFunc = EnDog_FollowPlayer;
+    }
+}
+
+void EnDog_LiftedUp(EnDog* this, GlobalContext* globalCtx) {
+    if (Actor_HasNoParent(&this->actor, globalCtx)) {
+        this->actionFunc = EnDog_Thrown;
+        this->collider.base.ocFlags1 |= OC1_TYPE_PLAYER;
+    }
+}
+
 void EnDog_FollowPlayer(EnDog* this, GlobalContext* globalCtx) {
     f32 speed;
 
@@ -370,12 +385,23 @@ void EnDog_FollowPlayer(EnDog* this, GlobalContext* globalCtx) {
         return;
     }
 
+    if (Actor_HasParent(&this->actor, globalCtx)) {
+        this->nextBehavior = DOG_SIT;
+        speed = 0.0f;
+        this->actor.speedXZ = 0.0f;
+        this->actionFunc = EnDog_LiftedUp;
+        this->collider.base.ocFlags1 &= ~OC1_TYPE_PLAYER;
+        EnDog_PlayBarkSFX(this);
+        return;
+    }
+
     if (this->actor.xzDistToPlayer > 400.0f) {
-        if (this->nextBehavior != DOG_SIT && this->nextBehavior != DOG_SIT_2) {
+        /*if (this->nextBehavior != DOG_SIT && this->nextBehavior != DOG_SIT_2) {
             this->nextBehavior = DOG_BOW;
         }
-        gSaveContext.dogParams = 0;
-        speed = 0.0f;
+        gSaveContext.dogParams = 0;*/
+        this->nextBehavior = DOG_RUN;
+        speed = 8.0f;
     } else if (this->actor.xzDistToPlayer > 100.0f) {
         this->nextBehavior = DOG_RUN;
         speed = 4.0f;
@@ -391,10 +417,10 @@ void EnDog_FollowPlayer(EnDog* this, GlobalContext* globalCtx) {
 
     Math_ApproachF(&this->actor.speedXZ, speed, 0.6f, 1.0f);
 
-    if (!(this->actor.xzDistToPlayer > 400.0f)) {
+    //if (!(this->actor.xzDistToPlayer > 400.0f)) {
         Math_SmoothStepToS(&this->actor.world.rot.y, this->actor.yawTowardsPlayer, 10, 1000, 1);
         this->actor.shape.rot = this->actor.world.rot;
-    }
+    //}
 }
 
 void EnDog_RunAway(EnDog* this, GlobalContext* globalCtx) {
@@ -459,6 +485,8 @@ void EnDog_Update(Actor* thisx, GlobalContext* globalCtx) {
     this->actionFunc(this, globalCtx);
     Collider_UpdateCylinder(&this->actor, &this->collider);
     CollisionCheck_SetOC(globalCtx, &globalCtx->colChkCtx, &this->collider.base);
+
+    func_8002F580(&this->actor, globalCtx); // check for pickup
 }
 
 s32 EnDog_OverrideLimbDraw(GlobalContext* globalCtx, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, void* thisx) {

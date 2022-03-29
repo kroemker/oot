@@ -213,9 +213,9 @@ static SavePlayerData sDebugSavePlayerData = {
 };
 
 ItemEquips sDebugSaveEquips = {
-    { ITEM_SWORD_MASTER, ITEM_BOMB, ITEM_NUT, ITEM_LONGSHOT }, // buttonItems
-    { SLOT_BEAN, SLOT_BOMBCHU, SLOT_BOMB },                          // cButtonSlots
-    0x1122,                                                         // equipment
+    { ITEM_SWORD_MASTER, ITEM_FEATHER, ITEM_HAMMER, ITEM_HAMMERANG }, // buttonItems
+    { SLOT_BEAN, SLOT_HAMMER, SLOT_BOOMERANG },                      // cButtonSlots
+    0x1122,                                                           // equipment
 };
 
 Inventory
@@ -223,8 +223,8 @@ Inventory
         {
             { ITEM_BOMB,           ITEM_NUT,           ITEM_FEATHER,           ITEM_LONGSHOT,         ITEM_HAMMERANG,       ITEM_STICK,
               ITEM_BOW_ARROW_FIRE, ITEM_BOW_ARROW_ICE, ITEM_BOW_ARROW_FOREST,  ITEM_BOW_ARROW_SHADOW, ITEM_BOW_ARROW_LIGHT, ITEM_BOW_ARROW_BOMB, 
-              ITEM_NONE,           ITEM_NONE,          ITEM_MAGIC_WATER_SPOUT, ITEM_LIGHT_BALL,       ITEM_NONE,            ITEM_NONE, 
-              ITEM_BOTTLE,         ITEM_BOTTLE,        ITEM_BOTTLE,            ITEM_BOTTLE,           ITEM_BOOTS_IRON,      ITEM_BOOTS_HOVER }, // items
+              ITEM_HAMMER,         ITEM_NONE,          ITEM_MAGIC_WATER_SPOUT, ITEM_LIGHT_BALL,       ITEM_NONE,            ITEM_NONE, 
+              ITEM_BOTTLE,         ITEM_BOTTLE,        ITEM_BOTTLE,            ITEM_BOTTLE,           ITEM_BOTTLE,          ITEM_BOTTLE }, // items
             { 50, 50, 10, 30, 1, 1, 30, 1, 50, 1, 1, 1, 1, 1, 1, 1 },                     // ammo
             0x7777,                                                                       // equipment
             0x125249,                                                                     // upgrades

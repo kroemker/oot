@@ -22,6 +22,10 @@ void osSyncPrintfUnused(const char* fmt, ...) {
 }
 
 void osSyncPrintf(const char* fmt, ...) {
+#ifndef DEVELOPMENT
+    return;
+#endif
+
     va_list args;
     va_start(args, fmt);
 

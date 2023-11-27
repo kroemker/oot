@@ -15,6 +15,9 @@ ORIG_COMPILER ?= 0
 # If COMPILER is "gcc", compile with GCC instead of IDO.
 COMPILER ?= gcc
 
+# If DEVELOPMENT is 1, compile with the -DDEVELOPMENT C flag
+DEVELOPMENT ?= 1
+
 CFLAGS ?=
 CPPFLAGS ?=
 
@@ -39,6 +42,11 @@ ifeq ($(NON_MATCHING),1)
   CFLAGS += -DNON_MATCHING -DAVOID_UB
   CPPFLAGS += -DNON_MATCHING -DAVOID_UB
   COMPARE := 0
+endif
+
+ifeq ($(DEVELOPMENT),1)
+  CFLAGS += -DDEVELOPMENT
+  CPPFLAGS += -DDEVELOPMENT
 endif
 
 PROJECT_DIR := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))

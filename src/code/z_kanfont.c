@@ -57,7 +57,7 @@ void Font_LoadOrderedFont(Font* font) {
             fontBuf = font->fontBuf + fontBufIndex * 8;
             fontStatic = (uintptr_t)_nes_font_staticSegmentRomStart;
 
-            osSyncPrintf("nes_mes_buf[%d]=%d\n", codePointIndex, font->msgBuf[codePointIndex]);
+            //osSyncPrintf("nes_mes_buf[%d]=%d\n", codePointIndex, font->msgBuf[codePointIndex]);
 
             offset = (font->msgBuf[codePointIndex] - ' ') * FONT_CHAR_TEX_SIZE;
             DmaMgr_RequestSyncDebug(fontBuf, fontStatic + offset, FONT_CHAR_TEX_SIZE, "../z_kanfont.c", 134);

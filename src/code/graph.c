@@ -393,19 +393,21 @@ void Graph_Update(GraphicsContext* gfxCtx, GameState* gameState) {
         sGraphPrevUpdateEndTime = timeNow;
     }
 
-    if (gIsCtrlr2Valid && CHECK_BTN_ALL(gameState->input[0].press.button, BTN_Z) &&
+#ifdef DEVELOPMENT
+    if (CHECK_BTN_ALL(gameState->input[0].press.button, BTN_Z) &&
         CHECK_BTN_ALL(gameState->input[0].cur.button, BTN_L | BTN_R)) {
         gSaveContext.gameMode = GAMEMODE_NORMAL;
         SET_NEXT_GAMESTATE(gameState, MapSelect_Init, MapSelectState);
         gameState->running = false;
     }
 
-    if (gIsCtrlr2Valid && PreNmiBuff_IsResetting(gAppNmiBufferPtr) && !gameState->inPreNMIState) {
+    if (PreNmiBuff_IsResetting(gAppNmiBufferPtr) && !gameState->inPreNMIState) {
         // "To reset mode"
         osSyncPrintf(VT_COL(YELLOW, BLACK) "PRE-NMIによりリセットモードに移行します\n" VT_RST);
         SET_NEXT_GAMESTATE(gameState, PreNMI_Init, PreNMIState);
         gameState->running = false;
     }
+#endif
 }
 
 void Graph_ThreadEntry(void* arg0) {
@@ -418,6 +420,21 @@ void Graph_ThreadEntry(void* arg0) {
 
     osSyncPrintf("グラフィックスレッド実行開始\n"); // "Start graphic thread execution"
     Graph_Init(&gfxCtx);
+
+#ifdef DEVELOPMENT
+    nextOvl = &gGameStateOverlayTable[GAMESTATE_PLAY];
+    Sram_InitDebugSave();
+    gSaveContext.save.entranceIndex = ENTR_TEST01_0;
+    gSaveContext.respawnFlag = 0;
+    gSaveContext.respawn[RESPAWN_MODE_DOWN].entranceIndex = ENTR_TEST01_0;
+    gSaveContext.seqId = (u8)NA_BGM_DISABLED;
+    gSaveContext.natureAmbienceId = 0xFF;
+    gSaveContext.showTitleCard = false;
+    gWeatherMode = WEATHER_MODE_CLEAR;
+    gSaveContext.magicFillTarget = gSaveContext.save.info.playerData.magic;
+    gSaveContext.magicCapacity = 0;
+    gSaveContext.save.info.playerData.magicLevel = gSaveContext.save.info.playerData.magic = 0;
+#endif
 
     while (nextOvl != NULL) {
         ovl = nextOvl;

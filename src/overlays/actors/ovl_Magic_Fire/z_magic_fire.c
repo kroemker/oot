@@ -87,7 +87,7 @@ void MagicFire_Init(Actor* thisx, PlayState* play) {
     Collider_SetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
     Collider_UpdateCylinder(&this->actor, &this->collider);
     this->actor.update = MagicFire_UpdateBeforeCast;
-    this->actionTimer = 20;
+    this->actionTimer = this->actor.params == 0 ? 20 : 0;
     this->actor.room = -1;
 }
 
@@ -113,7 +113,10 @@ void MagicFire_UpdateBeforeCast(Actor* thisx, PlayState* play) {
         this->actor.update = MagicFire_Update;
         Player_PlaySfx(player, NA_SE_PL_MAGIC_FIRE);
     }
-    this->actor.world.pos = player->actor.world.pos;
+
+    if (this->actor.params == 0) {
+        this->actor.world.pos = player->actor.world.pos;
+    }
 }
 
 void MagicFire_Update(Actor* thisx, PlayState* play) {
@@ -121,8 +124,9 @@ void MagicFire_Update(Actor* thisx, PlayState* play) {
     Player* player = GET_PLAYER(play);
     s32 pad;
 
-    if (1) {}
-    this->actor.world.pos = player->actor.world.pos;
+    if (this->actor.params == 0) {
+        this->actor.world.pos = player->actor.world.pos;
+    }
 
     // See `ACTOROVL_ALLOC_ABSOLUTE`
     //! @bug This condition is too broad, the actor will also be killed by warp songs. But warp songs do not use an

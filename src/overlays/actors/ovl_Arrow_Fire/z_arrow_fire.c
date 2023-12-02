@@ -51,6 +51,7 @@ void ArrowFire_Init(Actor* thisx, PlayState* play) {
     this->alpha = 160;
     this->timer = 0;
     this->unk_15C = 0.0f;
+    this->castFireMagic = 0;
 }
 
 void ArrowFire_Destroy(Actor* thisx, PlayState* play) {
@@ -95,6 +96,11 @@ void ArrowFire_Hit(ArrowFire* this, PlayState* play) {
     f32 scale;
     f32 offset;
     u16 timer;
+
+    if (!this->castFireMagic) {
+        Actor_Spawn(&play->actorCtx, play, ACTOR_MAGIC_FIRE, this->actor.world.pos.x, this->actor.world.pos.y, this->actor.world.pos.z, 0, 0, 0, 1);
+        this->castFireMagic = 1;
+    }
 
     if (this->actor.projectedW < 50.0f) {
         scale = 10.0f;

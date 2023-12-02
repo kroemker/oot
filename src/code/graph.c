@@ -430,10 +430,14 @@ void Graph_ThreadEntry(void* arg0) {
     gSaveContext.seqId = (u8)NA_BGM_DISABLED;
     gSaveContext.natureAmbienceId = 0xFF;
     gSaveContext.showTitleCard = false;
-    gWeatherMode = WEATHER_MODE_CLEAR;
     gSaveContext.magicFillTarget = gSaveContext.save.info.playerData.magic;
     gSaveContext.magicCapacity = 0;
     gSaveContext.save.info.playerData.magicLevel = gSaveContext.save.info.playerData.magic = 0;
+
+    gVisMonoColor.r = 255;
+    gVisMonoColor.g = 255;
+    gVisMonoColor.b = 255;
+    gVisMonoColor.a = 255;
 #endif
 
     while (nextOvl != NULL) {

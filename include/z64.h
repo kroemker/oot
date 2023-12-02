@@ -446,7 +446,16 @@ typedef struct PlayState {
     /* 0x1242B */ u8 viewpoint; // toggleable camera setting by shops or player. Is also equal to the bgCamIndex + 1
     /* 0x1242C */ SceneTableEntry* loadedScene;
     /* 0x12430 */ char unk_12430[0xE8];
+    u8 season;
 } PlayState; // size = 0x12518
+
+typedef enum {
+    SEASON_SPRING,
+    SEASON_SUMMER,
+    SEASON_FALL,
+    SEASON_WINTER,
+    NO_SEASON
+} Season; 
 
 typedef struct {
     /* 0x0000 */ GameState state;

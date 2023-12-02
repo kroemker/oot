@@ -440,6 +440,8 @@ void Environment_Init(PlayState* play2, EnvironmentContext* envCtx, s32 unused) 
 
     gCustomLensFlareOn = false;
     Rumble_Reset();
+
+    Environment_InitSeasons(play);
 }
 
 u8 Environment_SmoothStepToU8(u8* pvalue, u8 target, u8 scale, u8 step, u8 minStep) {
@@ -897,6 +899,7 @@ void Environment_Update(PlayState* play, EnvironmentContext* envCtx, LightContex
             }
         }
 
+        Environment_UpdateSeasons(play);
         Environment_UpdateRain(play);
         Environment_PlayTimeBasedSequence(play);
 
@@ -1172,32 +1175,34 @@ void Environment_Update(PlayState* play, EnvironmentContext* envCtx, LightContex
                         envCtx->lightBlend = 1.0f;
                     }
 
+                    envCtx->lightBlend = 0.1f;
+
                     for (i = 0; i < 3; i++) {
                         envCtx->lightSettings.ambientColor[i] =
-                            LERP(lightSettingsList[envCtx->prevLightSetting].ambientColor[i],
+                            LERP(envCtx->lightSettings.ambientColor[i],
                                  lightSettingsList[envCtx->lightSetting].ambientColor[i], envCtx->lightBlend);
                         envCtx->lightSettings.light1Dir[i] =
-                            LERP16(lightSettingsList[envCtx->prevLightSetting].light1Dir[i],
+                            LERP16(envCtx->lightSettings.light1Dir[i],
                                    lightSettingsList[envCtx->lightSetting].light1Dir[i], envCtx->lightBlend);
                         envCtx->lightSettings.light1Color[i] =
-                            LERP(lightSettingsList[envCtx->prevLightSetting].light1Color[i],
+                            LERP(envCtx->lightSettings.light1Color[i],
                                  lightSettingsList[envCtx->lightSetting].light1Color[i], envCtx->lightBlend);
                         envCtx->lightSettings.light2Dir[i] =
-                            LERP16(lightSettingsList[envCtx->prevLightSetting].light2Dir[i],
+                            LERP16(envCtx->lightSettings.light2Dir[i],
                                    lightSettingsList[envCtx->lightSetting].light2Dir[i], envCtx->lightBlend);
                         envCtx->lightSettings.light2Color[i] =
-                            LERP(lightSettingsList[envCtx->prevLightSetting].light2Color[i],
+                            LERP(envCtx->lightSettings.light2Color[i],
                                  lightSettingsList[envCtx->lightSetting].light2Color[i], envCtx->lightBlend);
                         envCtx->lightSettings.fogColor[i] =
-                            LERP(lightSettingsList[envCtx->prevLightSetting].fogColor[i],
+                            LERP(envCtx->lightSettings.fogColor[i],
                                  lightSettingsList[envCtx->lightSetting].fogColor[i], envCtx->lightBlend);
                     }
                     envCtx->lightSettings.fogNear = LERP16(
-                        ENV_LIGHT_SETTINGS_FOG_NEAR(lightSettingsList[envCtx->prevLightSetting].blendRateAndFogNear),
+                        envCtx->lightSettings.fogNear,
                         ENV_LIGHT_SETTINGS_FOG_NEAR(lightSettingsList[envCtx->lightSetting].blendRateAndFogNear),
                         envCtx->lightBlend);
                     envCtx->lightSettings.zFar =
-                        LERP16(lightSettingsList[envCtx->prevLightSetting].zFar,
+                        LERP16(envCtx->lightSettings.zFar,
                                lightSettingsList[envCtx->lightSetting].zFar, envCtx->lightBlend);
                 }
 
@@ -2620,4 +2625,341 @@ void Environment_WarpSongLeave(PlayState* play) {
         case ENTR_SACRED_FOREST_MEADOW_0:
             break;
     }
+}
+
+#include "overlays/actors/ovl_Object_Kankyo/z_object_kankyo.h"
+
+ObjectKankyoEffect snowEffects[64];
+
+void Environment_DrawSnow(PlayState* play) {
+    f32 dist;
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 maxDist;
+    f32 temp;
+    f32 baseX;
+    f32 baseY;
+    f32 baseZ;
+    Vec3f vec1 = { 0.0f, 0.0f, 0.0f };
+    Vec3f vec2 = { 0.0f, 0.0f, 0.0f };
+    s16 i;
+
+    if (!(play->cameraPtrs[CAM_ID_MAIN]->stateFlags & CAM_STATE_CAMERA_IN_WATER)) {
+        OPEN_DISPS(play->state.gfxCtx, "../z_object_kankyo.c", 958);
+        if (play->envCtx.precipitation[PRECIP_SNOW_CUR] < play->envCtx.precipitation[PRECIP_SNOW_MAX]) {
+            if (play->state.frames % 16 == 0) {
+                play->envCtx.precipitation[PRECIP_SNOW_CUR] += 2;
+            }
+        } else if (play->envCtx.precipitation[PRECIP_SNOW_CUR] > play->envCtx.precipitation[PRECIP_SNOW_MAX]) {
+            if (play->state.frames % 16 == 0) {
+                play->envCtx.precipitation[PRECIP_SNOW_CUR] -= 2;
+            }
+        }
+
+        for (i = 0; i < play->envCtx.precipitation[PRECIP_SNOW_CUR]; i++) {
+            switch (snowEffects[i].state) {
+                case 0:
+                    // spawn in front of the camera
+                    dx = play->view.at.x - play->view.eye.x;
+                    dy = play->view.at.y - play->view.eye.y;
+                    dz = play->view.at.z - play->view.eye.z;
+                    dist = sqrtf(SQ(dx) + SQ(dy) + SQ(dz));
+
+                    // fake
+                    temp = dz / dist;
+                    snowEffects[i].base.x = play->view.eye.x + dx / dist * 80.0f;
+                    snowEffects[i].base.y = play->view.eye.y + dy / dist * 80.0f;
+                    snowEffects[i].base.z = play->view.eye.z + temp * 80.0f;
+
+                    snowEffects[i].pos.x = (Rand_ZeroOne() - 0.5f) * 160.0f;
+                    snowEffects[i].pos.y = 80.0f;
+                    snowEffects[i].pos.z = (Rand_ZeroOne() - 0.5f) * 160.0f;
+                    if (snowEffects[i].base.y + snowEffects[i].pos.y < 50.0f) {
+                        snowEffects[i].base.y = 50.0f;
+                    }
+                    snowEffects[i].speed = Rand_ZeroOne() * 5.0f + 0.5f;
+                    snowEffects[i].dirPhase.x = Rand_ZeroOne() * 360.0f;
+                    snowEffects[i].dirPhase.z = Rand_ZeroOne() * 360.0f;
+                    snowEffects[i].state++;
+                    break;
+
+                case 1:
+                    dx = play->view.at.x - play->view.eye.x;
+                    dy = play->view.at.y - play->view.eye.y;
+                    dz = play->view.at.z - play->view.eye.z;
+                    dist = sqrtf(SQ(dx) + SQ(dy) + SQ(dz));
+
+                    baseX = play->view.eye.x + dx / dist * 80.0f;
+                    baseY = play->view.eye.y + dy / dist * 80.0f;
+                    baseZ = play->view.eye.z + dz / dist * 80.0f;
+
+                    snowEffects[i].dirPhase.x += 0.049999997f * Rand_ZeroOne();
+                    snowEffects[i].dirPhase.z += 0.049999997f * Rand_ZeroOne();
+                    snowEffects[i].pos.x += sinf(snowEffects[i].dirPhase.x * 0.01f);
+                    snowEffects[i].pos.z += cosf(snowEffects[i].dirPhase.z * 0.01f);
+                    snowEffects[i].pos.y += -snowEffects[i].speed;
+
+                    if (snowEffects[i].base.y + snowEffects[i].pos.y < -150.0f ||
+                        snowEffects[i].base.y + snowEffects[i].pos.y < play->view.eye.y - 150.0f) {
+                        snowEffects[i].state++;
+                    }
+
+                    maxDist = 80;
+                    if (snowEffects[i].base.x + snowEffects[i].pos.x - baseX > maxDist ||
+                        snowEffects[i].base.x + snowEffects[i].pos.x - baseX < -maxDist ||
+                        snowEffects[i].base.y + snowEffects[i].pos.y - baseY > maxDist ||
+                        snowEffects[i].base.y + snowEffects[i].pos.y - baseY < -maxDist ||
+                        snowEffects[i].base.z + snowEffects[i].pos.z - baseZ > maxDist ||
+                        snowEffects[i].base.z + snowEffects[i].pos.z - baseZ < -maxDist) {
+
+                        // when off screen, wrap around to the other side
+                        if (snowEffects[i].base.x + snowEffects[i].pos.x - baseX > maxDist) {
+                            snowEffects[i].base.x = baseX - maxDist;
+                            snowEffects[i].pos.x = 0.0f;
+                        }
+                        if (snowEffects[i].base.x + snowEffects[i].pos.x - baseX < -maxDist) {
+                            snowEffects[i].base.x = baseX + maxDist;
+                            snowEffects[i].pos.x = 0.0f;
+                        }
+                        if (snowEffects[i].base.z + snowEffects[i].pos.z - baseZ > maxDist) {
+                            snowEffects[i].base.z = baseZ - maxDist;
+                            snowEffects[i].pos.z = 0.0f;
+                        }
+                        if (snowEffects[i].base.z + snowEffects[i].pos.z - baseZ < -maxDist) {
+                            snowEffects[i].base.z = baseZ + maxDist;
+                            snowEffects[i].pos.z = 0.0f;
+                        }
+                    }
+                    break;
+
+                case 2:
+                    snowEffects[i].state = 0;
+                    break;
+
+                default:
+                    break;
+            }
+
+            if (1) {}
+            if (1) {}
+            Matrix_Translate(snowEffects[i].base.x + snowEffects[i].pos.x,
+                             snowEffects[i].base.y + snowEffects[i].pos.y,
+                             snowEffects[i].base.z + snowEffects[i].pos.z, MTXMODE_NEW);
+            Matrix_Scale(0.05f, 0.05f, 0.05f, MTXMODE_APPLY);
+            gDPPipeSync(POLY_XLU_DISP++);
+
+            gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 200, 200, 200, 180);
+            gDPSetEnvColor(POLY_XLU_DISP++, 200, 200, 200, 180);
+
+            gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx, "../z_object_kankyo.c", 1107), G_MTX_LOAD);
+
+            gSPSegment(POLY_XLU_DISP++, 0x08, SEGMENTED_TO_VIRTUAL(gDust5Tex));
+
+            Gfx_SetupDL_61Xlu(play->state.gfxCtx);
+            gSPMatrix(POLY_XLU_DISP++, &D_01000000, G_MTX_MODELVIEW | G_MTX_NOPUSH | G_MTX_MUL);
+
+            gDPPipeSync(POLY_XLU_DISP++);
+
+            gSPDisplayList(POLY_XLU_DISP++, gEffDustDL);
+
+            gDPPipeSync(POLY_XLU_DISP++);
+        }
+
+        CLOSE_DISPS(play->state.gfxCtx, "../z_object_kankyo.c", 1127);
+    }
+}
+
+void Environment_ChangeSkyboxConfigIfNecessary(PlayState* play, u8 config) {
+    if (play->envCtx.skyboxConfig != config) {
+        play->envCtx.changeSkyboxState = CHANGE_SKYBOX_REQUESTED;
+        play->envCtx.changeSkyboxNextConfig = config;
+        play->envCtx.changeSkyboxTimer = 60;
+    }
+} 
+
+char* seasonNames[] = { "Spring", "Summer", "Fall", "Winter", "None" };
+EnvLightSettings seasonalLightSettings[] = {
+    { {42, 153, 250 }, {0, 180, 0}, {0, 187, 255}, {0, 180, 0}, {15, 143, 212 }, {2, 151, 250}, 0x3de, ENV_ZFAR_MAX},
+    { {192, 192, 255 }, {0, 180, 0}, {230, 222, 11}, {0, 180, 0}, {230, 196, 48 }, {230, 196, 48}, 0x3ff, ENV_ZFAR_MAX},
+    { {189, 108, 26 }, {0, 180, 0}, {222, 148, 73}, {0, 180, 0}, {150, 76, 0 }, {135, 57, 34}, 0x3d4, ENV_ZFAR_MAX},
+    { {130, 130, 130 }, {0, 180, 0}, {130, 130, 130}, {0, 180, 0}, {130, 130, 130 }, {230, 230, 230}, 0x3c0, ENV_ZFAR_MAX},
+    { {0, 0, 0 }, {0, 0, 0}, {0, 0, 0}, {0, 0, 0 }, {0, 0, 0}, {0, 0, 0}, 0x3ff, ENV_ZFAR_MAX},
+};
+
+u32 seasonLightDebugCursor = 0;
+u32 seasonLightDebugCursor2 = 0;
+char* seasonLightDebugCursorNames[] = { "Ambient", "Light1Dir", "Light1Color", "Light2Dir", "Light2Color", "Fog", "Blend Rate", "FogNear" };
+u8 enableEnvLightDebug = 0;
+u8 useSeasons = 0;
+
+void Environment_ChangeSeason(PlayState* play, u8 season) {
+    if (!useSeasons) {
+        return;
+    }
+
+    play->season = season;
+    play->envCtx.lightSetting = season;
+    
+    Environment_StopStormNatureAmbience(play);
+    play->skyboxId = SKYBOX_NORMAL_SKY;
+    play->envCtx.lightningState = LIGHTNING_OFF;
+    play->envCtx.precipitation[PRECIP_RAIN_MAX] = 0;
+    play->envCtx.precipitation[PRECIP_RAIN_CUR] = 0;
+    play->envCtx.precipitation[PRECIP_SNOW_CUR] = 0;
+    play->envCtx.precipitation[PRECIP_SNOW_MAX] = 0;
+    play->envCtx.precipitation[PRECIP_SOS_MAX] = 0;
+    play->envCtx.windSpeed = 0.0f;
+
+    if (season == SEASON_WINTER) {
+        gWeatherMode = WEATHER_MODE_SNOW;
+        play->envCtx.precipitation[PRECIP_SNOW_CUR] = play->envCtx.precipitation[PRECIP_SNOW_MAX] = 64;
+        Environment_ChangeSkyboxConfigIfNecessary(play, 1);
+    }
+    else if (season == SEASON_SPRING) {
+        gWeatherMode = WEATHER_MODE_RAIN;
+        Environment_PlayStormNatureAmbience(play);
+        play->envCtx.lightningState = LIGHTNING_ON;
+        play->envCtx.precipitation[PRECIP_RAIN_MAX] = play->envCtx.precipitation[PRECIP_RAIN_CUR] = 20;
+        Environment_ChangeSkyboxConfigIfNecessary(play, 1);
+    }
+    else if (season == SEASON_SUMMER) {
+        gWeatherMode = WEATHER_MODE_CLEAR;
+        Environment_ChangeSkyboxConfigIfNecessary(play, 2);
+    }
+    else if (season == SEASON_FALL) {
+        gWeatherMode = WEATHER_MODE_CLEAR;
+        play->envCtx.changeSkyboxState = CHANGE_SKYBOX_REQUESTED;
+        Environment_ChangeSkyboxConfigIfNecessary(play, 1);
+        Player* player = GET_PLAYER(play);
+        play->envCtx.windDirection.x = player->actor.world.rot.x;
+        play->envCtx.windDirection.y = player->actor.world.rot.y;
+        play->envCtx.windDirection.z = player->actor.world.rot.z;
+        play->envCtx.windSpeed = 7.0f;
+    }
+    else {
+        osSyncPrintf("Environment_ChangeSeason(): invalid season (%d)\n", season);
+    }
+}
+
+void Environment_InitSeasons(PlayState* play) {
+    if (!useSeasons) {
+        return;
+    }
+
+    play->envCtx.lightMode = LIGHT_MODE_SETTINGS;
+    play->envCtx.lightningState = LIGHTNING_OFF;
+    play->envCtx.lightSettingsList = seasonalLightSettings;
+
+    Environment_ChangeSeason(play, SEASON_SUMMER);
+}
+
+void Environment_UpdateSeasons(PlayState* play) {
+    Input* sControlInput = &play->state.input[0];
+    s16 blendRate = seasonalLightSettings[play->season].blendRateAndFogNear >> 10;
+    s16 fogNear = ENV_LIGHT_SETTINGS_FOG_NEAR(seasonalLightSettings[play->season].blendRateAndFogNear);
+
+    if (!enableEnvLightDebug || !useSeasons) {
+        return;
+    }
+
+    if (CHECK_BTN_ALL(sControlInput->press.button, BTN_R)) {
+        seasonLightDebugCursor = (seasonLightDebugCursor + 1) % 6;
+    }
+    if (CHECK_BTN_ALL(sControlInput->press.button, BTN_L)) {
+        seasonLightDebugCursor = (seasonLightDebugCursor + 5) % 6;
+    }
+    
+    if (CHECK_BTN_ALL(sControlInput->press.button, BTN_DUP)) {
+        seasonLightDebugCursor2 = (seasonLightDebugCursor2 + 4) % 5;
+    }
+    if (CHECK_BTN_ALL(sControlInput->press.button, BTN_DDOWN)) {
+        seasonLightDebugCursor2 = (seasonLightDebugCursor2 + 1) % 5;
+    }
+
+    if (seasonLightDebugCursor2 < 3) {
+        u8* firstSeasonalLight = (u8*)&seasonalLightSettings[play->season];
+        if (CHECK_BTN_ALL(sControlInput->cur.button, BTN_DLEFT)) {
+            firstSeasonalLight[seasonLightDebugCursor * 3 + seasonLightDebugCursor2] -= 2;
+        }
+        if (CHECK_BTN_ALL(sControlInput->cur.button, BTN_DRIGHT)) {
+            firstSeasonalLight[seasonLightDebugCursor * 3 + seasonLightDebugCursor2] += 2;
+        }
+    }
+    else if (seasonLightDebugCursor2 == 3) {
+        if (CHECK_BTN_ALL(sControlInput->cur.button, BTN_DLEFT)) {
+            seasonalLightSettings[play->season].blendRateAndFogNear = ((blendRate - 2) << 10) | fogNear;
+        }
+        if (CHECK_BTN_ALL(sControlInput->cur.button, BTN_DRIGHT)) {
+            seasonalLightSettings[play->season].blendRateAndFogNear = ((blendRate + 2) << 10) | fogNear;
+        }
+    }
+    else if (seasonLightDebugCursor2 == 4) {
+        if (CHECK_BTN_ALL(sControlInput->cur.button, BTN_DLEFT)) {
+            seasonalLightSettings[play->season].blendRateAndFogNear = (blendRate << 10) | (fogNear - 2);
+        }
+        if (CHECK_BTN_ALL(sControlInput->cur.button, BTN_DRIGHT)) {
+            seasonalLightSettings[play->season].blendRateAndFogNear = (blendRate << 10) | (fogNear + 2);
+        }
+    }
+
+    if (CHECK_BTN_ALL(sControlInput->press.button, BTN_Z)) {
+        Environment_ChangeSeason(play, (play->season + 1) % 4);
+    }
+}
+
+void Environment_DrawSeasons(PlayState* play) {
+    Gfx* gfx;
+    Gfx* polyOpa;
+    GfxPrint printer;
+
+    GraphicsContext* gfxCtx = play->state.gfxCtx;
+
+    u8* firstSeasonalLight = (u8*)&seasonalLightSettings[play->season];
+
+    if (!enableEnvLightDebug || !useSeasons) {
+        return;
+    }
+
+    OPEN_DISPS(gfxCtx, "../z_kankyo.c", 2403);
+
+    polyOpa = POLY_OPA_DISP;
+    gfx = Graph_GfxPlusOne(polyOpa);
+    gSPDisplayList(OVERLAY_DISP++, gfx);
+
+    GfxPrint_Init(&printer);
+    GfxPrint_Open(&printer, gfx);
+
+    GfxPrint_SetColor(&printer, 50, 50, 250, 255);
+    GfxPrint_SetPos(&printer, 4, 8);
+    GfxPrint_Printf(&printer, "Season: %s, Light: %d, Prev: %d", seasonNames[play->season], play->envCtx.lightSetting, play->envCtx.prevLightSetting);
+    GfxPrint_SetPos(&printer, 4, 10);
+    GfxPrint_Printf(&printer, "%s", seasonLightDebugCursorNames[seasonLightDebugCursor]);
+    GfxPrint_SetColor(&printer, seasonLightDebugCursor2 == 0 ? 255 : 50, 50, 250, 255);
+    GfxPrint_SetPos(&printer, 4, 13);
+    GfxPrint_Printf(&printer, "R: %d", firstSeasonalLight[seasonLightDebugCursor * 3]);
+    GfxPrint_SetColor(&printer, seasonLightDebugCursor2 == 1 ? 255 : 50, 50, 250, 255);
+    GfxPrint_SetPos(&printer, 4, 15);
+    GfxPrint_Printf(&printer, "G: %d", firstSeasonalLight[seasonLightDebugCursor * 3 + 1]);
+    GfxPrint_SetColor(&printer, seasonLightDebugCursor2 == 2 ? 255 : 50, 50, 250, 255);
+    GfxPrint_SetPos(&printer, 4, 17);
+    GfxPrint_Printf(&printer, "B: %d", firstSeasonalLight[seasonLightDebugCursor * 3 + 2]);
+    GfxPrint_SetColor(&printer, seasonLightDebugCursor2 == 3 ? 255 : 50, 50, 250, 255);
+    GfxPrint_SetPos(&printer, 4, 19);
+    GfxPrint_Printf(&printer, "Blend Rate: %x", seasonalLightSettings[play->season].blendRateAndFogNear >> 10);
+    GfxPrint_SetColor(&printer, seasonLightDebugCursor2 == 4 ? 255 : 50, 50, 250, 255);
+    GfxPrint_SetPos(&printer, 4, 21);
+    GfxPrint_Printf(&printer, "Fog Near: %x", ENV_LIGHT_SETTINGS_FOG_NEAR(seasonalLightSettings[play->season].blendRateAndFogNear));
+    GfxPrint_SetColor(&printer, 50, 50, 250, 255);
+    GfxPrint_SetPos(&printer, 4, 23);
+    GfxPrint_Printf(&printer, "Blend: %f", play->envCtx.lightBlend);
+
+    gfx = GfxPrint_Close(&printer);
+    GfxPrint_Destroy(&printer);
+
+    gSPEndDisplayList(gfx++);
+    Graph_BranchDlist(polyOpa, gfx);
+    POLY_OPA_DISP = gfx;
+
+    CLOSE_DISPS(gfxCtx, "../z_kankyo.c", 2439);
 }

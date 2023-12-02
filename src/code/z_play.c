@@ -393,6 +393,7 @@ void Play_Init(GameState* thisx) {
     TransitionFade_Start(&this->transitionFadeFlash);
     VisMono_Init(&sPlayVisMono);
     gVisMonoColor.a = 0;
+    this->season = NO_SEASON;
     CutsceneFlags_UnsetAll(this);
 
     osSyncPrintf("ZELDA ALLOC SIZE=%x\n", THA_GetRemaining(&this->state.tha));
@@ -1210,6 +1211,10 @@ void Play_Draw(PlayState* this) {
             Environment_DrawRain(this, &this->view, gfxCtx);
         }
 
+        if (this->envCtx.precipitation[PRECIP_SNOW_CUR] != 0) {
+            Environment_DrawSnow(this);
+        }
+
         if ((R_HREG_MODE != HREG_MODE_PLAY) || (R_PLAY_DRAW_ROOM_FLAGS != 0)) {
             Environment_FillScreen(gfxCtx, 0, 0, 0, this->bgCoverAlpha, FILL_SCREEN_OPA);
         }
@@ -1227,6 +1232,8 @@ void Play_Draw(PlayState* this) {
             }
             Environment_DrawCustomLensFlare(this);
         }
+
+        Environment_DrawSeasons(this);
 
         if ((R_HREG_MODE != HREG_MODE_PLAY) || R_PLAY_DRAW_SCREEN_FILLS) {
             if (MREG(64) != 0) {

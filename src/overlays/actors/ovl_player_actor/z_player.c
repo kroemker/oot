@@ -2390,6 +2390,19 @@ void Player_ProcessItemButtons(Player* this, PlayState* play) {
     }
 
     if (!(this->stateFlags1 & (PLAYER_STATE1_11 | PLAYER_STATE1_29)) && !func_8008F128(this)) {
+        if (CHECK_BTN_ALL(sControlInput->press.button, BTN_DDOWN)) {
+            Environment_ChangeSeason(play, SEASON_WINTER);
+        }
+        else if (CHECK_BTN_ALL(sControlInput->press.button, BTN_DLEFT)) {
+            Environment_ChangeSeason(play, SEASON_SPRING);
+        }
+        else if (CHECK_BTN_ALL(sControlInput->press.button, BTN_DUP)) {
+            Environment_ChangeSeason(play, SEASON_SUMMER);
+        }
+        else if (CHECK_BTN_ALL(sControlInput->press.button, BTN_DRIGHT)) {
+            Environment_ChangeSeason(play, SEASON_FALL);
+        }
+
         if (this->itemAction >= PLAYER_IA_FISHING_POLE) {
             if (!Player_ItemIsInUse(this, B_BTN_ITEM) && !Player_ItemIsInUse(this, C_BTN_ITEM(0)) &&
                 !Player_ItemIsInUse(this, C_BTN_ITEM(1)) && !Player_ItemIsInUse(this, C_BTN_ITEM(2))) {

@@ -55,7 +55,9 @@ void ArrowLight_Init(Actor* thisx, PlayState* play) {
 }
 
 void ArrowLight_Destroy(Actor* thisx, PlayState* play) {
-    Magic_Reset(play);
+    if (Actor_FindOtherMagicArrow(&play->actorCtx, thisx) == NULL) {
+        Magic_Reset(play);
+    }
     LOG_STRING("消滅", "../z_arrow_light.c", 403); // "Disappearance"
 }
 

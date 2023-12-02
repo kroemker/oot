@@ -2872,7 +2872,7 @@ s32 func_808350A4(PlayState* play, Player* this) {
                 play->shootingGalleryStatus--;
             } else {
                 Inventory_ChangeAmmo(item, -1);
-                if (arrowType >= ARROW_FIRE && arrowType <= ARROW_0E) {
+                if (arrowType >= ARROW_FIRE && arrowType <= ARROW_0E && gSaveContext.magicState != MAGIC_STATE_IDLE) {
                     gSaveContext.magicState = MAGIC_STATE_CONSUME_SETUP; // initiate magic consumption
                 }
             }
@@ -11467,15 +11467,7 @@ void Player_DrawDebugInfo(PlayState* play, Player* this) {
     GfxPrint_SetPos(&printer, 4, 10);
     GfxPrint_Printf(&printer, "UpperAF: %s", this->debugUpperActionFuncName);
     GfxPrint_SetPos(&printer, 4, 12);
-    GfxPrint_Printf(&printer, "heldItemAction: %d", this->heldItemAction);
-    GfxPrint_SetPos(&printer, 4, 14);
-    GfxPrint_Printf(&printer, "unk_836: %d", this->unk_836);
-    GfxPrint_SetPos(&printer, 4, 16);
-    GfxPrint_Printf(&printer, "unk_860: %d", this->unk_860);
-    GfxPrint_SetPos(&printer, 4, 18);
-    GfxPrint_Printf(&printer, "sUseHeldItem: %d", sUseHeldItem);
-    GfxPrint_SetPos(&printer, 4, 20);
-    GfxPrint_Printf(&printer, "sItemButtonDown: %d", sHeldItemButtonIsHeldDown);
+    GfxPrint_Printf(&printer, "magicState: %d", gSaveContext.magicState);
 
     gfx = GfxPrint_Close(&printer);
     GfxPrint_Destroy(&printer);

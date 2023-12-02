@@ -3162,6 +3162,27 @@ Actor* Actor_Find(ActorContext* actorCtx, s32 actorId, s32 actorCategory) {
 }
 
 /**
+ * Finds a magic arrow actor that is not 'actor' if there is one.
+ */
+Actor* Actor_FindOtherMagicArrow(ActorContext* actorCtx, Actor* actor) {
+    Actor* similarActor;
+
+    if (actor == NULL) {
+        return NULL;
+    }
+    similarActor = actorCtx->actorLists[actor->category].head;
+
+    while (similarActor != NULL) {
+        if (similarActor != actor && similarActor->id >= ACTOR_ARROW_FIRE && similarActor->id <= ACTOR_ARROW_LIGHT) {
+            return similarActor;
+        }
+        similarActor = similarActor->next;
+    }
+
+    return NULL;
+}
+
+/**
  * Play the death sound effect and flash the screen white for 4 frames.
  * While the screen flashes, the game freezes.
  */

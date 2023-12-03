@@ -188,8 +188,8 @@ static SavePlayerData sDebugSavePlayerData = {
 };
 
 static ItemEquips sDebugSaveEquips = {
-    { ITEM_SWORD_MASTER, ITEM_BOW, ITEM_BOMB, ITEM_OCARINA_FAIRY }, // buttonItems
-    { SLOT_BOW, SLOT_BOMB, SLOT_OCARINA },                          // cButtonSlots
+    { ITEM_SWORD_MASTER, ITEM_BOW, ITEM_HAMMERANG, ITEM_OCARINA_FAIRY }, // buttonItems
+    { SLOT_BOW, SLOT_HAMMERANG, SLOT_OCARINA },                          // cButtonSlots
     // equipment
     (EQUIP_VALUE_SWORD_MASTER << (EQUIP_TYPE_SWORD * 4)) | (EQUIP_VALUE_SHIELD_HYLIAN << (EQUIP_TYPE_SHIELD * 4)) |
         (EQUIP_VALUE_TUNIC_KOKIRI << (EQUIP_TYPE_TUNIC * 4)) | (EQUIP_VALUE_BOOTS_KOKIRI << (EQUIP_TYPE_BOOTS * 4)),
@@ -210,7 +210,7 @@ static Inventory sDebugSaveInventory = {
         ITEM_HOOKSHOT,            // SLOT_HOOKSHOT
         ITEM_ARROW_ICE,           // SLOT_ARROW_ICE
         ITEM_FARORES_WIND,        // SLOT_FARORES_WIND
-        ITEM_BOOMERANG,           // SLOT_BOOMERANG
+        ITEM_HAMMERANG,           // SLOT_BOOMERANG
         ITEM_LENS_OF_TRUTH,       // SLOT_LENS_OF_TRUTH
         ITEM_MAGIC_BEAN,          // SLOT_MAGIC_BEAN
         ITEM_HAMMER,              // SLOT_HAMMER

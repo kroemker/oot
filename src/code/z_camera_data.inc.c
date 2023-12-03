@@ -268,7 +268,7 @@ CameraModeValue sSetNormal0ModeHookshotFlyData[] = {
 };
 
 CameraModeValue sSetNormal0ModeAimBoomerangData[] = {
-    CAM_FUNCDATA_SUBJ3(5, 50, 50, 10, 0, 0, 0, 45,
+    CAM_FUNCDATA_SUBJ3(5, 80, 80, 10, 0, 80, 0, 45,
                        CAM_INTERFACE_FIELD(CAM_LETTERBOX_MEDIUM, CAM_HUD_VISIBILITY_ALL, 0)),
 };
 

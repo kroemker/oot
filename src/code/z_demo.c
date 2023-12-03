@@ -561,9 +561,7 @@ void CutsceneCmd_Destination(PlayState* play, CutsceneContext* csCtx, CsCmdDesti
         titleDemoSkipped = true;
     }
 
-    if ((csCtx->curFrame == cmd->startFrame) || titleDemoSkipped ||
-        ((csCtx->curFrame > 20) && CHECK_BTN_ALL(play->state.input[0].press.button, BTN_START) &&
-         (gSaveContext.fileNum != 0xFEDC))) {
+    if ((csCtx->curFrame == cmd->startFrame) || titleDemoSkipped) {
         csCtx->state = CS_STATE_RUN_UNSTOPPABLE;
         Audio_SetCutsceneFlag(0);
         gSaveContext.cutsceneTransitionControl = 1;

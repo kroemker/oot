@@ -1439,6 +1439,7 @@ void FileSelect_LoadGame(GameState* thisx) {
     u16 swordEquipValue;
     s32 pad;
 
+    #ifdef DEVELOPMENT
     if (this->buttonIndex == FS_BTN_SELECT_FILE_1) {
         Audio_PlaySfxGeneral(NA_SE_SY_FSEL_DECIDE_L, &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale,
                              &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
@@ -1456,6 +1457,15 @@ void FileSelect_LoadGame(GameState* thisx) {
         SET_NEXT_GAMESTATE(&this->state, Play_Init, PlayState);
         this->state.running = false;
     }
+    #else
+    Audio_PlaySfxGeneral(NA_SE_SY_FSEL_DECIDE_L, &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale,
+                            &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
+    gSaveContext.fileNum = this->buttonIndex;
+    Sram_OpenSave(&this->sramCtx);
+    gSaveContext.gameMode = GAMEMODE_NORMAL;
+    SET_NEXT_GAMESTATE(&this->state, Play_Init, PlayState);
+    this->state.running = false;
+    #endif
 
     gSaveContext.respawn[RESPAWN_MODE_DOWN].entranceIndex = ENTR_LOAD_OPENING;
     gSaveContext.respawnFlag = 0;

@@ -720,20 +720,26 @@ void Sram_InitSave(FileSelectState* fileSelect, SramContext* sramCtx) {
     u16* ptr;
     u16 checksum;
 
+    #ifdef DEVELOPMENT
     if (fileSelect->buttonIndex != 0) {
         Sram_InitNewSave();
     } else {
         Sram_InitDebugSave();
     }
+    #else
+    Sram_InitNewSave();
+    #endif
 
     gSaveContext.save.entranceIndex = ENTR_LINKS_HOUSE_0;
     gSaveContext.save.linkAge = LINK_AGE_CHILD;
     gSaveContext.save.dayTime = CLOCK_TIME(10, 0);
     gSaveContext.save.cutsceneIndex = 0xFFF1;
 
+    #ifdef DEVELOPMENT
     if (fileSelect->buttonIndex == 0) {
         gSaveContext.save.cutsceneIndex = 0;
     }
+    #endif
 
     for (offset = 0; offset < 8; offset++) {
         gSaveContext.save.info.playerData.playerName[offset] = fileSelect->fileNames[fileSelect->buttonIndex][offset];

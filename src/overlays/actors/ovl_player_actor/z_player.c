@@ -13729,6 +13729,10 @@ void Player_Action_8084FBF4(Player* this, PlayState* play) {
 }
 
 s32 func_8084FCAC(Player* this, PlayState* play) {
+    #ifndef DEVELOPMENT
+        return 1;
+    #endif
+
     sControlInput = &play->state.input[0];
 
     if ((CHECK_BTN_ALL(sControlInput->cur.button, BTN_A | BTN_L | BTN_R) &&

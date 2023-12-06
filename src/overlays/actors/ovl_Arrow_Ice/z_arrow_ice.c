@@ -166,6 +166,19 @@ void ArrowIce_Fly(ArrowIce* this, PlayState* play) {
     }
     func_80867E8C(&this->unkPos, &this->actor.world.pos, 0.05f);
 
+    Actor_UpdateBgCheckInfo(play, &this->actor, 0.0f, 0.0f, 0.0f, UPDBGCHECKINFO_FLAG_2);
+    if (this->actor.bgCheckFlags & BGCHECKFLAG_WATER) { // underwater
+        Actor_Spawn(&play->actorCtx, play, 
+            ACTOR_ICE_BLOCK, 
+            this->actor.world.pos.x,
+            this->actor.world.pos.y + this->actor.yDistToWater,
+            this->actor.world.pos.z,
+            0, 0, 0,
+            200);
+        Actor_Kill(&this->actor);
+        return;
+    }
+
     if (arrow->hitFlags & 1) {
         Actor_PlaySfx(&this->actor, NA_SE_IT_EXPLOSION_ICE);
         ArrowIce_SetupAction(this, ArrowIce_Hit);

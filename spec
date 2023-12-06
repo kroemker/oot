@@ -543,6 +543,12 @@ beginseg
 endseg
 
 beginseg
+    name "ovl_Ice_Block"
+    include "build/src/overlays/actors/ovl_Ice_Block/z_ice_block.o"
+    include "build/src/overlays/actors/ovl_Ice_Block/ovl_Ice_Block_reloc.o"
+endseg
+
+beginseg
     name "ovl_title"
     address 0x80800000
     include "build/src/overlays/gamestates/ovl_title/z_title.o"

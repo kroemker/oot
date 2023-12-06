@@ -74,7 +74,7 @@ void EnArrow_Init(Actor* thisx, PlayState* play) {
     };
     static EffectBlureInit2 blureLight = {
         0, 4, 0, { 0, 255, 200, 255 },   { 0, 255, 255, 255 }, { 0, 255, 200, 0 }, { 0, 255, 255, 0 }, 16,
-        0, 1, 0, { 255, 255, 170, 255 }, { 255, 255, 0, 0 },
+        0, 1, 0, { 170, 255, 170, 255 }, { 0, 255, 0, 0 },
     };
     static u32 dmgFlags[] = {
         DMG_ARROW_FIRE,  DMG_ARROW_NORMAL, DMG_ARROW_NORMAL, DMG_ARROW_FIRE, DMG_ARROW_ICE,
@@ -112,7 +112,7 @@ void EnArrow_Init(Actor* thisx, PlayState* play) {
 
             Effect_Add(play, &this->effectIndex, EFFECT_BLURE2, 0, 0, &blureIce);
 
-        } else if (this->actor.params == ARROW_LIGHT) {
+        } else if (this->actor.params == ARROW_FOREST) {
 
             Effect_Add(play, &this->effectIndex, EFFECT_BLURE2, 0, 0, &blureLight);
         }
@@ -310,6 +310,40 @@ void EnArrow_Fly(EnArrow* this, PlayState* play) {
                     Actor_PlaySfx(&this->actor, NA_SE_IT_ARROW_STICK_CRE);
                 }
             } else if (this->touchedPoly) {
+                if (this->actor.params == ARROW_FOREST) {
+                    Vec3f normal;
+                    f32 dist = 1;
+                    s16 xRot, yRot, zRot;
+                    CollisionPoly_GetNormalF(this->actor.wallPoly, &normal.x, &normal.y, &normal.z);
+                    if (normal.y <= 0.0001) {
+                        if (normal.x == 0 && normal.y == -1.0f && normal.z == 0) {
+                            xRot = 0;
+                            yRot = GET_PLAYER(play)->actor.world.rot.y - 0x8000;
+                            zRot = 0;
+                        }
+                        else if ((normal.x == 0 && normal.y == 0 && normal.z == 1.0f) || (normal.x == 0 && normal.y == 0 && normal.z == -1.0f)) {
+                            xRot = 0;
+                            yRot = normal.z == 1.0f ? 0 : 0x8000;
+                            zRot = 0;
+                        }
+                        else if ((normal.x == 1.0f && normal.y == 0 && normal.z == 0) || (normal.x == -1.0f && normal.y == 0 && normal.z == 0)) {
+                            xRot = 0;
+                            yRot = 0x4000 * normal.x;
+                            zRot = 0;
+                        }
+                        else {
+                            xRot = 0;
+                            yRot = Math_Atan2S(normal.z, normal.x);
+                            zRot = 0;
+                        }
+                        osSyncPrintf("Normal: %f, %f, %f\n", normal.x, normal.y, normal.z);
+                        osSyncPrintf("Rotation: %d, %d, %d\n", xRot, yRot, zRot);
+
+                        Actor_Spawn(&play->actorCtx, play, ACTOR_VINE_SPOT, this->actor.world.pos.x + normal.x * dist,
+                            this->actor.world.pos.y + normal.y * dist, this->actor.world.pos.z + normal.z * dist, xRot, yRot, zRot, 0);
+                    }
+                }
+
                 EnArrow_SetupAction(this, func_809B45E0);
                 Animation_PlayOnce(&this->skelAnime, &gArrow2Anim);
 

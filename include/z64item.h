@@ -172,6 +172,7 @@ typedef enum {
     /* 0x10 */ ITEM_MAGIC_BEAN,
     /* 0x11 */ ITEM_HAMMER,
     /* 0x12 */ ITEM_ARROW_LIGHT,
+    ITEM_ARROW_FOREST = 0x12,
     /* 0x13 */ ITEM_NAYRUS_LOVE,
     /* 0x14 */ ITEM_BOTTLE_EMPTY,
     /* 0x15 */ ITEM_BOTTLE_POTION_RED,

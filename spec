@@ -537,6 +537,12 @@ beginseg
 endseg
 
 beginseg
+    name "ovl_Vine_Spot"
+    include "build/src/overlays/actors/ovl_Vine_Spot/z_vine_spot.o"
+    include "build/src/overlays/actors/ovl_Vine_Spot/ovl_Vine_Spot_reloc.o"
+endseg
+
+beginseg
     name "ovl_title"
     address 0x80800000
     include "build/src/overlays/gamestates/ovl_title/z_title.o"

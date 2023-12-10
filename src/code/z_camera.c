@@ -5004,7 +5004,7 @@ s32 Camera_Unique0(Camera* camera) {
         camera->animState++;
     }
 
-    if (player->stateFlags1 & PLAYER_STATE1_29) {
+    if (player->stateFlags1 & PLAYER_STATE1_IN_CUTSCENE) {
         rwData->initalPos = playerPosRot->pos;
     }
 
@@ -5012,7 +5012,7 @@ s32 Camera_Unique0(Camera* camera) {
         if (rwData->animTimer > 0) {
             rwData->animTimer--;
             rwData->initalPos = playerPosRot->pos;
-        } else if (!(player->stateFlags1 & PLAYER_STATE1_29) &&
+        } else if (!(player->stateFlags1 & PLAYER_STATE1_IN_CUTSCENE) &&
                    ((OLib_Vec3fDistXZ(&playerPosRot->pos, &rwData->initalPos) >= 10.0f) ||
                     CHECK_BTN_ALL(D_8015BD7C->state.input[0].press.button, BTN_A) ||
                     CHECK_BTN_ALL(D_8015BD7C->state.input[0].press.button, BTN_B) ||
@@ -5040,7 +5040,7 @@ s32 Camera_Unique0(Camera* camera) {
             rwData->initalPos = playerPosRot->pos;
         }
 
-        if (!(player->stateFlags1 & PLAYER_STATE1_29) &&
+        if (!(player->stateFlags1 & PLAYER_STATE1_IN_CUTSCENE) &&
             ((0.001f < camera->xzSpeed) || CHECK_BTN_ALL(D_8015BD7C->state.input[0].press.button, BTN_A) ||
              CHECK_BTN_ALL(D_8015BD7C->state.input[0].press.button, BTN_B) ||
              CHECK_BTN_ALL(D_8015BD7C->state.input[0].press.button, BTN_CLEFT) ||
@@ -6223,14 +6223,14 @@ s32 Camera_Demo5(Camera* camera) {
 
     if (camera->player->stateFlags1 & PLAYER_STATE1_27 && (player->currentBoots != PLAYER_BOOTS_IRON)) {
         // swimming, and not iron boots
-        player->stateFlags1 |= PLAYER_STATE1_29;
+        player->stateFlags1 |= PLAYER_STATE1_IN_CUTSCENE;
         // env frozen
         player->actor.freezeTimer = camera->timer;
     } else {
         sp4A = playerhead.rot.y - playerTargetGeo.yaw;
         if (camera->target->category == ACTORCAT_PLAYER) {
             framesDiff = camera->play->state.frames - sDemo5PrevAction12Frame;
-            if (player->stateFlags1 & PLAYER_STATE1_11) {
+            if (player->stateFlags1 & PLAYER_STATE1_HOLDING_ACTOR) {
                 // holding object over head.
                 Player_SetCsActionWithHaltedActors(camera->play, camera->target, PLAYER_CSACTION_8);
             } else if (ABS(framesDiff) > 3000) {
@@ -7842,7 +7842,7 @@ void Camera_Finish(Camera* camera) {
 
         if ((camera->parentCamId == CAM_ID_MAIN) && (camera->csId != 0)) {
             player->actor.freezeTimer = 0;
-            player->stateFlags1 &= ~PLAYER_STATE1_29;
+            player->stateFlags1 &= ~PLAYER_STATE1_IN_CUTSCENE;
 
             if (player->csAction != PLAYER_CSACTION_NONE) {
                 Player_SetCsActionWithHaltedActors(camera->play, &player->actor, PLAYER_CSACTION_7);
@@ -8219,7 +8219,7 @@ s32 Camera_RequestQuake(Camera* camera, s32 unused, s16 y, s32 duration) {
 
 s32 Camera_SetViewParam(Camera* camera, s32 viewFlag, void* param) {
     s32 pad[3];
-
+    osSyncPrintf("camera: set view param %d\n", viewFlag);
     if (param != NULL) {
         switch (viewFlag) {
             case CAM_VIEW_AT:
@@ -8234,6 +8234,7 @@ s32 Camera_SetViewParam(Camera* camera, s32 viewFlag, void* param) {
 
             case CAM_VIEW_TARGET:
                 if (camera->setting != CAM_SET_CS_C && camera->setting != CAM_SET_CS_ATTENTION) {
+                    osSyncPrintf("camera: set target %x\n", param);
                     camera->target = (Actor*)param;
                     camera->viewFlags &= ~(CAM_VIEW_AT | CAM_VIEW_TARGET | CAM_VIEW_TARGET_POS);
                 }

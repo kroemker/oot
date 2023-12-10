@@ -1001,7 +1001,7 @@ f32 func_8002DCE4(Player* player) {
 }
 
 int func_8002DD6C(Player* player) {
-    return player->stateFlags1 & PLAYER_STATE1_3;
+    return player->stateFlags1 & PLAYER_STATE1_AIMING_FPS_ITEM;
 }
 
 int func_8002DD78(Player* player) {
@@ -1011,7 +1011,7 @@ int func_8002DD78(Player* player) {
 int func_8002DDA8(PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    return (player->stateFlags1 & PLAYER_STATE1_11) || func_8002DD78(player);
+    return (player->stateFlags1 & PLAYER_STATE1_HOLDING_ACTOR) || func_8002DD78(player);
 }
 
 s32 func_8002DDE4(PlayState* play) {
@@ -1050,7 +1050,7 @@ void Actor_MountHorse(PlayState* play, Player* player, Actor* horse) {
 }
 
 int func_8002DEEC(Player* player) {
-    return (player->stateFlags1 & (PLAYER_STATE1_7 | PLAYER_STATE1_29)) || (player->csAction != PLAYER_CSACTION_NONE);
+    return (player->stateFlags1 & (PLAYER_STATE1_7 | PLAYER_STATE1_IN_CUTSCENE)) || (player->csAction != PLAYER_CSACTION_NONE);
 }
 
 void func_8002DF18(PlayState* play, Player* player) {
@@ -1084,7 +1084,7 @@ s32 Player_SetCsAction(PlayState* play, Actor* csActor, u8 csAction) {
  * There are no safety checks to see if Player is already in some form of a cutscene state.
  * This will instantly take effect.
  *
- * `haltActorsDuringCsAction` being set to true in this function means that eventually `PLAYER_STATE1_29` will be set.
+ * `haltActorsDuringCsAction` being set to true in this function means that eventually `PLAYER_STATE1_IN_CUTSCENE` will be set.
  * This makes it so actors belonging to categories `ACTORCAT_ENEMY` and `ACTORCAT_MISC` will not update
  * while Player is performing the cutscene action.
  *
@@ -1673,7 +1673,7 @@ s32 Actor_OfferGetItem(Actor* actor, PlayState* play, s32 getItemId, f32 xzRange
         Player_GetExplosiveHeld(player) < 0) {
         if ((((player->heldActor != NULL) || (actor == player->targetActor)) && (getItemId > GI_NONE) &&
              (getItemId < GI_MAX)) ||
-            (!(player->stateFlags1 & (PLAYER_STATE1_11 | PLAYER_STATE1_29)))) {
+            (!(player->stateFlags1 & (PLAYER_STATE1_HOLDING_ACTOR | PLAYER_STATE1_IN_CUTSCENE)))) {
             if ((actor->xzDistToPlayer < xzRange) && (fabsf(actor->yDistToPlayer) < yRange)) {
                 s16 yawDiff = actor->yawTowardsPlayer - player->actor.shape.rot.y;
                 s32 absYawDiff = ABS(yawDiff);
@@ -1742,7 +1742,7 @@ u32 Actor_SetRideActor(PlayState* play, Actor* horse, s32 mountSide) {
     Player* player = GET_PLAYER(play);
 
     if (!(player->stateFlags1 &
-          (PLAYER_STATE1_7 | PLAYER_STATE1_11 | PLAYER_STATE1_12 | PLAYER_STATE1_13 | PLAYER_STATE1_14 |
+          (PLAYER_STATE1_7 | PLAYER_STATE1_HOLDING_ACTOR | PLAYER_STATE1_12 | PLAYER_STATE1_13 | PLAYER_STATE1_14 |
            PLAYER_STATE1_18 | PLAYER_STATE1_19 | PLAYER_STATE1_20 | PLAYER_STATE1_21))) {
         player->rideActor = horse;
         player->mountSide = mountSide;
@@ -2113,13 +2113,13 @@ u32 sCategoryFreezeMasks[ACTORCAT_MAX] = {
     // ACTORCAT_NPC
     PLAYER_STATE1_7,
     // ACTORCAT_ENEMY
-    PLAYER_STATE1_6 | PLAYER_STATE1_7 | PLAYER_STATE1_28 | PLAYER_STATE1_29,
+    PLAYER_STATE1_6 | PLAYER_STATE1_7 | PLAYER_STATE1_28 | PLAYER_STATE1_IN_CUTSCENE,
     // ACTORCAT_PROP
     PLAYER_STATE1_7 | PLAYER_STATE1_28,
     // ACTORCAT_ITEMACTION
     0,
     // ACTORCAT_MISC
-    PLAYER_STATE1_6 | PLAYER_STATE1_7 | PLAYER_STATE1_28 | PLAYER_STATE1_29,
+    PLAYER_STATE1_6 | PLAYER_STATE1_7 | PLAYER_STATE1_28 | PLAYER_STATE1_IN_CUTSCENE,
     // ACTORCAT_BOSS
     PLAYER_STATE1_6 | PLAYER_STATE1_7 | PLAYER_STATE1_10 | PLAYER_STATE1_28,
     // ACTORCAT_DOOR
@@ -5876,4 +5876,75 @@ s32 Actor_TrackPlayer(PlayState* play, Actor* actor, Vec3s* headRot, Vec3s* tors
     Actor_TrackPoint(actor, &target, headRot, torsoRot);
 
     return true;
+}
+
+s32 Actor_CalcSpeedAndYawFromControlStick(PlayState* play, Actor* actor, f32* outSpeedTarget, s16* outYawTarget, u8 speedMode) {
+    f32 temp;
+    f32 sinFloorPitch;
+    f32 floorPitchInfluence;
+    f32 speedCap;
+
+    f32 controlStickMagnitude;
+    s16 controlStickAngle;
+    
+    Lib_GetControlStickData(&controlStickMagnitude, &controlStickAngle, &play->state.input[0]);
+
+    *outSpeedTarget = controlStickMagnitude;
+    *outYawTarget = controlStickAngle;
+
+    if (speedMode != 0) {
+        *outSpeedTarget -= 20.0f;
+
+        if (*outSpeedTarget < 0.0f) {
+            // If control stick magnitude is below 20, return zero speed.
+            *outSpeedTarget = 0.0f;
+        } else {
+            // Cosine of the control stick magnitude isn't exactly meaningful, but
+            // it happens to give a desirable curve for grounded movement speed relative
+            // to control stick magnitude.
+            temp = 1.0f - Math_CosS(*outSpeedTarget * 450.0f);
+            *outSpeedTarget = (SQ(temp) * 30.0f) + 7.0f;
+        }
+    } else {
+        // Speed increases linearly relative to control stick magnitude
+        *outSpeedTarget *= 0.8f;
+    }
+
+    if (controlStickMagnitude != 0.0f) {
+        u32 floorType = SurfaceType_GetFloorType(&play->colCtx, actor->floorPoly, actor->floorBgId);
+
+        f32 floorPolyNormalX = COLPOLY_GET_NORMAL(actor->floorPoly->normal.x);
+        f32 invFloorPolyNormalY = 1.0f / COLPOLY_GET_NORMAL(actor->floorPoly->normal.y);
+        f32 floorPolyNormalZ = COLPOLY_GET_NORMAL(actor->floorPoly->normal.z);
+
+        f32 floorPitch =
+            Math_Atan2S(1.0f, (-(floorPolyNormalX * Math_SinS(actor->shape.rot.y)) - (floorPolyNormalZ * Math_CosS(actor->shape.rot.y))) * invFloorPolyNormalY);
+
+        sinFloorPitch = Math_SinS(floorPitch);
+        speedCap = actor->speedCap;
+        floorPitchInfluence = CLAMP(sinFloorPitch, 0.0f, 0.6f);
+
+        /*if (this->unk_6C4 != 0.0f) {
+            speedCap -= this->unk_6C4 * 0.008f;
+            speedCap = CLAMP_MIN(speedCap, 2.0f);
+        }*/
+
+        *outSpeedTarget = (*outSpeedTarget * 0.14f) - (8.0f * floorPitchInfluence * floorPitchInfluence);
+        *outSpeedTarget = CLAMP(*outSpeedTarget, 0.0f, speedCap);
+
+        return true;
+    }
+
+    return false;
+}
+
+s32 Actor_GetMovementSpeedAndYaw(Actor* actor, f32* outSpeedTarget, s16* outYawTarget, u8 speedMode,
+                                  PlayState* play) {
+    if (!Actor_CalcSpeedAndYawFromControlStick(play, actor, outSpeedTarget, outYawTarget, speedMode)) {
+        *outYawTarget = actor->shape.rot.y;
+        return false;
+    } else {
+        *outYawTarget += Camera_GetInputDirYaw(GET_ACTIVE_CAM(play));
+        return true;
+    }
 }

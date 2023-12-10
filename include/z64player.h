@@ -593,10 +593,10 @@ typedef struct {
 
 #define LEDGE_DIST_MAX 399.96002f
 
-#define PLAYER_STATE1_0 (1 << 0)
+#define PLAYER_STATE1_EXITING_SCENE (1 << 0)
 #define PLAYER_STATE1_SWINGING_BOTTLE (1 << 1)
-#define PLAYER_STATE1_2 (1 << 2)
-#define PLAYER_STATE1_3 (1 << 3)
+#define PLAYER_STATE1_END_HOOKSHOT_MOVE (1 << 2)
+#define PLAYER_STATE1_AIMING_FPS_ITEM (1 << 3)
 #define PLAYER_STATE1_4 (1 << 4)
 #define PLAYER_STATE1_5 (1 << 5)
 #define PLAYER_STATE1_6 (1 << 6)
@@ -604,12 +604,12 @@ typedef struct {
 #define PLAYER_STATE1_START_CHANGING_HELD_ITEM (1 << 8)
 #define PLAYER_STATE1_9 (1 << 9)
 #define PLAYER_STATE1_10 (1 << 10)
-#define PLAYER_STATE1_11 (1 << 11)
+#define PLAYER_STATE1_HOLDING_ACTOR (1 << 11)
 #define PLAYER_STATE1_12 (1 << 12)
 #define PLAYER_STATE1_13 (1 << 13)
 #define PLAYER_STATE1_14 (1 << 14)
 #define PLAYER_STATE1_15 (1 << 15)
-#define PLAYER_STATE1_16 (1 << 16)
+#define PLAYER_STATE1_FORCE_STRAFING (1 << 16)
 #define PLAYER_STATE1_17 (1 << 17)
 #define PLAYER_STATE1_18 (1 << 18)
 #define PLAYER_STATE1_19 (1 << 19)
@@ -622,7 +622,7 @@ typedef struct {
 #define PLAYER_STATE1_26 (1 << 26)
 #define PLAYER_STATE1_27 (1 << 27)
 #define PLAYER_STATE1_28 (1 << 28)
-#define PLAYER_STATE1_29 (1 << 29)
+#define PLAYER_STATE1_IN_CUTSCENE (1 << 29)
 #define PLAYER_STATE1_30 (1 << 30)
 #define PLAYER_STATE1_31 (1 << 31)
 
@@ -632,7 +632,7 @@ typedef struct {
 #define PLAYER_STATE2_3 (1 << 3)
 #define PLAYER_STATE2_4 (1 << 4)
 #define PLAYER_STATE2_5 (1 << 5)
-#define PLAYER_STATE2_6 (1 << 6)
+#define PLAYER_STATE2_ALWAYS_DISABLE_MOVE_ROTATION (1 << 6)
 #define PLAYER_STATE2_7 (1 << 7)
 #define PLAYER_STATE2_8 (1 << 8)
 #define PLAYER_STATE2_FORCE_SAND_FLOOR_SOUND (1 << 9)
@@ -641,7 +641,7 @@ typedef struct {
 #define PLAYER_STATE2_12 (1 << 12)
 #define PLAYER_STATE2_13 (1 << 13)
 #define PLAYER_STATE2_14 (1 << 14)
-#define PLAYER_STATE2_15 (1 << 15)
+#define PLAYER_STATE2_PAUSE_MOST_UPDATING (1 << 15)
 #define PLAYER_STATE2_DO_ACTION_ENTER (1 << 16) // Turns on the "Enter On A" DoAction
 #define PLAYER_STATE2_17 (1 << 17)
 #define PLAYER_STATE2_CRAWLING (1 << 18) // Crawling through a crawlspace
@@ -655,7 +655,7 @@ typedef struct {
 #define PLAYER_STATE2_26 (1 << 26)
 #define PLAYER_STATE2_27 (1 << 27)
 #define PLAYER_STATE2_28 (1 << 28)
-#define PLAYER_STATE2_29 (1 << 29)
+#define PLAYER_STATE2_DISABLE_DRAW (1 << 29)
 #define PLAYER_STATE2_30 (1 << 30)
 #define PLAYER_STATE2_31 (1 << 31)
 
@@ -859,6 +859,7 @@ typedef struct Player {
     /* 0x0A88 */ Vec3f unk_A88; // previous body part 0 position
     char* debugUpperActionFuncName;
     char* debugActionFuncName;
+    Actor* transformActor;
 } Player; // size = 0xA94
 
 #endif

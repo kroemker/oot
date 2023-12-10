@@ -549,6 +549,12 @@ beginseg
 endseg
 
 beginseg
+    name "ovl_Transform_Ik"
+    include "build/src/overlays/actors/ovl_Transform_Ik/z_transform_ik.o"
+    include "build/src/overlays/actors/ovl_Transform_Ik/ovl_Transform_Ik_reloc.o"
+endseg
+
+beginseg
     name "ovl_title"
     address 0x80800000
     include "build/src/overlays/gamestates/ovl_title/z_title.o"

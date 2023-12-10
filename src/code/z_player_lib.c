@@ -488,8 +488,8 @@ void Player_SetBootData(PlayState* play, Player* this) {
 }
 
 int Player_InBlockingCsMode(PlayState* play, Player* this) {
-    return (this->stateFlags1 & (PLAYER_STATE1_7 | PLAYER_STATE1_29)) || (this->csAction != PLAYER_CSACTION_NONE) ||
-           (play->transitionTrigger == TRANS_TRIGGER_START) || (this->stateFlags1 & PLAYER_STATE1_0) ||
+    return (this->stateFlags1 & (PLAYER_STATE1_7 | PLAYER_STATE1_IN_CUTSCENE)) || (this->csAction != PLAYER_CSACTION_NONE) ||
+           (play->transitionTrigger == TRANS_TRIGGER_START) || (this->stateFlags1 & PLAYER_STATE1_EXITING_SCENE) ||
            (this->stateFlags3 & PLAYER_STATE3_7) ||
            ((gSaveContext.magicState != MAGIC_STATE_IDLE) && (Player_ActionToMagicSpell(this, this->itemAction) >= 0));
 }
@@ -609,7 +609,7 @@ void func_8008EE08(Player* this) {
         (this->stateFlags1 & (PLAYER_STATE1_21 | PLAYER_STATE1_23 | PLAYER_STATE1_27)) ||
         (!(this->stateFlags1 & (PLAYER_STATE1_18 | PLAYER_STATE1_19)) &&
          ((this->actor.world.pos.y - this->actor.floorHeight) < 100.0f))) {
-        this->stateFlags1 &= ~(PLAYER_STATE1_15 | PLAYER_STATE1_16 | PLAYER_STATE1_17 | PLAYER_STATE1_18 |
+        this->stateFlags1 &= ~(PLAYER_STATE1_15 | PLAYER_STATE1_FORCE_STRAFING | PLAYER_STATE1_17 | PLAYER_STATE1_18 |
                                PLAYER_STATE1_19 | PLAYER_STATE1_30);
     } else if (!(this->stateFlags1 & (PLAYER_STATE1_18 | PLAYER_STATE1_19 | PLAYER_STATE1_21))) {
         this->stateFlags1 |= PLAYER_STATE1_19;
@@ -624,7 +624,7 @@ void func_8008EEAC(PlayState* play, Actor* actor) {
     func_8008EE08(this);
     this->unk_664 = actor;
     this->unk_684 = actor;
-    this->stateFlags1 |= PLAYER_STATE1_16;
+    this->stateFlags1 |= PLAYER_STATE1_FORCE_STRAFING;
     Camera_SetViewParam(Play_GetCamera(play, CAM_ID_MAIN), CAM_VIEW_TARGET, actor);
     Camera_RequestMode(Play_GetCamera(play, CAM_ID_MAIN), CAM_MODE_Z_TARGET_FRIENDLY);
 }
@@ -1512,7 +1512,7 @@ void Player_PostLimbDrawGameplay(PlayState* play, s32 limbIndex, Gfx** dList, Ve
                     Matrix_Get(&sp14C);
                     Matrix_MtxFToYXZRotS(&sp14C, &hookedActor->world.rot, 0);
                     hookedActor->shape.rot = hookedActor->world.rot;
-                } else if (this->stateFlags1 & PLAYER_STATE1_11) {
+                } else if (this->stateFlags1 & PLAYER_STATE1_HOLDING_ACTOR) {
                     Vec3s spB8;
 
                     Matrix_Get(&sp14C);

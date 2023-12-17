@@ -236,9 +236,9 @@ static DamageTable sDamageTable = {
     /* Giant jump    */ DMG_ENTRY(8, STALFOS_DMGEFF_NORMAL),
     /* Master jump   */ DMG_ENTRY(4, STALFOS_DMGEFF_NORMAL),
     /* Unknown 1     */ DMG_ENTRY(0, STALFOS_DMGEFF_NORMAL),
-    /* Unblockable   */ DMG_ENTRY(0, STALFOS_DMGEFF_NORMAL),
+    /* Unblockable   */ DMG_ENTRY(8, STALFOS_DMGEFF_NORMAL),
     /* Hammer jump   */ DMG_ENTRY(4, STALFOS_DMGEFF_NORMAL),
-    /* Unknown 2     */ DMG_ENTRY(0, STALFOS_DMGEFF_NORMAL),
+    /* Unknown 2     */ DMG_ENTRY(15, STALFOS_DMGEFF_NORMAL),
 };
 
 static InitChainEntry sInitChain[] = {

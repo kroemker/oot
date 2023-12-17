@@ -93,9 +93,9 @@ static DamageTable sDamageTable[] = {
     /* Giant jump    */ DMG_ENTRY(12, ANUBICE_DMGEFF_0xF),
     /* Master jump   */ DMG_ENTRY(4, ANUBICE_DMGEFF_0xF),
     /* Unknown 1     */ DMG_ENTRY(0, ANUBICE_DMGEFF_NONE),
-    /* Unblockable   */ DMG_ENTRY(0, ANUBICE_DMGEFF_NONE),
+    /* Unblockable   */ DMG_ENTRY(8, ANUBICE_DMGEFF_NONE),
     /* Hammer jump   */ DMG_ENTRY(0, ANUBICE_DMGEFF_NONE),
-    /* Unknown 2     */ DMG_ENTRY(0, ANUBICE_DMGEFF_NONE),
+    /* Unknown 2     */ DMG_ENTRY(15, ANUBICE_DMGEFF_NONE),
 };
 
 void EnAnubice_Hover(EnAnubice* this, PlayState* play) {

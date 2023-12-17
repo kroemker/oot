@@ -353,7 +353,7 @@ void func_8002C124(TargetContext* targetCtx, PlayState* play) {
 
         func_8002BE64(targetCtx, targetCtx->unk_4C, projTargetCenter.x, projTargetCenter.y, projTargetCenter.z);
 
-        if (!(player->stateFlags1 & PLAYER_STATE1_6) || (actor != player->unk_664)) {
+        if (!(player->stateFlags1 & PLAYER_STATE1_6) || (actor != player->zTargetActor)) {
             OVERLAY_DISP = Gfx_SetupDL(OVERLAY_DISP, SETUPDL_57);
 
             for (spB0 = 0, spAC = targetCtx->unk_4C; spB0 < spB8; spB0++, spAC = (spAC + 1) % 3) {
@@ -428,7 +428,7 @@ void func_8002C7BC(TargetContext* targetCtx, Player* player, Actor* actorArg, Pl
 
     unkActor = NULL;
 
-    if ((player->unk_664 != NULL) && (player->unk_84B[player->unk_846] == 2)) {
+    if ((player->zTargetActor != NULL) && (player->unk_84B[player->unk_846] == 2)) {
         targetCtx->unk_94 = NULL;
     } else {
         func_80032AF0(play, &play->actorCtx, &unkActor, player);
@@ -1486,7 +1486,7 @@ f32 func_8002EFC0(Actor* actor, Player* player, s16 arg2) {
     s16 yawTemp = (s16)(actor->yawTowardsPlayer - 0x8000) - arg2;
     s16 yawTempAbs = ABS(yawTemp);
 
-    if (player->unk_664 != NULL) {
+    if (player->zTargetActor != NULL) {
         if ((yawTempAbs > 0x4000) || (actor->flags & ACTOR_FLAG_27)) {
             return MAXFLOAT;
         } else {
@@ -1532,7 +1532,7 @@ s32 func_8002F0C8(Actor* actor, Player* player, s32 flag) {
         s16 abs_var = ABS(var);
         f32 dist;
 
-        if ((player->unk_664 == NULL) && (abs_var > 0x2AAA)) {
+        if ((player->zTargetActor == NULL) && (abs_var > 0x2AAA)) {
             dist = MAXFLOAT;
         } else {
             dist = actor->xyzDistToPlayerSq;
@@ -2222,13 +2222,13 @@ void Actor_UpdateAll(PlayState* play, ActorContext* actorCtx) {
                 actor->flags &= ~ACTOR_FLAG_24;
 
                 if ((DECR(actor->freezeTimer) == 0) && (actor->flags & (ACTOR_FLAG_4 | ACTOR_FLAG_6))) {
-                    if (actor == player->unk_664) {
+                    if (actor == player->zTargetActor) {
                         actor->isTargeted = true;
                     } else {
                         actor->isTargeted = false;
                     }
 
-                    if ((actor->targetPriority != 0) && (player->unk_664 == NULL)) {
+                    if ((actor->targetPriority != 0) && (player->zTargetActor == NULL)) {
                         actor->targetPriority = 0;
                     }
 
@@ -2251,7 +2251,7 @@ void Actor_UpdateAll(PlayState* play, ActorContext* actorCtx) {
         }
     }
 
-    actor = player->unk_664;
+    actor = player->zTargetActor;
 
     if ((actor != NULL) && (actor->update == NULL)) {
         actor = NULL;
@@ -3005,7 +3005,7 @@ Actor* Actor_Delete(ActorContext* actorCtx, Actor* actor, PlayState* play) {
         osSyncPrintf("アクタークラス削除 [%s]\n", name); // "Actor class deleted [%s]"
     }
 
-    if ((player != NULL) && (actor == player->unk_664)) {
+    if ((player != NULL) && (actor == player->zTargetActor)) {
         func_8008EDF0(player);
         Camera_RequestMode(Play_GetCamera(play, Play_GetActiveCamId(play)), CAM_MODE_NORMAL);
     }
@@ -3068,7 +3068,7 @@ void func_800328D4(PlayState* play, ActorContext* actorCtx, Player* player, u32 
     Vec3f sp70;
 
     actor = actorCtx->actorLists[actorCategory].head;
-    sp84 = player->unk_664;
+    sp84 = player->zTargetActor;
 
     while (actor != NULL) {
         if ((actor->update != NULL) && ((Player*)actor != player) && CHECK_FLAG_ALL(actor->flags, ACTOR_FLAG_0)) {
@@ -5946,5 +5946,27 @@ s32 Actor_GetMovementSpeedAndYaw(Actor* actor, f32* outSpeedTarget, s16* outYawT
     } else {
         *outYawTarget += Camera_GetInputDirYaw(GET_ACTIVE_CAM(play));
         return true;
+    }
+}
+
+void Actor_HandleZTarget(Actor* actor, PlayState* play) {
+    s32 holdTarget = gSaveContext.zTargetSetting != 0;
+    Camera* mainCamera = Play_GetCamera(play, CAM_ID_MAIN);
+    Actor* arrowActor = play->actorCtx.targetCtx.arrowPointedActor;
+    Actor* targetActor = play->actorCtx.targetCtx.targetedActor;
+
+    if (!CHECK_BTN_ALL(play->state.input[0].cur.button, BTN_Z) && (holdTarget || targetActor == NULL) && mainCamera->mode != CAM_MODE_NORMAL) {
+        osSyncPrintf("HandleZTarget: disable targeting\n");
+        Camera_RequestMode(mainCamera, CAM_MODE_NORMAL);
+    }
+    else if (targetActor != NULL && (mainCamera->mode == CAM_MODE_NORMAL || mainCamera->mode == CAM_MODE_Z_PARALLEL || mainCamera->target != targetActor)) {
+        osSyncPrintf("HandleZTarget: enable targeting with target: %x\n", targetActor);
+        u32 camMode = !CHECK_FLAG_ALL(targetActor->flags, ACTOR_FLAG_0 | ACTOR_FLAG_2) ? CAM_MODE_Z_TARGET_FRIENDLY : CAM_MODE_Z_TARGET_UNFRIENDLY;
+        Camera_SetViewParam(Play_GetCamera(play, CAM_ID_MAIN), CAM_VIEW_TARGET, targetActor);
+        Camera_RequestMode(mainCamera, camMode);
+    }
+    else if (CHECK_BTN_ALL(play->state.input[0].cur.button, BTN_Z) && targetActor == NULL && mainCamera->mode == CAM_MODE_NORMAL) {
+        osSyncPrintf("HandleZTarget: enable targeting without target\n");            
+        Camera_RequestMode(mainCamera, CAM_MODE_Z_PARALLEL);
     }
 }

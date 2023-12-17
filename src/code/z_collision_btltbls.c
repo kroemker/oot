@@ -32,9 +32,9 @@ static DamageTable sDamageTablePresets[] = {
         /* Giant jump    */ DMG_ENTRY(0, 0x0),
         /* Master jump   */ DMG_ENTRY(0, 0x0),
         /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-        /* Unblockable   */ DMG_ENTRY(0, 0x0),
+        /* Unblockable   */ DMG_ENTRY(8, 0x0),
         /* Hammer jump   */ DMG_ENTRY(0, 0x0),
-        /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+        /* Unknown 2     */ DMG_ENTRY(15, 0x0),
     } },
     { {
         // 1 Used by En_Karebaba
@@ -67,9 +67,9 @@ static DamageTable sDamageTablePresets[] = {
         /* Giant jump    */ DMG_ENTRY(0, 0x0),
         /* Master jump   */ DMG_ENTRY(0, 0x0),
         /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-        /* Unblockable   */ DMG_ENTRY(0, 0x0),
+        /* Unblockable   */ DMG_ENTRY(8, 0x0),
         /* Hammer jump   */ DMG_ENTRY(0, 0x0),
-        /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+        /* Unknown 2     */ DMG_ENTRY(15, 0x0),
     } },
     { {
         // 2 Used by En_St, En_Ssh
@@ -102,9 +102,9 @@ static DamageTable sDamageTablePresets[] = {
         /* Giant jump    */ DMG_ENTRY(4, 0x0),
         /* Master jump   */ DMG_ENTRY(8, 0x0),
         /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-        /* Unblockable   */ DMG_ENTRY(0, 0x0),
+        /* Unblockable   */ DMG_ENTRY(8, 0x0),
         /* Hammer jump   */ DMG_ENTRY(0, 0x0),
-        /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+        /* Unknown 2     */ DMG_ENTRY(15, 0x0),
     } },
     { {
         // 3
@@ -137,9 +137,9 @@ static DamageTable sDamageTablePresets[] = {
         /* Giant jump    */ DMG_ENTRY(2, 0x0),
         /* Master jump   */ DMG_ENTRY(2, 0x0),
         /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-        /* Unblockable   */ DMG_ENTRY(0, 0x0),
+        /* Unblockable   */ DMG_ENTRY(8, 0x0),
         /* Hammer jump   */ DMG_ENTRY(0, 0x0),
-        /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+        /* Unknown 2     */ DMG_ENTRY(15, 0x0),
     } },
     { {
         // 4 Used by En_Dodojr
@@ -172,9 +172,9 @@ static DamageTable sDamageTablePresets[] = {
         /* Giant jump    */ DMG_ENTRY(4, 0x0),
         /* Master jump   */ DMG_ENTRY(8, 0x0),
         /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-        /* Unblockable   */ DMG_ENTRY(0, 0x0),
+        /* Unblockable   */ DMG_ENTRY(8, 0x0),
         /* Hammer jump   */ DMG_ENTRY(0, 0x0),
-        /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+        /* Unknown 2     */ DMG_ENTRY(15, 0x0),
     } },
     { {
         // 5
@@ -207,9 +207,9 @@ static DamageTable sDamageTablePresets[] = {
         /* Giant jump    */ DMG_ENTRY(0, 0x0),
         /* Master jump   */ DMG_ENTRY(0, 0x0),
         /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-        /* Unblockable   */ DMG_ENTRY(0, 0x0),
+        /* Unblockable   */ DMG_ENTRY(8, 0x0),
         /* Hammer jump   */ DMG_ENTRY(0, 0x0),
-        /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+        /* Unknown 2     */ DMG_ENTRY(15, 0x0),
     } },
     { {
         // 6
@@ -242,9 +242,9 @@ static DamageTable sDamageTablePresets[] = {
         /* Giant jump    */ DMG_ENTRY(0, 0x0),
         /* Master jump   */ DMG_ENTRY(0, 0x0),
         /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-        /* Unblockable   */ DMG_ENTRY(0, 0x0),
+        /* Unblockable   */ DMG_ENTRY(8, 0x0),
         /* Hammer jump   */ DMG_ENTRY(0, 0x0),
-        /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+        /* Unknown 2     */ DMG_ENTRY(15, 0x0),
     } },
     { {
         // 7
@@ -277,9 +277,9 @@ static DamageTable sDamageTablePresets[] = {
         /* Giant jump    */ DMG_ENTRY(0, 0x0),
         /* Master jump   */ DMG_ENTRY(0, 0x0),
         /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-        /* Unblockable   */ DMG_ENTRY(0, 0x0),
+        /* Unblockable   */ DMG_ENTRY(8, 0x0),
         /* Hammer jump   */ DMG_ENTRY(0, 0x0),
-        /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+        /* Unknown 2     */ DMG_ENTRY(15, 0x0),
     } },
     { {
         // 8
@@ -312,9 +312,9 @@ static DamageTable sDamageTablePresets[] = {
         /* Giant jump    */ DMG_ENTRY(0, 0x0),
         /* Master jump   */ DMG_ENTRY(0, 0x0),
         /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-        /* Unblockable   */ DMG_ENTRY(0, 0x0),
+        /* Unblockable   */ DMG_ENTRY(8, 0x0),
         /* Hammer jump   */ DMG_ENTRY(0, 0x0),
-        /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+        /* Unknown 2     */ DMG_ENTRY(15, 0x0),
     } },
     { {
         // 9 Used by En_Bubble
@@ -347,9 +347,9 @@ static DamageTable sDamageTablePresets[] = {
         /* Giant jump    */ DMG_ENTRY(4, 0x0),
         /* Master jump   */ DMG_ENTRY(8, 0x0),
         /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-        /* Unblockable   */ DMG_ENTRY(0, 0x0),
+        /* Unblockable   */ DMG_ENTRY(8, 0x0),
         /* Hammer jump   */ DMG_ENTRY(0, 0x0),
-        /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+        /* Unknown 2     */ DMG_ENTRY(15, 0x0),
     } },
     { {
         // 10
@@ -382,9 +382,9 @@ static DamageTable sDamageTablePresets[] = {
         /* Giant jump    */ DMG_ENTRY(0, 0x0),
         /* Master jump   */ DMG_ENTRY(0, 0x0),
         /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-        /* Unblockable   */ DMG_ENTRY(0, 0x0),
+        /* Unblockable   */ DMG_ENTRY(8, 0x0),
         /* Hammer jump   */ DMG_ENTRY(0, 0x0),
-        /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+        /* Unknown 2     */ DMG_ENTRY(15, 0x0),
     } },
     { {
         // 11 Used by En_Horse
@@ -417,9 +417,9 @@ static DamageTable sDamageTablePresets[] = {
         /* Giant jump    */ DMG_ENTRY(0, 0x0),
         /* Master jump   */ DMG_ENTRY(0, 0x0),
         /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-        /* Unblockable   */ DMG_ENTRY(0, 0x0),
+        /* Unblockable   */ DMG_ENTRY(8, 0x0),
         /* Hammer jump   */ DMG_ENTRY(0, 0x0),
-        /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+        /* Unknown 2     */ DMG_ENTRY(15, 0x0),
     } },
     { {
         // 12
@@ -452,9 +452,9 @@ static DamageTable sDamageTablePresets[] = {
         /* Giant jump    */ DMG_ENTRY(0, 0x0),
         /* Master jump   */ DMG_ENTRY(0, 0x0),
         /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-        /* Unblockable   */ DMG_ENTRY(0, 0x0),
+        /* Unblockable   */ DMG_ENTRY(8, 0x0),
         /* Hammer jump   */ DMG_ENTRY(0, 0x0),
-        /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+        /* Unknown 2     */ DMG_ENTRY(15, 0x0),
     } },
     { {
         // 13
@@ -487,9 +487,9 @@ static DamageTable sDamageTablePresets[] = {
         /* Giant jump    */ DMG_ENTRY(0, 0x0),
         /* Master jump   */ DMG_ENTRY(0, 0x0),
         /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-        /* Unblockable   */ DMG_ENTRY(0, 0x0),
+        /* Unblockable   */ DMG_ENTRY(8, 0x0),
         /* Hammer jump   */ DMG_ENTRY(0, 0x0),
-        /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+        /* Unknown 2     */ DMG_ENTRY(15, 0x0),
     } },
     { {
         // 14 Used by En_Sw
@@ -522,9 +522,9 @@ static DamageTable sDamageTablePresets[] = {
         /* Giant jump    */ DMG_ENTRY(4, 0x0),
         /* Master jump   */ DMG_ENTRY(8, 0x0),
         /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-        /* Unblockable   */ DMG_ENTRY(0, 0x0),
+        /* Unblockable   */ DMG_ENTRY(8, 0x0),
         /* Hammer jump   */ DMG_ENTRY(0, 0x0),
-        /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+        /* Unknown 2     */ DMG_ENTRY(15, 0x0),
     } },
     { {
         // 15 Used by En_Fd
@@ -557,9 +557,9 @@ static DamageTable sDamageTablePresets[] = {
         /* Giant jump    */ DMG_ENTRY(0, 0x0),
         /* Master jump   */ DMG_ENTRY(0, 0x0),
         /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-        /* Unblockable   */ DMG_ENTRY(0, 0x0),
+        /* Unblockable   */ DMG_ENTRY(8, 0x0),
         /* Hammer jump   */ DMG_ENTRY(0, 0x0),
-        /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+        /* Unknown 2     */ DMG_ENTRY(15, 0x0),
     } },
     { {
         // 16 Used by En_Fw
@@ -592,9 +592,9 @@ static DamageTable sDamageTablePresets[] = {
         /* Giant jump    */ DMG_ENTRY(4, 0x0),
         /* Master jump   */ DMG_ENTRY(8, 0x0),
         /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-        /* Unblockable   */ DMG_ENTRY(0, 0x0),
+        /* Unblockable   */ DMG_ENTRY(8, 0x0),
         /* Hammer jump   */ DMG_ENTRY(0, 0x0),
-        /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+        /* Unknown 2     */ DMG_ENTRY(15, 0x0),
     } },
     { {
         // 17
@@ -627,9 +627,9 @@ static DamageTable sDamageTablePresets[] = {
         /* Giant jump    */ DMG_ENTRY(0, 0x0),
         /* Master jump   */ DMG_ENTRY(0, 0x0),
         /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-        /* Unblockable   */ DMG_ENTRY(0, 0x0),
+        /* Unblockable   */ DMG_ENTRY(8, 0x0),
         /* Hammer jump   */ DMG_ENTRY(0, 0x0),
-        /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+        /* Unknown 2     */ DMG_ENTRY(15, 0x0),
     } },
     { {
         // 18
@@ -662,9 +662,9 @@ static DamageTable sDamageTablePresets[] = {
         /* Giant jump    */ DMG_ENTRY(0, 0x0),
         /* Master jump   */ DMG_ENTRY(0, 0x0),
         /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-        /* Unblockable   */ DMG_ENTRY(0, 0x0),
+        /* Unblockable   */ DMG_ENTRY(8, 0x0),
         /* Hammer jump   */ DMG_ENTRY(0, 0x0),
-        /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+        /* Unknown 2     */ DMG_ENTRY(15, 0x0),
     } },
     { {
         // 19
@@ -697,9 +697,9 @@ static DamageTable sDamageTablePresets[] = {
         /* Giant jump    */ DMG_ENTRY(0, 0x0),
         /* Master jump   */ DMG_ENTRY(0, 0x0),
         /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-        /* Unblockable   */ DMG_ENTRY(0, 0x0),
+        /* Unblockable   */ DMG_ENTRY(8, 0x0),
         /* Hammer jump   */ DMG_ENTRY(0, 0x0),
-        /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+        /* Unknown 2     */ DMG_ENTRY(15, 0x0),
     } },
     { {
         // 20
@@ -732,9 +732,9 @@ static DamageTable sDamageTablePresets[] = {
         /* Giant jump    */ DMG_ENTRY(0, 0x0),
         /* Master jump   */ DMG_ENTRY(0, 0x0),
         /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-        /* Unblockable   */ DMG_ENTRY(0, 0x0),
+        /* Unblockable   */ DMG_ENTRY(8, 0x0),
         /* Hammer jump   */ DMG_ENTRY(0, 0x0),
-        /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+        /* Unknown 2     */ DMG_ENTRY(15, 0x0),
     } },
     { {
         // 21
@@ -767,9 +767,9 @@ static DamageTable sDamageTablePresets[] = {
         /* Giant jump    */ DMG_ENTRY(0, 0x0),
         /* Master jump   */ DMG_ENTRY(0, 0x0),
         /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-        /* Unblockable   */ DMG_ENTRY(0, 0x0),
+        /* Unblockable   */ DMG_ENTRY(8, 0x0),
         /* Hammer jump   */ DMG_ENTRY(0, 0x0),
-        /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+        /* Unknown 2     */ DMG_ENTRY(15, 0x0),
     } },
     { {
         // 22 Used by En_Du, En_Go, En_Ma1, En_Ma2, En_Ma3
@@ -802,9 +802,9 @@ static DamageTable sDamageTablePresets[] = {
         /* Giant jump    */ DMG_ENTRY(0, 0x0),
         /* Master jump   */ DMG_ENTRY(0, 0x0),
         /* Unknown 1     */ DMG_ENTRY(0, 0x0),
-        /* Unblockable   */ DMG_ENTRY(0, 0x0),
+        /* Unblockable   */ DMG_ENTRY(8, 0x0),
         /* Hammer jump   */ DMG_ENTRY(0, 0x0),
-        /* Unknown 2     */ DMG_ENTRY(0, 0x0),
+        /* Unknown 2     */ DMG_ENTRY(15, 0x0),
     } },
 };
 

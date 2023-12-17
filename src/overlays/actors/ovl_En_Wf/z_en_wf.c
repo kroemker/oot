@@ -182,9 +182,9 @@ static DamageTable sDamageTable = {
     /* Giant jump    */ DMG_ENTRY(8, ENWF_DMGEFF_NONE),
     /* Master jump   */ DMG_ENTRY(4, ENWF_DMGEFF_NONE),
     /* Unknown 1     */ DMG_ENTRY(0, ENWF_DMGEFF_NONE),
-    /* Unblockable   */ DMG_ENTRY(0, ENWF_DMGEFF_NONE),
+    /* Unblockable   */ DMG_ENTRY(8, ENWF_DMGEFF_NONE),
     /* Hammer jump   */ DMG_ENTRY(4, ENWF_DMGEFF_NONE),
-    /* Unknown 2     */ DMG_ENTRY(0, ENWF_DMGEFF_NONE),
+    /* Unknown 2     */ DMG_ENTRY(15, ENWF_DMGEFF_NONE),
 };
 
 ActorInit En_Wf_InitVars = {

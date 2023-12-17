@@ -70,9 +70,9 @@ static DamageTable sDamageTable = {
     /* Giant jump    */ DMG_ENTRY(8, LEEVER_DMGEFF_OTHER),
     /* Master jump   */ DMG_ENTRY(4, LEEVER_DMGEFF_OTHER),
     /* Unknown 1     */ DMG_ENTRY(0, LEEVER_DMGEFF_UNK),
-    /* Unblockable   */ DMG_ENTRY(0, LEEVER_DMGEFF_NONE),
+    /* Unblockable   */ DMG_ENTRY(8, LEEVER_DMGEFF_NONE),
     /* Hammer jump   */ DMG_ENTRY(0, LEEVER_DMGEFF_NONE),
-    /* Unknown 2     */ DMG_ENTRY(0, LEEVER_DMGEFF_NONE),
+    /* Unknown 2     */ DMG_ENTRY(15, LEEVER_DMGEFF_NONE),
 };
 
 ActorInit En_Reeba_InitVars = {

@@ -8,11 +8,10 @@
 
 #include "assets/objects/object_ik/object_ik.h"
 
-#define FLAGS 0x00000010
+#define FLAGS ACTOR_FLAG_4
 
 #define THIS ((TransformIk*)thisx)
 
-#define ARMOR_BROKEN (1 << 0)
 #define RUNNING_SPEED 3.5f
 
 void TransformIk_Init(Actor* thisx, PlayState* play);
@@ -24,7 +23,11 @@ void TransformIk_Action_Idle(TransformIk* this, PlayState* play);
 void TransformIk_Action_Walk(TransformIk* this, PlayState* play);
 void TransformIk_Action_Run(TransformIk* this, PlayState* play);
 void TransformIk_Action_SwingAxe(TransformIk* this, PlayState* play);
-void TransformIk_Action_ReturnToIdleAfterAnimFinished(EnIk* this, PlayState* play);
+void TransformIk_Action_ReturnToIdleAfterAnimFinished(TransformIk* this, PlayState* play);
+void TransformIk_Action_Block(TransformIk* this, PlayState* play);
+void TransformIk_Action_GetHit(TransformIk* this, PlayState* play);
+void TransformIk_Action_VerticalAttack(TransformIk* this, PlayState* play);
+void TransformIk_Action_PullOutAxe(TransformIk* this, PlayState* play);
 
 const ActorInit Transform_Ik_InitVars = {
     ACTOR_TRANSFORM_IK,
@@ -38,21 +41,21 @@ const ActorInit Transform_Ik_InitVars = {
     (ActorFunc)TransformIk_Draw,
 };
 
-static ColliderCylinderInit sCylinderInit = {
+static ColliderCylinderInit sBodyCollider = {
     {
         COLTYPE_NONE,
         AT_NONE,
-        AC_ON | AC_TYPE_PLAYER,
+        AC_ON | AC_TYPE_ENEMY,
         OC1_ON | OC1_TYPE_ALL,
-        OC2_TYPE_2,
+        OC2_TYPE_PLAYER,
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK0,
+        ELEMTYPE_UNK1,
         { 0x00000000, 0x00, 0x00 },
         { 0xFFCFFFFF, 0x00, 0x00 },
         TOUCH_NONE,
-        BUMP_ON | BUMP_HOOKABLE,
+        BUMP_ON,
         OCELEM_ON,
     },
     { 25, 80, 0, { 0, 0, 0 } },
@@ -65,7 +68,7 @@ static ColliderTrisElementInit sTrisElementsInit[2] = {
             { 0x00000000, 0x00, 0x00 },
             { 0xFFC3FFFF, 0x00, 0x00 },
             TOUCH_NONE,
-            BUMP_ON | BUMP_NO_AT_INFO,
+            BUMP_ON,
             OCELEM_NONE,
         },
         { { { -10.0f, 14.0f, 2.0f }, { -10.0f, -6.0f, 2.0f }, { 9.0f, 14.0f, 2.0f } } },
@@ -76,72 +79,57 @@ static ColliderTrisElementInit sTrisElementsInit[2] = {
             { 0x00000000, 0x00, 0x00 },
             { 0xFFC3FFFF, 0x00, 0x00 },
             TOUCH_NONE,
-            BUMP_ON | BUMP_NO_AT_INFO,
+            BUMP_ON,
             OCELEM_NONE,
         },
         { { { -10.0f, -6.0f, 2.0f }, { 9.0f, -6.0f, 2.0f }, { 9.0f, 14.0f, 2.0f } } },
     },
 };
 
-static ColliderTrisInit sTrisInit = {
+static ColliderTrisInit sShieldTrisCollider = {
     {
         COLTYPE_METAL,
         AT_NONE,
-        AC_ON | AC_HARD | AC_TYPE_PLAYER,
+        AC_ON | AC_HARD | AC_TYPE_ENEMY,
         OC1_NONE,
-        OC2_NONE,
+        OC2_TYPE_PLAYER,
         COLSHAPE_TRIS,
     },
     2,
     sTrisElementsInit,
 };
 
-static ColliderQuadInit sQuadInit = {
+static ColliderQuadInit sAxeCollider = {
     {
         COLTYPE_NONE,
-        AT_ON | AT_TYPE_ENEMY,
+        AT_ON | AT_TYPE_PLAYER,
         AC_NONE,
         OC1_NONE,
-        OC2_NONE,
+        OC2_TYPE_PLAYER,
         COLSHAPE_QUAD,
     },
     {
-        ELEMTYPE_UNK0,
-        { 0x20000000, 0x00, 0x40 },
+        ELEMTYPE_UNK2,
+        { 0x20000000, 0x0F, 0x40 },
         { 0x00000000, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_NORMAL | TOUCH_UNK7,
+        TOUCH_ON | TOUCH_SFX_NORMAL,
         BUMP_NONE,
         OCELEM_NONE,
     },
     { { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } } },
 };
 
-void TransformIk_CheckAxeSwing(TransformIk* this, PlayState* play) {
-    if (CHECK_BTN_ALL(play->state.input[0].press.button, BTN_B)) {
-        TransformIk_SetupAction(this, play, TransformIk_Action_SwingAxe);
-    }
-}
-
-void TransformIk_MoveAndUpdateBgInfo(TransformIk* this, PlayState* play) {
-    Actor_MoveXZGravity(&this->actor);
-    Actor_UpdateBgCheckInfo(play, &this->actor, 75.0f, 30.0f, 30.0f,
-                            UPDBGCHECKINFO_FLAG_0 | UPDBGCHECKINFO_FLAG_2 | UPDBGCHECKINFO_FLAG_3 |
-                                UPDBGCHECKINFO_FLAG_4);
-
-    this->actor.focus.pos = this->actor.world.pos;
-    this->actor.focus.pos.y += 45.0f;
-
-    Collider_UpdateCylinder(&this->actor, &this->bodyCollider);
-    CollisionCheck_SetOC(play, &play->colChkCtx, &this->bodyCollider.base);
-}
-
 void TransformIk_SetupAction(TransformIk* this, PlayState* play, TransformIkActionFunc actionFunc) {
     this->actionFunc = actionFunc;
 
+    this->attackState = 0;
+    this->shieldState = 0;
+    this->playedSfx = 0;
+    this->queuedAttack = 0;
+    this->axeCollider.info.toucher.dmgFlags = DMG_UNBLOCKABLE;
+    this->axeCollider.info.toucher.damage = 0x40;
     if (this->actionFunc == TransformIk_Action_Idle) {
-        this->actor.speed = GET_PLAYER(play)->actor.speed;
-        f32 endFrame = Animation_GetLastFrame(&object_ik_Anim_00DD50);
-        Animation_Change(&this->skelAnime, &object_ik_Anim_00DD50, 0.0f, 0.0f, endFrame, ANIMMODE_LOOP, 4.0f);
+        Animation_Change(&this->skelAnime, &object_ik_Anim_00DD50, 0.0f, 0.0f, Animation_GetLastFrame(&object_ik_Anim_00DD50), ANIMMODE_LOOP, 4.0f);
     }
     else if (this->actionFunc == TransformIk_Action_Walk) {
         Animation_Change(&this->skelAnime, &gIronKnuckleWalkAnim, 1.0f, 0.0f, Animation_GetLastFrame(&gIronKnuckleWalkAnim), ANIMMODE_LOOP, -4.0f);
@@ -151,23 +139,103 @@ void TransformIk_SetupAction(TransformIk* this, PlayState* play, TransformIkActi
         Actor_PlaySfx(&this->actor, NA_SE_EN_IRONNACK_DASH);
     }
     else if (this->actionFunc == TransformIk_Action_SwingAxe) {
+        this->actor.speed = 0.0f;
         Animation_Change(&this->skelAnime, &gIronKnuckleHorizontalAttackAnim, 0.5f, 0.0f, 10.0f, ANIMMODE_ONCE_INTERP, -4.0f);
-        this->playedSfx = 0;
-        this->queuedAttack = 0;
+    }
+    else if (this->actionFunc == TransformIk_Action_VerticalAttack) {
+        this->actor.speed = 0.0f;
+        Animation_Change(&this->skelAnime, &gIronKnuckleVerticalAttackAnim, 1.0f, 0.0f, Animation_GetLastFrame(&gIronKnuckleVerticalAttackAnim), ANIMMODE_ONCE_INTERP, -4.0f);
+    }
+    else if (this->actionFunc == TransformIk_Action_PullOutAxe) {
+        Actor_PlaySfx(&this->actor, NA_SE_EN_IRONNACK_PULLOUT);
+        Animation_Change(&this->skelAnime, &gIronKnuckleAxeStuckAnim, 1.0f, 0.0f, Animation_GetLastFrame(&gIronKnuckleAxeStuckAnim), ANIMMODE_LOOP, -4.0f);
+        this->animationTimer = Animation_GetLastFrame(&gIronKnuckleAxeStuckAnim);
     }
     else if (this->actionFunc == TransformIk_Action_ReturnToIdleAfterAnimFinished) {
-        Animation_Change(&this->skelAnime, &gIronKnuckleRecoverFromHorizontalAttackAnim, 1.5f, 0.0f, Animation_GetLastFrame(&gIronKnuckleRecoverFromHorizontalAttackAnim), ANIMMODE_ONCE_INTERP, -4.0f);
+        Animation_Change(&this->skelAnime, this->recoverAnimation, 1.5f, 0.0f, Animation_GetLastFrame(this->recoverAnimation), ANIMMODE_ONCE_INTERP, -4.0f);
+    }
+    else if (this->actionFunc == TransformIk_Action_Block) {
+        this->shieldState = 1;
+        this->actor.speed = 0.0f;
+        Animation_Change(&this->skelAnime, &gIronKnuckleBlockAnim, 1.0f, 0.0f, Animation_GetLastFrame(&gIronKnuckleBlockAnim), ANIMMODE_ONCE_INTERP, -4.0f);
+    }
+    else if (this->actionFunc == TransformIk_Action_GetHit) {
+        s16 yaw = Math_Vec3f_Yaw(&this->actor.world.pos, &this->bodyCollider.base.ac->world.pos);
+        s16 yawDiff = yaw - this->actor.shape.rot.y;
+
+        if (ABS(yawDiff) <= 0x4000) {
+            Animation_Change(&this->skelAnime, &gIronKnuckleFrontHitAnim, 1.0f, 0.0f,
+                            Animation_GetLastFrame(&gIronKnuckleFrontHitAnim), ANIMMODE_ONCE, -4.0f);
+            this->actor.speed = -6.0f;
+        } else {
+            Animation_Change(&this->skelAnime, &gIronKnuckleBackHitAnim, 1.0f, 0.0f,
+                            Animation_GetLastFrame(&gIronKnuckleBackHitAnim), ANIMMODE_ONCE, -4.0f);
+            this->actor.speed = 6.0f;
+        }
     }
 }
 
-void TransformIk_Action_ReturnToIdleAfterAnimFinished(EnIk* this, PlayState* play) {
+void TransformIk_CheckAxeSwing(TransformIk* this, PlayState* play) {
+    if (CHECK_BTN_ALL(play->state.input[0].press.button, BTN_B)) {
+        TransformIk_SetupAction(this, play, TransformIk_Action_SwingAxe);
+    }
+    else if (CHECK_BTN_ALL(play->state.input[0].press.button, BTN_A)) {
+        TransformIk_SetupAction(this, play, TransformIk_Action_VerticalAttack);
+    }
+}
+
+void TransformIk_CheckBlock(TransformIk* this, PlayState* play) {
+    if (CHECK_BTN_ALL(play->state.input[0].cur.button, BTN_R)) {
+        TransformIk_SetupAction(this, play, TransformIk_Action_Block);
+    }
+}
+
+void TransformIk_Action_ReturnToIdleAfterAnimFinished(TransformIk* this, PlayState* play) {
     if (SkelAnime_Update(&this->skelAnime)) {
         TransformIk_SetupAction(this, play, TransformIk_Action_Idle);
     }
 }
 
+void TransformIk_Action_VerticalAttack(TransformIk* this, PlayState* play) {
+    Vec3f sparksPos;
+
+    if (this->skelAnime.curFrame == 15.0f) {
+        Actor_PlaySfx(&this->actor, NA_SE_EN_IRONNACK_SWING_AXE);
+    } else if (this->skelAnime.curFrame == 21.0f) {
+        sparksPos.x = this->actor.world.pos.x + Math_SinS(this->actor.shape.rot.y + 0x6A4) * 70.0f;
+        sparksPos.z = this->actor.world.pos.z + Math_CosS(this->actor.shape.rot.y + 0x6A4) * 70.0f;
+        sparksPos.y = this->actor.world.pos.y;
+
+        Actor_PlaySfx(&this->actor, NA_SE_EN_IRONNACK_HIT_GND);
+        Camera_RequestQuake(&play->mainCamera, 2, 25, 5);
+        Rumble_Request(this->actor.xzDistToPlayer, 255, 20, 150);
+        CollisionCheck_SpawnShieldParticles(play, &sparksPos);
+    }
+
+    if ((this->skelAnime.curFrame > 17.0f) && (this->skelAnime.curFrame < 23.0f)) {
+        this->attackState = 1;
+        this->axeCollider.info.toucher.dmgFlags = DMG_UNKNOWN_2;
+        this->axeCollider.info.toucher.damage = 0x60;
+    } else {
+        this->attackState = 0;
+        this->axeCollider.info.toucher.dmgFlags = DMG_UNBLOCKABLE;
+        this->axeCollider.info.toucher.damage = 0x40;
+    }
+
+    if (SkelAnime_Update(&this->skelAnime)) {
+        TransformIk_SetupAction(this, play, TransformIk_Action_PullOutAxe);
+    }
+}
+
+void TransformIk_Action_PullOutAxe(TransformIk* this, PlayState* play) {
+    if (SkelAnime_Update(&this->skelAnime) || (--this->animationTimer == 0)) {
+        this->recoverAnimation = &gIronKnuckleRecoverFromVerticalAttackAnim;
+        TransformIk_SetupAction(this, play, TransformIk_Action_ReturnToIdleAfterAnimFinished);
+    }
+}
+
 void TransformIk_Action_SwingAxe(TransformIk* this, PlayState* play) {
-    if (this->skelAnime.curFrame > 8.0f && CHECK_BTN_ALL(play->state.input[0].press.button, BTN_B) && this->queuedAttack == 0) {
+    if (this->skelAnime.curFrame > 7.0f && CHECK_BTN_ALL(play->state.input[0].press.button, BTN_B) && this->queuedAttack == 0) {
         this->queuedAttack = 1;
         this->skelAnime.endFrame = Animation_GetLastFrame(&gIronKnuckleHorizontalAttackAnim);
     }
@@ -177,17 +245,22 @@ void TransformIk_Action_SwingAxe(TransformIk* this, PlayState* play) {
             Actor_PlaySfx(&this->actor, NA_SE_EN_IRONNACK_SWING_AXE);
             this->playedSfx = 1;
         }
+        this->attackState = 1;
     }
-
-    if ((this->skelAnime.curFrame > 13.0f) && (this->skelAnime.curFrame < 18.0f)) {
+    else if ((this->skelAnime.curFrame > 13.0f) && (this->skelAnime.curFrame < 18.0f)) {
         if (this->playedSfx < 2) {
             Actor_PlaySfx(&this->actor, NA_SE_EN_IRONNACK_SWING_AXE);
             this->playedSfx = 2;
         }
+        this->attackState = 1;
+    }
+    else {
+        this->attackState = 0;
     }
 
     if (SkelAnime_Update(&this->skelAnime)) {
         if (this->skelAnime.curFrame > 10.0f) {
+            this->recoverAnimation = &gIronKnuckleRecoverFromHorizontalAttackAnim;
             TransformIk_SetupAction(this, play, TransformIk_Action_ReturnToIdleAfterAnimFinished);
         }
         else {
@@ -199,8 +272,6 @@ void TransformIk_Action_SwingAxe(TransformIk* this, PlayState* play) {
 void TransformIk_Action_Run(TransformIk* this, PlayState* play) {
     f32 speedTarget;
     s16 yawTarget;
-
-    TransformIk_MoveAndUpdateBgInfo(this, play);
 
     Actor_GetMovementSpeedAndYaw(&this->actor, &speedTarget, &yawTarget, 1, play);
 
@@ -215,6 +286,7 @@ void TransformIk_Action_Run(TransformIk* this, PlayState* play) {
     }
 
     TransformIk_CheckAxeSwing(this, play);
+    TransformIk_CheckBlock(this, play);
 
     SkelAnime_Update(&this->skelAnime);
 
@@ -226,8 +298,6 @@ void TransformIk_Action_Run(TransformIk* this, PlayState* play) {
 void TransformIk_Action_Walk(TransformIk* this, PlayState* play) {
     f32 speedTarget;
     s16 yawTarget;
-
-    TransformIk_MoveAndUpdateBgInfo(this, play);
 
     Actor_GetMovementSpeedAndYaw(&this->actor, &speedTarget, &yawTarget, 1, play);
 
@@ -242,6 +312,7 @@ void TransformIk_Action_Walk(TransformIk* this, PlayState* play) {
     }
     
     TransformIk_CheckAxeSwing(this, play);
+    TransformIk_CheckBlock(this, play);
 
     SkelAnime_Update(&this->skelAnime);
 
@@ -254,8 +325,6 @@ void TransformIk_Action_Idle(TransformIk* this, PlayState* play) {
     f32 speedTarget;
     s16 yawTarget;
 
-    TransformIk_MoveAndUpdateBgInfo(this, play);
-
     Actor_GetMovementSpeedAndYaw(&this->actor, &speedTarget, &yawTarget, 1, play);
 
     if (speedTarget != 0.0f) {
@@ -267,8 +336,27 @@ void TransformIk_Action_Idle(TransformIk* this, PlayState* play) {
     }
     
     TransformIk_CheckAxeSwing(this, play);
+    TransformIk_CheckBlock(this, play);
 
     SkelAnime_Update(&this->skelAnime);
+}
+
+void TransformIk_Action_Block(TransformIk* this, PlayState* play) {
+    if (!CHECK_BTN_ALL(play->state.input[0].cur.button, BTN_R)) {
+        TransformIk_SetupAction(this, play, TransformIk_Action_Idle);
+    }
+
+    CollisionCheck_SetAC(play, &play->colChkCtx, &this->shieldCollider.base);
+
+    SkelAnime_Update(&this->skelAnime);
+}
+
+void TransformIk_Action_GetHit(TransformIk* this, PlayState* play) {
+    Math_SmoothStepToF(&this->actor.speed, 0.0f, 1.0f, 1.0f, 0.0f);
+
+    if (SkelAnime_Update(&this->skelAnime)) {
+        TransformIk_SetupAction(this, play, TransformIk_Action_Idle);
+    }
 }
 
 void TransformIk_Init(Actor* thisx, PlayState* play) {
@@ -280,15 +368,13 @@ void TransformIk_Init(Actor* thisx, PlayState* play) {
                         this->jointTable, this->morphTable, IRON_KNUCKLE_LIMB_MAX);
 
     Collider_InitCylinder(play, &this->bodyCollider);
-    Collider_SetCylinder(play, &this->bodyCollider, thisx, &sCylinderInit);
+    Collider_SetCylinder(play, &this->bodyCollider, thisx, &sBodyCollider);
     Collider_InitTris(play, &this->shieldCollider);
-    Collider_SetTris(play, &this->shieldCollider, thisx, &sTrisInit, this->shieldColliderItems);
+    Collider_SetTris(play, &this->shieldCollider, thisx, &sShieldTrisCollider, this->shieldColliderItems);
     Collider_InitQuad(play, &this->axeCollider);
-    Collider_SetQuad(play, &this->axeCollider, thisx, &sQuadInit);
+    Collider_SetQuad(play, &this->axeCollider, thisx, &sAxeCollider);
 
-    //thisx->colChkInfo.damageTable = &sDamageTable;
     thisx->colChkInfo.mass = MASS_HEAVY;
-    this->isBreakingProp = false;
     thisx->colChkInfo.health = 30;
     thisx->gravity = -1.0f;
     thisx->speedCap = 10.0f;
@@ -309,10 +395,17 @@ void TransformIk_Init(Actor* thisx, PlayState* play) {
     Effect_Add(play, &this->blureIdx, EFFECT_BLURE1, 0, 0, &blureInit);
 
     TransformIk_SetupAction(this, play, TransformIk_Action_Idle);
+
+    this->actor.speed = GET_PLAYER(play)->actor.speed;
+    this->actor.room = -1;
 }
 
 void TransformIk_Destroy(Actor* thisx, PlayState* play) {
     TransformIk* this = THIS;
+
+    Collider_DestroyTris(play, &this->shieldCollider);
+    Collider_DestroyCylinder(play, &this->bodyCollider);
+    Collider_DestroyQuad(play, &this->axeCollider);
 }
 
 void TransformIk_Update(Actor* thisx, PlayState* play) {
@@ -322,6 +415,10 @@ void TransformIk_Update(Actor* thisx, PlayState* play) {
     player->actor.world.pos.x = this->actor.world.pos.x;
     player->actor.world.pos.y = this->actor.world.pos.y;
     player->actor.world.pos.z = this->actor.world.pos.z;
+
+    Math_Vec3f_Copy(&player->actor.world.pos, &this->actor.world.pos);
+    Math_Vec3f_Copy(&player->actor.home.pos, &this->actor.world.pos);
+    Math_Vec3f_Copy(&player->actor.prevPos, &this->actor.world.pos);
     player->actor.world.rot.x = this->actor.world.rot.x;
     player->actor.world.rot.y = this->actor.world.rot.y;
     player->actor.world.rot.z = this->actor.world.rot.z;
@@ -329,11 +426,63 @@ void TransformIk_Update(Actor* thisx, PlayState* play) {
     player->actor.shape.rot.y = this->actor.shape.rot.y;
     player->actor.shape.rot.z = this->actor.shape.rot.z;
 
-    if (this->actionFunc != NULL) {
-        this->actionFunc(this, play);
+    if (this->shieldCollider.base.acFlags & AC_BOUNCED) {
+        s16 frames = Animation_GetLastFrame(&gIronKnuckleBlockAnim) - 2.0f;
+
+        if (this->skelAnime.curFrame < frames) {
+            this->skelAnime.curFrame = frames;
+        }
+
+        this->shieldCollider.base.acFlags &= ~AC_BOUNCED;
+        this->bodyCollider.base.acFlags &= ~AC_HIT;
+    } else if (this->axeCollider.base.atFlags & AT_HIT) {
+        this->axeCollider.base.atFlags &= ~AT_HIT;
+    } else if (this->bodyCollider.base.acFlags & AC_HIT) {
+        this->bodyCollider.base.acFlags &= ~AC_HIT;
+
+        Actor_SetColorFilter(&this->actor, COLORFILTER_COLORFLAG_RED, 255, COLORFILTER_BUFFLAG_OPA, 12);
+
+        play->damagePlayer(play, -this->actor.colChkInfo.damage);
+
+        if (gSaveContext.save.info.playerData.health == 0) {
+            Actor_PlaySfx(&this->actor, NA_SE_EN_IRONNACK_DEAD);
+            Actor_PlaySfx(&this->actor, NA_SE_EN_NUTS_CUTBODY);
+            Enemy_StartFinishingBlow(play, &this->actor);
+            Actor_Kill(&this->actor);
+        }
+
+        Actor_PlaySfx(&this->actor, NA_SE_EN_IRONNACK_DAMAGE);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_NUTS_CUTBODY);
+
+        TransformIk_SetupAction(this, play, TransformIk_Action_GetHit);
+    }
+
+    Actor_HandleZTarget(&this->actor, play);
+    Actor_MoveXZGravity(&this->actor);
+    Actor_UpdateBgCheckInfo(play, &this->actor, 75.0f, 30.0f, 30.0f,
+                            UPDBGCHECKINFO_FLAG_0 | UPDBGCHECKINFO_FLAG_2 | UPDBGCHECKINFO_FLAG_3 |
+                                UPDBGCHECKINFO_FLAG_4);
+
+    this->actor.focus.pos = this->actor.world.pos;
+    this->actor.focus.pos.y += 45.0f;
+
+    this->actionFunc(this, play);
+
+    Collider_UpdateCylinder(&this->actor, &this->bodyCollider);
+    CollisionCheck_SetOC(play, &play->colChkCtx, &this->bodyCollider.base);
+
+    if (gSaveContext.save.info.playerData.health > 0 && (this->actor.colorFilterTimer == 0)) {
+        CollisionCheck_SetAC(play, &play->colChkCtx, &this->bodyCollider.base);
+    }
+
+    if (this->attackState > 0) {
+        CollisionCheck_SetAT(play, &play->colChkCtx, &this->axeCollider.base);
+    }
+
+    if (this->shieldState > 0) {
+        CollisionCheck_SetAC(play, &play->colChkCtx, &this->shieldCollider.base);
     }
 }
-
 
 Gfx* TransformIk_SetPrimEnvColors(GraphicsContext* gfxCtx, u8 primR, u8 primG, u8 primB, u8 envR, u8 envG, u8 envB) {
     Gfx* displayList;
@@ -359,13 +508,8 @@ s32 TransformIk_OverrideLimbDrawEnemy(PlayState* play, s32 limbIndex, Gfx** dLis
         *dList = gIronKnuckleGerudoHeadDL;
     } else if ((limbIndex == IRON_KNUCKLE_LIMB_CHEST_ARMOR_FRONT) ||
                (limbIndex == IRON_KNUCKLE_LIMB_CHEST_ARMOR_BACK)) {
-        if (this->drawArmorFlag & ARMOR_BROKEN) {
-            *dList = NULL;
-        }
     } else if ((limbIndex == IRON_KNUCKLE_LIMB_TORSO) || (limbIndex == IRON_KNUCKLE_LIMB_WAIST)) {
-        if (!(this->drawArmorFlag & ARMOR_BROKEN)) {
-            *dList = NULL;
-        }
+        *dList = NULL;
     }
 
     return false;
@@ -397,19 +541,10 @@ void TransformIk_PostLimbDrawEnemy(PlayState* play, s32 limbIndex, Gfx** dList, 
 
     OPEN_DISPS(play->state.gfxCtx, __FILE__, __LINE__);
 
-    /*if (this->armorStatusFlag & ARMOR_BROKEN) {
-        BodyBreak_SetInfo(&this->bodyBreak, limbIndex, IRON_KNUCKLE_LIMB_CHEST_ARMOR_FRONT,
-                          IRON_KNUCKLE_LIMB_CHEST_ARMOR_BACK, IRON_KNUCKLE_LIMB_TORSO, dList,
-                          BODYBREAK_OBJECT_SLOT_DEFAULT);
-    }*/
     if (limbIndex == IRON_KNUCKLE_LIMB_HELMET_ARMOR) {
         gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx, __FILE__, __LINE__),
                   G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        if (this->actor.params != IK_TYPE_NABOORU) {
-            gSPDisplayList(POLY_XLU_DISP++, gIronKnuckleHelmetMarkingDL);
-        } else {
-            gSPDisplayList(POLY_XLU_DISP++, object_ik_DL_016D88);
-        }
+        gSPDisplayList(POLY_XLU_DISP++, gIronKnuckleHelmetMarkingDL);
     } else if (limbIndex == IRON_KNUCKLE_LIMB_AXE) {
         s32 i;
         Vec3f vertices_0[3];
@@ -423,13 +558,12 @@ void TransformIk_PostLimbDrawEnemy(PlayState* play, s32 limbIndex, Gfx** dList, 
                                  &this->axeCollider.dim.quad[2], &this->axeCollider.dim.quad[3]);
         Matrix_MultVec3f(&D_80A7847C[0], &spF4);
         Matrix_MultVec3f(&D_80A7847C[1], &spE8);
-        if (this->unk_2FE > 0) {
+        if (this->attackState > 0) {
             EffectBlure_AddVertex(Effect_GetByIndex(this->blureIdx), &spF4, &spE8);
-        } else if (this->unk_2FE == 0) {
+        } else if (this->attackState == 0) {
             EffectBlure_AddSpace(Effect_GetByIndex(this->blureIdx));
-            this->unk_2FE = -1;
         }
-        if (this->unk_2F8 == 9) {
+        if (this->shieldState > 0) {
             for (i = 0; i < ARRAY_COUNT(vertices_1); i++) {
                 Matrix_MultVec3f(&D_80A784AC[i], &vertices_0[i]);
                 Matrix_MultVec3f(&D_80A784D0[i], &vertices_1[i]);
@@ -454,19 +588,15 @@ void TransformIk_PostLimbDrawEnemy(PlayState* play, s32 limbIndex, Gfx** dList, 
             break;
 
         case IRON_KNUCKLE_LIMB_CHEST_ARMOR_FRONT:
-            if (!(this->drawArmorFlag & ARMOR_BROKEN)) {
-                gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx, __FILE__, __LINE__),
-                          G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-                gSPDisplayList(POLY_XLU_DISP++, gIronKnuckleArmorRivetAndSymbolDL);
-            }
+            gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx, __FILE__, __LINE__),
+                        G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            gSPDisplayList(POLY_XLU_DISP++, gIronKnuckleArmorRivetAndSymbolDL);
             break;
 
         case IRON_KNUCKLE_LIMB_CHEST_ARMOR_BACK:
-            if (!(this->drawArmorFlag & ARMOR_BROKEN)) {
-                gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx, __FILE__, __LINE__),
-                          G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-                gSPDisplayList(POLY_XLU_DISP++, object_ik_DL_016CD8);
-            }
+            gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx, __FILE__, __LINE__),
+                        G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            gSPDisplayList(POLY_XLU_DISP++, object_ik_DL_016CD8);
             break;
     }
 
@@ -490,9 +620,9 @@ void TransformIk_DrawDebugInfo(PlayState* play, TransformIk* this) {
 
     GfxPrint_SetColor(&printer, 250, 250, 50, 255);
     GfxPrint_SetPos(&printer, 4, 14);
-    GfxPrint_Printf(&printer, "speed: %f", this->actor.speed);
+    GfxPrint_Printf(&printer, "arrow actor: %x", play->actorCtx.targetCtx.arrowPointedActor);
     GfxPrint_SetPos(&printer, 4, 16);
-    GfxPrint_Printf(&printer, "yaw: %d", this->actor.shape.rot.y);
+    GfxPrint_Printf(&printer, "target actor: %x", play->actorCtx.targetCtx.targetedActor);
 
     gfx = GfxPrint_Close(&printer);
     GfxPrint_Destroy(&printer);
@@ -504,8 +634,15 @@ void TransformIk_DrawDebugInfo(PlayState* play, TransformIk* this) {
     CLOSE_DISPS(gfxCtx, __FILE__, __LINE__);
 }
 
+static Color_RGB8 sTunicColors[3] = {
+    { 30, 105, 27 }, // PLAYER_TUNIC_KOKIRI
+    { 100, 20, 0 },  // PLAYER_TUNIC_GORON
+    { 0, 60, 100 },  // PLAYER_TUNIC_ZORA
+};
+
 void TransformIk_Draw(Actor* thisx, PlayState* play) {
     TransformIk* this = (TransformIk*)thisx;
+    u8 tunic = TUNIC_EQUIP_TO_PLAYER(CUR_EQUIP_VALUE(EQUIP_TYPE_TUNIC));
 
     OPEN_DISPS(play->state.gfxCtx, __FILE__, __LINE__);
 
@@ -515,7 +652,7 @@ void TransformIk_Draw(Actor* thisx, PlayState* play) {
     Gfx_SetupDL_25Xlu(play->state.gfxCtx);
 
     gSPSegment(POLY_OPA_DISP++, 0x08, TransformIk_SetPrimEnvColors(play->state.gfxCtx, 245, 225, 155, 30, 30, 0));
-    gSPSegment(POLY_OPA_DISP++, 0x09, TransformIk_SetPrimEnvColors(play->state.gfxCtx, 255, 40, 0, 40, 0, 0));
+    gSPSegment(POLY_OPA_DISP++, 0x09, TransformIk_SetPrimEnvColors(play->state.gfxCtx, sTunicColors[tunic].r, sTunicColors[tunic].g, sTunicColors[tunic].b, sTunicColors[tunic].r/4, sTunicColors[tunic].g/4, sTunicColors[tunic].b/4));
     gSPSegment(POLY_OPA_DISP++, 0x0A, TransformIk_SetPrimEnvColors(play->state.gfxCtx, 255, 255, 255, 20, 40, 30));
 
     SkelAnime_DrawFlexOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable, this->skelAnime.dListCount,

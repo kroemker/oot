@@ -174,9 +174,9 @@ static DamageTable sDekuBabaDamageTable = {
     /* Giant jump    */ DMG_ENTRY(8, DEKUBABA_DMGEFF_SWORD),
     /* Master jump   */ DMG_ENTRY(4, DEKUBABA_DMGEFF_SWORD),
     /* Unknown 1     */ DMG_ENTRY(0, DEKUBABA_DMGEFF_NONE),
-    /* Unblockable   */ DMG_ENTRY(0, DEKUBABA_DMGEFF_NONE),
+    /* Unblockable   */ DMG_ENTRY(8, DEKUBABA_DMGEFF_NONE),
     /* Hammer jump   */ DMG_ENTRY(4, DEKUBABA_DMGEFF_NONE),
-    /* Unknown 2     */ DMG_ENTRY(0, DEKUBABA_DMGEFF_NONE),
+    /* Unknown 2     */ DMG_ENTRY(15, DEKUBABA_DMGEFF_NONE),
 };
 
 // The only difference is that for Big Deku Babas, Hookshot will act the same as Deku Nuts: i.e. it will stun, but
@@ -211,9 +211,9 @@ static DamageTable sBigDekuBabaDamageTable = {
     /* Giant jump    */ DMG_ENTRY(8, DEKUBABA_DMGEFF_SWORD),
     /* Master jump   */ DMG_ENTRY(4, DEKUBABA_DMGEFF_SWORD),
     /* Unknown 1     */ DMG_ENTRY(0, DEKUBABA_DMGEFF_NONE),
-    /* Unblockable   */ DMG_ENTRY(0, DEKUBABA_DMGEFF_NONE),
+    /* Unblockable   */ DMG_ENTRY(8, DEKUBABA_DMGEFF_NONE),
     /* Hammer jump   */ DMG_ENTRY(4, DEKUBABA_DMGEFF_NONE),
-    /* Unknown 2     */ DMG_ENTRY(0, DEKUBABA_DMGEFF_NONE),
+    /* Unknown 2     */ DMG_ENTRY(15, DEKUBABA_DMGEFF_NONE),
 };
 
 static InitChainEntry sInitChain[] = {

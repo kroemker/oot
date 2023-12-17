@@ -158,9 +158,9 @@ static DamageTable sDamageTable = {
     /* Giant jump    */ DMG_ENTRY(8, PEAHAT_DMG_EFF_ATTACK),
     /* Master jump   */ DMG_ENTRY(4, PEAHAT_DMG_EFF_ATTACK),
     /* Unknown 1     */ DMG_ENTRY(0, PEAHAT_DMG_EFF_ATTACK),
-    /* Unblockable   */ DMG_ENTRY(0, PEAHAT_DMG_EFF_ATTACK),
+    /* Unblockable   */ DMG_ENTRY(8, PEAHAT_DMG_EFF_ATTACK),
     /* Hammer jump   */ DMG_ENTRY(4, PEAHAT_DMG_EFF_ATTACK),
-    /* Unknown 2     */ DMG_ENTRY(0, PEAHAT_DMG_EFF_ATTACK),
+    /* Unknown 2     */ DMG_ENTRY(15, PEAHAT_DMG_EFF_ATTACK),
 };
 
 typedef enum {

@@ -189,9 +189,9 @@ static DamageTable sDamageTable = {
     /* Giant jump    */ DMG_ENTRY(8, ENZF_DMGEFF_NONE),
     /* Master jump   */ DMG_ENTRY(4, ENZF_DMGEFF_NONE),
     /* Unknown 1     */ DMG_ENTRY(0, ENZF_DMGEFF_NONE),
-    /* Unblockable   */ DMG_ENTRY(0, ENZF_DMGEFF_NONE),
+    /* Unblockable   */ DMG_ENTRY(8, ENZF_DMGEFF_NONE),
     /* Hammer jump   */ DMG_ENTRY(4, ENZF_DMGEFF_NONE),
-    /* Unknown 2     */ DMG_ENTRY(0, ENZF_DMGEFF_NONE),
+    /* Unknown 2     */ DMG_ENTRY(15, ENZF_DMGEFF_NONE),
 };
 
 static InitChainEntry sInitChain[] = {
@@ -546,7 +546,7 @@ s32 EnZf_CanAttack(PlayState* play, EnZf* this) {
             return true;
         }
         if (this->actor.params == ENZF_TYPE_DINOLFOS) {
-            targetedActor = player->unk_664;
+            targetedActor = player->zTargetActor;
             if (targetedActor == NULL) {
                 return false;
             } else {

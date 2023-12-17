@@ -10495,3 +10495,17 @@ beginseg
     romalign 0x1000
     include "build/baserom/softsprite_matrix_static.o"
 endseg
+
+beginseg
+    name "hm_comp_scene"
+    romalign 0x1000
+    include "build/assets/scenes/hm_comp_scenes/hm_comp/hm_comp_scene.o"
+    number 2
+endseg
+
+beginseg
+    name "hm_comp_room_0"
+    romalign 0x1000
+    include "build/assets/scenes/hm_comp_scenes/hm_comp/hm_comp_room_0.o"
+    number 3
+endseg

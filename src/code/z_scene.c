@@ -78,7 +78,7 @@ void Object_InitContext(PlayState* play, ObjectContext* objectCtx) {
 
     osSyncPrintf(VT_FGCOL(GREEN));
     // "Object exchange bank data %8.3fKB"
-    osSyncPrintf("オブジェクト入れ替えバンク情報 %8.3fKB\n", spaceSize / 1024.0f);
+    osSyncPrintf("Object exchange bank data %8.3fKB\n", spaceSize / 1024.0f);
     osSyncPrintf(VT_RST);
 
     objectCtx->spaceStart = objectCtx->slots[0].segment = GameState_Alloc(&play->state, spaceSize, "../z_scene.c", 219);

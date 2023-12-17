@@ -122,9 +122,9 @@ static DamageTable sDamageTable = {
     /* Giant jump    */ DMG_ENTRY(8, BARI_DMGEFF_NONE),
     /* Master jump   */ DMG_ENTRY(4, BARI_DMGEFF_NONE),
     /* Unknown 1     */ DMG_ENTRY(0, BARI_DMGEFF_NONE),
-    /* Unblockable   */ DMG_ENTRY(0, BARI_DMGEFF_NONE),
+    /* Unblockable   */ DMG_ENTRY(8, BARI_DMGEFF_NONE),
     /* Hammer jump   */ DMG_ENTRY(4, BARI_DMGEFF_NONE),
-    /* Unknown 2     */ DMG_ENTRY(0, BARI_DMGEFF_NONE),
+    /* Unknown 2     */ DMG_ENTRY(15, BARI_DMGEFF_NONE),
 };
 
 static InitChainEntry sInitChain[] = {

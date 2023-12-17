@@ -173,9 +173,9 @@ static DamageTable sDamageTable = {
     /* Giant jump    */ DMG_ENTRY(8, EN_IK_DMGEFF_DAMAGE),
     /* Master jump   */ DMG_ENTRY(4, EN_IK_DMGEFF_DAMAGE),
     /* Unknown 1     */ DMG_ENTRY(10, EN_IK_DMGEFF_DAMAGE),
-    /* Unblockable   */ DMG_ENTRY(0, EN_IK_DMGEFF_NONE),
+    /* Unblockable   */ DMG_ENTRY(8, EN_IK_DMGEFF_DAMAGE),
     /* Hammer jump   */ DMG_ENTRY(4, EN_IK_DMGEFF_DAMAGE),
-    /* Unknown 2     */ DMG_ENTRY(0, EN_IK_DMGEFF_NONE),
+    /* Unknown 2     */ DMG_ENTRY(15, EN_IK_DMGEFF_DAMAGE),
 };
 
 void EnIk_Destroy(Actor* thisx, PlayState* play) {

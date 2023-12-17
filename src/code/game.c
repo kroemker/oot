@@ -483,13 +483,13 @@ void* GameState_Alloc(GameState* gameState, size_t size, char* file, s32 line) {
         ret = NULL;
     } else if ((u32)THA_GetRemaining(&gameState->tha) < size) {
         // "Hyral on the verge of extinction does not have %d bytes left (%d bytes until extinction)"
-        osSyncPrintf("滅亡寸前のハイラルには %d バイトの余力もない（滅亡まであと %d バイト）\n", size,
+        osSyncPrintf("Hyral on the verge of extinction does not have %d bytes left (%d bytes until extinction)\n", size,
                      THA_GetRemaining(&gameState->tha));
         ret = NULL;
     } else {
         ret = THA_AllocTailAlign16(&gameState->tha, size);
         if (THA_IsCrash(&gameState->tha)) {
-            osSyncPrintf("ハイラルは滅亡してしまった\n"); // "Hyrule has been destroyed"
+            osSyncPrintf("Hyrule has been destroyed\n"); // "Hyrule has been destroyed"
             ret = NULL;
         }
     }

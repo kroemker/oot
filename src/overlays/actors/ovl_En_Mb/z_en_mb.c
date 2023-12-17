@@ -205,9 +205,9 @@ static DamageTable sSpearMoblinDamageTable = {
     /* Giant jump    */ DMG_ENTRY(8, ENMB_DMGEFF_DEFAULT),
     /* Master jump   */ DMG_ENTRY(4, ENMB_DMGEFF_DEFAULT),
     /* Unknown 1     */ DMG_ENTRY(0, ENMB_DMGEFF_FREEZE),
-    /* Unblockable   */ DMG_ENTRY(0, ENMB_DMGEFF_IGNORE),
+    /* Unblockable   */ DMG_ENTRY(8, ENMB_DMGEFF_IGNORE),
     /* Hammer jump   */ DMG_ENTRY(4, ENMB_DMGEFF_DEFAULT),
-    /* Unknown 2     */ DMG_ENTRY(0, ENMB_DMGEFF_IGNORE),
+    /* Unknown 2     */ DMG_ENTRY(15, ENMB_DMGEFF_IGNORE),
 };
 
 static DamageTable sClubMoblinDamageTable = {
@@ -240,9 +240,9 @@ static DamageTable sClubMoblinDamageTable = {
     /* Giant jump    */ DMG_ENTRY(8, ENMB_DMGEFF_DEFAULT),
     /* Master jump   */ DMG_ENTRY(4, ENMB_DMGEFF_DEFAULT),
     /* Unknown 1     */ DMG_ENTRY(0, ENMB_DMGEFF_FREEZE),
-    /* Unblockable   */ DMG_ENTRY(0, ENMB_DMGEFF_IGNORE),
+    /* Unblockable   */ DMG_ENTRY(8, ENMB_DMGEFF_IGNORE),
     /* Hammer jump   */ DMG_ENTRY(4, ENMB_DMGEFF_DEFAULT),
-    /* Unknown 2     */ DMG_ENTRY(0, ENMB_DMGEFF_IGNORE),
+    /* Unknown 2     */ DMG_ENTRY(15, ENMB_DMGEFF_IGNORE),
 };
 
 static InitChainEntry sInitChain[] = {

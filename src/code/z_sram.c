@@ -45,12 +45,12 @@ static SavePlayerData sNewSavePlayerData = {
     0,                                                  // bgsFlag
     0,                                                  // ocarinaGameRoundNum
     {
-        { ITEM_NONE, ITEM_NONE, ITEM_NONE, ITEM_NONE }, // buttonItems
+        { ITEM_BOW, ITEM_NONE, ITEM_NONE, ITEM_NONE }, // buttonItems
         { SLOT_NONE, SLOT_NONE, SLOT_NONE },            // cButtonSlots
         0,                                              // equipment
     },                                                  // childEquips
     {
-        { ITEM_NONE, ITEM_NONE, ITEM_NONE, ITEM_NONE }, // buttonItems
+        { ITEM_BOW, ITEM_NONE, ITEM_NONE, ITEM_NONE }, // buttonItems
         { SLOT_NONE, SLOT_NONE, SLOT_NONE },            // cButtonSlots
         0,                                              // equipment
     },                                                  // adultEquips
@@ -60,7 +60,7 @@ static SavePlayerData sNewSavePlayerData = {
 };
 
 static ItemEquips sNewSaveEquips = {
-    { ITEM_NONE, ITEM_NONE, ITEM_NONE, ITEM_NONE }, // buttonItems
+    { ITEM_BOW, ITEM_NONE, ITEM_NONE, ITEM_NONE }, // buttonItems
     { SLOT_NONE, SLOT_NONE, SLOT_NONE },            // cButtonSlots
     0x1100,                                         // equipment
 };
@@ -173,12 +173,12 @@ static SavePlayerData sDebugSavePlayerData = {
     0,                                                  // bgsFlag
     0,                                                  // ocarinaGameRoundNum
     {
-        { ITEM_NONE, ITEM_NONE, ITEM_NONE, ITEM_NONE }, // buttonItems
+        { ITEM_BOW, ITEM_NONE, ITEM_NONE, ITEM_NONE }, // buttonItems
         { SLOT_NONE, SLOT_NONE, SLOT_NONE },            // cButtonSlots
         0,                                              // equipment
     },                                                  // childEquips
     {
-        { ITEM_NONE, ITEM_NONE, ITEM_NONE, ITEM_NONE }, // buttonItems
+        { ITEM_BOW, ITEM_NONE, ITEM_NONE, ITEM_NONE }, // buttonItems
         { SLOT_NONE, SLOT_NONE, SLOT_NONE },            // cButtonSlots
         0,                                              // equipment
     },                                                  // adultEquips
@@ -188,7 +188,7 @@ static SavePlayerData sDebugSavePlayerData = {
 };
 
 static ItemEquips sDebugSaveEquips = {
-    { ITEM_SWORD_MASTER, ITEM_BOW, ITEM_HAMMERANG, ITEM_LONGSHOT }, // buttonItems
+    { ITEM_BOW, ITEM_BOW, ITEM_HAMMERANG, ITEM_LONGSHOT }, // buttonItems
     { SLOT_BOW, SLOT_HAMMERANG, SLOT_HOOKSHOT },                          // cButtonSlots
     // equipment
     (EQUIP_VALUE_SWORD_MASTER << (EQUIP_TYPE_SWORD * 4)) | (EQUIP_VALUE_SHIELD_HYLIAN << (EQUIP_TYPE_SHIELD * 4)) |

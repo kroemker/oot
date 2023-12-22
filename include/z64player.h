@@ -797,6 +797,7 @@ typedef struct Player {
 
     /* 0x084F */ union { 
         s8 actionVar1;
+        s8 transformActorId;
     } av1; // "Action Variable 1": context dependent variable that has different meanings depending on what action is currently running
 
     /* 0x0850 */ union { 

@@ -555,6 +555,12 @@ beginseg
 endseg
 
 beginseg
+    name "ovl_Transform_Octorok"
+    include "build/src/overlays/actors/ovl_Transform_Octorok/z_transform_octorok.o"
+    include "build/src/overlays/actors/ovl_Transform_Octorok/ovl_Transform_Octorok_reloc.o"
+endseg
+
+beginseg
     name "ovl_title"
     address 0x80800000
     include "build/src/overlays/gamestates/ovl_title/z_title.o"

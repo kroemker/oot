@@ -130,34 +130,42 @@ void TransformIk_SetupAction(TransformIk* this, PlayState* play, TransformIkActi
     this->axeCollider.info.toucher.damage = 0x40;
     if (this->actionFunc == TransformIk_Action_Idle) {
         Animation_Change(&this->skelAnime, &object_ik_Anim_00DD50, 0.0f, 0.0f, Animation_GetLastFrame(&object_ik_Anim_00DD50), ANIMMODE_LOOP, 4.0f);
+    Interface_SetDoAction(play, DO_ACTION_ATTACK);
     }
     else if (this->actionFunc == TransformIk_Action_Walk) {
         Animation_Change(&this->skelAnime, &gIronKnuckleWalkAnim, 1.0f, 0.0f, Animation_GetLastFrame(&gIronKnuckleWalkAnim), ANIMMODE_LOOP, -4.0f);
+        Interface_SetDoAction(play, DO_ACTION_ATTACK);
     }
     else if (this->actionFunc == TransformIk_Action_Run) {
         Animation_Change(&this->skelAnime, &gIronKnuckleRunAnim, 1.0f, 0.0f, Animation_GetLastFrame(&gIronKnuckleRunAnim), ANIMMODE_LOOP, -4.0f);
         Actor_PlaySfx(&this->actor, NA_SE_EN_IRONNACK_DASH);
+        Interface_SetDoAction(play, DO_ACTION_ATTACK);
     }
     else if (this->actionFunc == TransformIk_Action_SwingAxe) {
         this->actor.speed = 0.0f;
         Animation_Change(&this->skelAnime, &gIronKnuckleHorizontalAttackAnim, 0.5f, 0.0f, 10.0f, ANIMMODE_ONCE_INTERP, -4.0f);
+        Interface_SetDoAction(play, DO_ACTION_NONE);
     }
     else if (this->actionFunc == TransformIk_Action_VerticalAttack) {
         this->actor.speed = 0.0f;
         Animation_Change(&this->skelAnime, &gIronKnuckleVerticalAttackAnim, 1.0f, 0.0f, Animation_GetLastFrame(&gIronKnuckleVerticalAttackAnim), ANIMMODE_ONCE_INTERP, -4.0f);
+        Interface_SetDoAction(play, DO_ACTION_NONE);
     }
     else if (this->actionFunc == TransformIk_Action_PullOutAxe) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_IRONNACK_PULLOUT);
         Animation_Change(&this->skelAnime, &gIronKnuckleAxeStuckAnim, 1.0f, 0.0f, Animation_GetLastFrame(&gIronKnuckleAxeStuckAnim), ANIMMODE_LOOP, -4.0f);
         this->animationTimer = Animation_GetLastFrame(&gIronKnuckleAxeStuckAnim);
+        Interface_SetDoAction(play, DO_ACTION_NONE);
     }
     else if (this->actionFunc == TransformIk_Action_ReturnToIdleAfterAnimFinished) {
         Animation_Change(&this->skelAnime, this->recoverAnimation, 1.5f, 0.0f, Animation_GetLastFrame(this->recoverAnimation), ANIMMODE_ONCE_INTERP, -4.0f);
+        Interface_SetDoAction(play, DO_ACTION_NONE);
     }
     else if (this->actionFunc == TransformIk_Action_Block) {
         this->shieldState = 1;
         this->actor.speed = 0.0f;
         Animation_Change(&this->skelAnime, &gIronKnuckleBlockAnim, 1.0f, 0.0f, Animation_GetLastFrame(&gIronKnuckleBlockAnim), ANIMMODE_ONCE_INTERP, -4.0f);
+        Interface_SetDoAction(play, DO_ACTION_NONE);
     }
     else if (this->actionFunc == TransformIk_Action_GetHit) {
         s16 yaw = Math_Vec3f_Yaw(&this->actor.world.pos, &this->bodyCollider.base.ac->world.pos);
@@ -172,6 +180,7 @@ void TransformIk_SetupAction(TransformIk* this, PlayState* play, TransformIkActi
                             Animation_GetLastFrame(&gIronKnuckleBackHitAnim), ANIMMODE_ONCE, -4.0f);
             this->actor.speed = 6.0f;
         }
+        Interface_SetDoAction(play, DO_ACTION_NONE);
     }
 }
 

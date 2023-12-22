@@ -2450,10 +2450,7 @@ void Player_Action_Transform(Player* this, PlayState* play) {
     play->envCtx.screenFillColor[3] = play->envCtx.screenFillColor[3] < 255 - TRANSFORM_SCREEN_FILL_SPEED ? play->envCtx.screenFillColor[3] + TRANSFORM_SCREEN_FILL_SPEED : 255;
 
     if (play->envCtx.screenFillColor[3] == 255) {
-        if (!Object_IsLoaded(&play->objectCtx, Object_GetSlot(&play->objectCtx, OBJECT_IK))) {
-            Object_SpawnPersistent(&play->objectCtx, OBJECT_IK);
-        }
-        this->transformActor = Actor_Spawn(&play->actorCtx, play, ACTOR_TRANSFORM_IK, this->actor.world.pos.x, this->actor.world.pos.y,
+        this->transformActor = Actor_Spawn(&play->actorCtx, play, this->av1.actionVar1, this->actor.world.pos.x, this->actor.world.pos.y,
                     this->actor.world.pos.z, this->actor.world.rot.x, this->actor.world.rot.y, this->actor.world.rot.z, 0);
 
         if (this->transformActor != NULL) {
@@ -2502,6 +2499,17 @@ void Player_ProcessItemButtons(Player* this, PlayState* play) {
             Player_PlaySfx(this, NA_SE_PL_MAGIC_WIND_WARP);
             Player_PlaySfx(this, NA_SE_EN_IRONNACK_WAKEUP);
             PLAYER_SETUPACTIONFUNC_DEBUG(play, this, Player_Action_Transform, 0);
+            this->av1.actionVar1 = ACTOR_TRANSFORM_IK;
+            this->av2.actionVar2 = OBJECT_IK;
+            this->stateFlags3 |= PLAYER_STATE3_TRANSFORMING;
+            return;
+        }
+        else if (CHECK_BTN_ALL(sControlInput->press.button, BTN_DRIGHT) && this->transformActor == NULL) {
+            Player_PlaySfx(this, NA_SE_PL_MAGIC_WIND_WARP);
+            Player_PlaySfx(this, NA_SE_EN_OCTAROCK_LAND);
+            PLAYER_SETUPACTIONFUNC_DEBUG(play, this, Player_Action_Transform, 0);
+            this->av1.actionVar1 = ACTOR_TRANSFORM_OCTOROK;
+            this->av2.actionVar2 = OBJECT_OKUTA;
             this->stateFlags3 |= PLAYER_STATE3_TRANSFORMING;
             return;
         }
@@ -10216,6 +10224,8 @@ void Player_Init(Actor* thisx, PlayState* play2) {
 
     Map_SavePlayerInitialInfo(play);
     MREG(64) = 0;
+
+    gSaveContext.save.info.equips.buttonItems[0] = ITEM_BOW;
 }
 
 void func_808471F4(s16* pValue) {
@@ -10281,7 +10291,7 @@ static u8 sDiveDoActions[] = { DO_ACTION_1, DO_ACTION_2, DO_ACTION_3, DO_ACTION_
                                DO_ACTION_5, DO_ACTION_6, DO_ACTION_7, DO_ACTION_8 };
 
 void func_808473D4(PlayState* play, Player* this) {
-    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_NONE) && (this->actor.category == ACTORCAT_PLAYER)) {
+    if ((Message_GetState(&play->msgCtx) == TEXT_STATE_NONE) && (this->actor.category == ACTORCAT_PLAYER) && !(this->stateFlags3 & (PLAYER_STATE3_TRANSFORMED | PLAYER_STATE3_TRANSFORMING))) {
         Actor* heldActor = this->heldActor;
         Actor* interactRangeActor = this->interactRangeActor;
         s32 sp24;
@@ -11096,7 +11106,7 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         this->unk_890--;
     }
 
-    func_808473D4(play, this);
+    func_808473D4(play, this); // update a button label
     func_80836BEC(this, play);
 
     if ((this->heldItemAction == PLAYER_IA_DEKU_STICK) && (this->unk_860 != 0)) {
@@ -11557,9 +11567,9 @@ void Player_DrawDebugInfo(PlayState* play, Player* this) {
     GfxPrint_Printf(&printer, "AF: %s", this->debugActionFuncName);
     GfxPrint_SetPos(&printer, 4, 10);
     // GfxPrint_Printf(&printer, "UpperAF: %s", this->debugUpperActionFuncName);
-    GfxPrint_Printf(&printer, "Cam Player: %x", Play_GetCamera(play, CAM_ID_MAIN)->player);
+    GfxPrint_Printf(&printer, "actionVar1: %x", this->av1.actionVar1);
     GfxPrint_SetPos(&printer, 4, 12);
-    GfxPrint_Printf(&printer, "stateFlags3: %x", this->stateFlags3);
+    GfxPrint_Printf(&printer, "bbuttonitem: %d", gSaveContext.save.info.equips.buttonItems[0]);
 
     gfx = GfxPrint_Close(&printer);
     GfxPrint_Destroy(&printer);
@@ -11897,7 +11907,7 @@ void Player_Action_8084B1D8(Player* this, PlayState* play) {
 
     if ((this->csAction != PLAYER_CSACTION_NONE) || (this->unk_6AD == 0) || (this->unk_6AD >= 4) ||
         func_80833B54(this) || (this->zTargetActor != NULL) || (func_8083AD4C(play, this) == CAM_MODE_NORMAL) ||
-        (((this->unk_6AD == 2) && (CHECK_BTN_ANY(sControlInput->press.button, BTN_A | BTN_B | BTN_R) ||
+        (((this->unk_6AD == 2) && (CHECK_BTN_ANY(sControlInput->press.button, BTN_A | BTN_R) ||
                                    func_80833B2C(this) || (!func_8002DD78(this) && !func_808334B4(this)))) ||
          ((this->unk_6AD == 1) &&
           CHECK_BTN_ANY(sControlInput->press.button,

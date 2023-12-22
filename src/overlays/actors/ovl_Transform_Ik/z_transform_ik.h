@@ -3,6 +3,7 @@
 
 #include "ultra64.h"
 #include "global.h"
+
 #include "../ovl_En_Ik/z_en_ik.h"
 
 struct TransformIk;

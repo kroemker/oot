@@ -3420,7 +3420,7 @@ void Interface_Draw(PlayState* play) {
 
         gDPPipeSync(OVERLAY_DISP++);
 
-        Interface_DrawDPad(play);
+        //Interface_DrawDPad(play);
 
         gDPPipeSync(OVERLAY_DISP++);
 
@@ -3432,7 +3432,11 @@ void Interface_Draw(PlayState* play) {
             if (gSaveContext.save.info.equips.buttonItems[0] != ITEM_NONE) {
                 Interface_DrawItemIconTexture(play, interfaceCtx->iconItemSegment, 0);
 
-                if ((player->stateFlags1 & PLAYER_STATE1_23) || (play->shootingGalleryStatus > 1) ||
+                if (gSaveContext.save.info.equips.buttonItems[0] == ITEM_BOW || 
+                    gSaveContext.save.info.equips.buttonItems[0] == ITEM_BOW_FIRE || 
+                    gSaveContext.save.info.equips.buttonItems[0] == ITEM_BOW_ICE || 
+                    gSaveContext.save.info.equips.buttonItems[0] == ITEM_BOW_LIGHT || 
+                    (player->stateFlags1 & PLAYER_STATE1_23) || (play->shootingGalleryStatus > 1) ||
                     ((play->sceneId == SCENE_BOMBCHU_BOWLING_ALLEY) && Flags_GetSwitch(play, 0x38))) {
                     gDPPipeSync(OVERLAY_DISP++);
                     gDPSetCombineLERP(OVERLAY_DISP++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE,
@@ -4140,7 +4144,7 @@ void Interface_Update(PlayState* play) {
             if ((msgCtx->msgMode == MSGMODE_NONE) ||
                 ((msgCtx->msgMode != MSGMODE_NONE) && (play->sceneId == SCENE_BOMBCHU_BOWLING_ALLEY))) {
                 if (play->gameOverCtx.state == GAMEOVER_INACTIVE) {
-                    func_80083108(play);
+                    //func_80083108(play); //set bbutton items
                 }
             }
         }

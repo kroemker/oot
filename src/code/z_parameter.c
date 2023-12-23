@@ -2311,15 +2311,17 @@ void Interface_LoadActionLabelB(PlayState* play, u16 action) {
         action += DO_ACTION_MAX;
     }
 
-    interfaceCtx->unk_1FC = action;
+    if (interfaceCtx->unk_1FC != action) {
+        interfaceCtx->unk_1FC = action;
 
-    osCreateMesgQueue(&interfaceCtx->loadQueue, &interfaceCtx->loadMsg, 1);
-    DmaMgr_RequestAsync(&interfaceCtx->dmaRequest_160, interfaceCtx->doActionSegment + DO_ACTION_TEX_SIZE,
-                        (uintptr_t)_do_action_staticSegmentRomStart + (action * DO_ACTION_TEX_SIZE), DO_ACTION_TEX_SIZE,
-                        0, &interfaceCtx->loadQueue, NULL, "../z_parameter.c", 2228);
-    osRecvMesg(&interfaceCtx->loadQueue, NULL, OS_MESG_BLOCK);
+        osCreateMesgQueue(&interfaceCtx->loadQueue, &interfaceCtx->loadMsg, 1);
+        DmaMgr_RequestAsync(&interfaceCtx->dmaRequest_160, interfaceCtx->doActionSegment + DO_ACTION_TEX_SIZE,
+                            (uintptr_t)_do_action_staticSegmentRomStart + (action * DO_ACTION_TEX_SIZE), DO_ACTION_TEX_SIZE,
+                            0, &interfaceCtx->loadQueue, NULL, "../z_parameter.c", 2228);
+        osRecvMesg(&interfaceCtx->loadQueue, NULL, OS_MESG_BLOCK);
 
-    interfaceCtx->unk_1FA = true;
+        interfaceCtx->unk_1FA = true;
+    }
 }
 
 /**

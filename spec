@@ -561,6 +561,12 @@ beginseg
 endseg
 
 beginseg
+    name "ovl_Transform_Keese"
+    include "build/src/overlays/actors/ovl_Transform_Keese/z_transform_keese.o"
+    include "build/src/overlays/actors/ovl_Transform_Keese/ovl_Transform_Keese_reloc.o"
+endseg
+
+beginseg
     name "ovl_title"
     address 0x80800000
     include "build/src/overlays/gamestates/ovl_title/z_title.o"

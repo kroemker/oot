@@ -89,6 +89,7 @@ void Object_InitContext(PlayState* play, ObjectContext* objectCtx) {
 
     Object_SpawnPersistent(objectCtx, OBJECT_OKUTA);
     Object_SpawnPersistent(objectCtx, OBJECT_IK);
+    Object_SpawnPersistent(objectCtx, OBJECT_FIREFLY);
 }
 
 void Object_UpdateEntries(ObjectContext* objectCtx) {

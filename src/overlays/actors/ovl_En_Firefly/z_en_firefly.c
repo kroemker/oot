@@ -487,7 +487,7 @@ void EnFirefly_DiveAttack(EnFirefly* this, PlayState* play) {
         }
         Math_ScaledStepToS(&this->actor.shape.rot.x, this->targetPitch, 0x100);
     }
-    if ((this->timer == 0) || (Player_GetMask(play) == PLAYER_MASK_SKULL)) {
+    if ((this->timer == 0) || (Player_GetMask(play) == PLAYER_MASK_SKULL) || (player->transformActor != NULL)) {
         EnFirefly_SetupFlyAway(this);
     }
 }

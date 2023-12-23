@@ -2392,6 +2392,7 @@ void func_8083A060(Player* this, PlayState* play);
 void Player_DisableTransform(Player* this, PlayState* play) {
     this->stateFlags2 &= ~(PLAYER_STATE2_DISABLE_DRAW | PLAYER_STATE2_PAUSE_MOST_UPDATING);
     this->stateFlags3 &= ~(PLAYER_STATE3_TRANSFORMED);
+    play->interfaceCtx.unk_1FA = false; // disable B button text
     if (this->transformActor != NULL) {
         Actor_Kill(this->transformActor);
     }
@@ -2429,7 +2430,7 @@ void Player_Action_Transformed(Player* this, PlayState* play) {
     }
     play->envCtx.fillScreen = false;
 
-    if(CHECK_BTN_ALL(sControlInput->press.button, BTN_DUP)) {
+    if(CHECK_BTN_ALL(sControlInput->press.button, BTN_CUP)) {
         Player_PlaySfx(this, NA_SE_PL_MAGIC_WIND_WARP);
         PLAYER_SETUPACTIONFUNC_DEBUG(play, this, Player_Action_TransformBack, 0);
         this->stateFlags3 |= PLAYER_STATE3_TRANSFORMING;
@@ -2495,21 +2496,27 @@ void Player_ProcessItemButtons(Player* this, PlayState* play) {
     }
 
     if (!(this->stateFlags1 & (PLAYER_STATE1_HOLDING_ACTOR | PLAYER_STATE1_IN_CUTSCENE)) && !func_8008F128(this)) {
-        if (CHECK_BTN_ALL(sControlInput->press.button, BTN_DDOWN) && this->transformActor == NULL) {
+        if (CHECK_BTN_ALL(sControlInput->press.button, BTN_CLEFT) && this->transformActor == NULL) {
             Player_PlaySfx(this, NA_SE_PL_MAGIC_WIND_WARP);
             Player_PlaySfx(this, NA_SE_EN_IRONNACK_WAKEUP);
             PLAYER_SETUPACTIONFUNC_DEBUG(play, this, Player_Action_Transform, 0);
             this->av1.actionVar1 = ACTOR_TRANSFORM_IK;
-            this->av2.actionVar2 = OBJECT_IK;
             this->stateFlags3 |= PLAYER_STATE3_TRANSFORMING;
             return;
         }
-        else if (CHECK_BTN_ALL(sControlInput->press.button, BTN_DRIGHT) && this->transformActor == NULL) {
+        else if (CHECK_BTN_ALL(sControlInput->press.button, BTN_CDOWN) && this->transformActor == NULL) {
             Player_PlaySfx(this, NA_SE_PL_MAGIC_WIND_WARP);
             Player_PlaySfx(this, NA_SE_EN_OCTAROCK_LAND);
             PLAYER_SETUPACTIONFUNC_DEBUG(play, this, Player_Action_Transform, 0);
             this->av1.actionVar1 = ACTOR_TRANSFORM_OCTOROK;
-            this->av2.actionVar2 = OBJECT_OKUTA;
+            this->stateFlags3 |= PLAYER_STATE3_TRANSFORMING;
+            return;
+        }
+        else if (CHECK_BTN_ALL(sControlInput->press.button, BTN_CRIGHT) && this->transformActor == NULL) {
+            Player_PlaySfx(this, NA_SE_PL_MAGIC_WIND_WARP);
+            Player_PlaySfx(this, NA_SE_EN_FFLY_ATTACK);
+            PLAYER_SETUPACTIONFUNC_DEBUG(play, this, Player_Action_Transform, 0);
+            this->av1.actionVar1 = ACTOR_TRANSFORM_KEESE;
             this->stateFlags3 |= PLAYER_STATE3_TRANSFORMING;
             return;
         }

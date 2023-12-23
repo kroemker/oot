@@ -88,17 +88,20 @@ void TransformOctorok_SetupAction(TransformOctorok* this, PlayState* play, Trans
         osSyncPrintf("okuta: float\n");
         Animation_PlayLoop(&this->skelAnime, &gOctorokFloatAnim);
         Interface_SetDoAction(play, DO_ACTION_DIVE);
+        Interface_LoadActionLabelB(play, DO_ACTION_ATTACK);
     }
     else if (actionFunc == TransformOctorok_Action_Shoot) {
         osSyncPrintf("okuta: shoot\n");
         this->actor.speed = 0.0f;
         Animation_PlayOnceSetSpeed(&this->skelAnime, &gOctorokShootAnim, 1.5f);
         Interface_SetDoAction(play, DO_ACTION_NONE);
+        Interface_LoadActionLabelB(play, DO_ACTION_NONE);
     }
     else if (actionFunc == TransformOctorok_Action_Jump) {
         osSyncPrintf("okuta: jump\n");
         Animation_PlayOnce(&this->skelAnime, &gOctorokShootAnim);
         Interface_SetDoAction(play, DO_ACTION_NONE);
+        Interface_LoadActionLabelB(play, DO_ACTION_ATTACK);
     }
     else if (actionFunc == TransformOctorok_Action_Dive) {
         osSyncPrintf("okuta: dive\n");
@@ -107,12 +110,14 @@ void TransformOctorok_SetupAction(TransformOctorok* this, PlayState* play, Trans
         this->framesAPressed = 0;
         Animation_PlayOnce(&this->skelAnime, &gOctorokHideAnim);
         Interface_SetDoAction(play, DO_ACTION_NONE);
+        Interface_LoadActionLabelB(play, DO_ACTION_NONE);
     }
     else if (actionFunc == TransformOctorok_Action_WaitForJumpRelease) {
         osSyncPrintf("okuta: wait for jump release\n");
         this->actor.speed = 0.0f;
         this->actor.velocity.y = 0.0f;
         Interface_SetDoAction(play, DO_ACTION_ATTACK);
+        Interface_LoadActionLabelB(play, DO_ACTION_NONE);
     }
     else if (actionFunc == TransformOctorok_Action_JumpOutOfWater) {
         osSyncPrintf("okuta: jump out of water\n");
@@ -120,11 +125,13 @@ void TransformOctorok_SetupAction(TransformOctorok* this, PlayState* play, Trans
         this->actor.velocity.y = CLAMP(this->framesAPressed * 1.5f, 5.0f, 24.0f);
         Animation_PlayOnceSetSpeed(&this->skelAnime, &gOctorokFloatAnim, 2.0f);
         Interface_SetDoAction(play, DO_ACTION_NONE);
+        Interface_LoadActionLabelB(play, DO_ACTION_NONE);
     }
     else if (actionFunc == TransformOctorok_Action_GetHit) {
         osSyncPrintf("okuta: get hit\n");
         Animation_MorphToPlayOnce(&this->skelAnime, &gOctorokHitAnim, -5.0f);
         Interface_SetDoAction(play, DO_ACTION_NONE);
+        Interface_LoadActionLabelB(play, DO_ACTION_NONE);
     }
 }
 

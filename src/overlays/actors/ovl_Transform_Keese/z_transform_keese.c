@@ -19,6 +19,7 @@ void TransformKeese_Action_DiveAttack(TransformKeese* this, PlayState* play);
 #define GRAVITY -0.5f
 #define DIVE_ATTACK_SPEED_MULTIPLIER 1.84f
 #define SPEED_CAP 4.0f
+#define STAMINA_FILL_DELAY 10
 
 typedef enum {
     /* 0 */ KEESE_AURA_NONE, 
@@ -74,21 +75,25 @@ static InitChainEntry sInitChain[] = {
 };
 
 void TransformKeese_Extinguish(TransformKeese* this) {
-    this->actor.params += 2;
     this->collider.elements[0].info.toucher.effect = 0; // None
+    this->collider.elements[0].info.toucher.dmgFlags &= ~(DMG_FIRE | DMG_ICE);
     this->auraType = KEESE_AURA_NONE;
     this->onFire = false;
+    this->onBlueFire = false;
 }
 
 void TransformKeese_Ignite(TransformKeese* this) {
-    if (this->actor.params == KEESE_ICE_FLY) {
-        this->actor.params = KEESE_FIRE_FLY;
-    } else {
-        this->actor.params -= 2;
-    }
     this->collider.elements[0].info.toucher.effect = 1; // Fire
+    this->collider.elements[0].info.toucher.dmgFlags |= DMG_FIRE;
     this->auraType = KEESE_AURA_FIRE;
     this->onFire = true;
+}
+
+void TransformKeese_BlueIgnite(TransformKeese* this) {
+    this->collider.elements[0].info.toucher.effect = 2; // Ice
+    this->collider.elements[0].info.toucher.dmgFlags |= DMG_ICE;
+    this->auraType = KEESE_AURA_ICE;
+    this->onBlueFire = true;
 }
 
 void TransformKeese_SetupAction(TransformKeese* this, PlayState* play, TransformKeeseActionFunc actionFunc) {
@@ -115,11 +120,63 @@ void TransformKeese_SetupAction(TransformKeese* this, PlayState* play, Transform
     }
 }
 
+s32 TransformKeese_CheckTorch(TransformKeese* this, PlayState* play) {
+    ObjSyokudai* findTorch;
+    ObjSyokudai* closestTorch;
+    f32 torchDist;
+    f32 currentMinDist;
+    Vec3f flamePos;
+
+    findTorch = (ObjSyokudai*)play->actorCtx.actorLists[ACTORCAT_PROP].head;
+    closestTorch = NULL;
+    currentMinDist = 35000.0f;
+
+    while (findTorch != NULL) {
+        if ((findTorch->actor.id == ACTOR_OBJ_SYOKUDAI) && (findTorch->litTimer != 0)) {
+            torchDist = Actor_WorldDistXYZToActor(&this->actor, &findTorch->actor);
+            if (torchDist < currentMinDist) {
+                currentMinDist = torchDist;
+                closestTorch = findTorch;
+            }
+        }
+        findTorch = (ObjSyokudai*)findTorch->actor.next;
+    }
+
+    if (closestTorch != NULL) {
+        flamePos.x = closestTorch->actor.world.pos.x;
+        flamePos.y = closestTorch->actor.world.pos.y + 52.0f + 15.0f;
+        flamePos.z = closestTorch->actor.world.pos.z;
+        if (Actor_WorldDistXYZToPoint(&this->actor, &flamePos) < 15.0f) {
+            TransformKeese_Ignite(this);
+            return 1;
+        }
+    }
+    return 0;
+}
+
+s32 TransformKeese_CheckAscend(TransformKeese* this, PlayState* play) {
+    if (CHECK_BTN_ALL(play->state.input[0].cur.button, BTN_A) && gSaveContext.stamina > 0) {
+        this->actor.velocity.y = MIN(this->actor.velocity.y + A_PRESS_Y_ACCEL, MAX_Y_SPEED);
+        gSaveContext.stamina = MAX(gSaveContext.stamina - 1, 0);
+        this->staminaTimer = STAMINA_FILL_DELAY;
+        return 1;
+    }
+    else {
+        if (this->staminaTimer == 0) {
+            gSaveContext.stamina = MIN(gSaveContext.stamina + 2, 0x60);
+        }
+        else {
+            this->staminaTimer--;
+        }
+        return 0;
+    }
+}
+
 void TransformKeese_Action_Fly(TransformKeese* this, PlayState* play) {
     f32 speedTarget;
     s16 yawTarget;
 
-    Actor_GetMovementSpeedAndYaw(&this->actor, &speedTarget, &yawTarget, 1, play);
+    Actor_GetMovementSpeedAndYaw(&this->actor, &speedTarget, &yawTarget, 1, 0, play);
 
     Math_StepToF(&this->actor.speed, speedTarget, 0.9f);
     if (speedTarget != 0.0f) {
@@ -130,9 +187,8 @@ void TransformKeese_Action_Fly(TransformKeese* this, PlayState* play) {
         this->actor.shape.rot.y = this->actor.world.rot.y;
     }
 
-    if (CHECK_BTN_ALL(play->state.input[0].cur.button, BTN_A)) {
-        this->actor.velocity.y = MIN(this->actor.velocity.y + A_PRESS_Y_ACCEL, MAX_Y_SPEED);
-    }
+    TransformKeese_CheckTorch(this, play);
+    TransformKeese_CheckAscend(this, play);
 
     this->skelAnime.playSpeed = (speedTarget / SPEED_CAP) * 0.75f + 0.25f; 
     SkelAnime_Update(&this->skelAnime);
@@ -152,14 +208,12 @@ void TransformKeese_Action_Land(TransformKeese* this, PlayState* play) {
     f32 speedTarget;
     s16 yawTarget;
 
-    Actor_GetMovementSpeedAndYaw(&this->actor, &speedTarget, &yawTarget, 1, play);
+    Actor_GetMovementSpeedAndYaw(&this->actor, &speedTarget, &yawTarget, 1, 0, play);
 
     Math_ScaledStepToS(&this->actor.world.rot.y, yawTarget, 1200);
     this->actor.shape.rot.y = this->actor.world.rot.y;
 
-    if (CHECK_BTN_ALL(play->state.input[0].cur.button, BTN_A)) {
-        this->actor.velocity.y = MIN(this->actor.velocity.y + A_PRESS_Y_ACCEL, MAX_Y_SPEED);
-    }
+    TransformKeese_CheckAscend(this, play);
 
     if (Animation_OnFrame(&this->skelAnime, 6.0f)) {
         this->skelAnime.playSpeed = 0.0f;
@@ -175,7 +229,7 @@ void TransformKeese_Action_DiveAttack(TransformKeese* this, PlayState* play) {
     f32 speedTarget;
     s16 yawTarget;
 
-    Actor_GetMovementSpeedAndYaw(&this->actor, &speedTarget, &yawTarget, 1, play);
+    Actor_GetMovementSpeedAndYaw(&this->actor, &speedTarget, &yawTarget, 1, 0, play);
 
     Math_StepToF(&this->actor.speed, speedTarget * DIVE_ATTACK_SPEED_MULTIPLIER, 0.9f);
     if (speedTarget != 0.0f) {
@@ -184,6 +238,12 @@ void TransformKeese_Action_DiveAttack(TransformKeese* this, PlayState* play) {
     else {
         Math_ScaledStepToS(&this->actor.world.rot.y, yawTarget, 1200);
         this->actor.shape.rot.y = this->actor.world.rot.y;
+    }
+
+    TransformKeese_CheckTorch(this, play);
+    if (TransformKeese_CheckAscend(this, play)) {
+        TransformKeese_SetupAction(this, play, TransformKeese_Action_Fly);
+        return;
     }
 
     if (Animation_OnFrame(&this->skelAnime, 4.0f)) {
@@ -215,6 +275,9 @@ void TransformKeese_Init(Actor* thisx, PlayState* play) {
     this->actor.speedCap = SPEED_CAP;
     this->actor.gravity = GRAVITY;
 
+    if (this->actor.params & 1) {
+        TransformKeese_Ignite(this);
+    }
     TransformKeese_SetupAction(this, play, TransformKeese_Action_Fly);
 }
 
@@ -254,6 +317,18 @@ void TransformKeese_Update(Actor* thisx, PlayState* play) {
             Enemy_StartFinishingBlow(play, &this->actor);
             Actor_Kill(&this->actor);
         }
+
+        u8 fireHit = (this->collider.elements[0].info.acHitInfo->toucher.effect & 1); //|| (this->collider.elements[0].info.acHitInfo->toucher.dmgFlags & DMG_FIRE);
+        u8 iceHit = (this->collider.elements[0].info.acHitInfo->toucher.effect & 2); //|| (this->collider.elements[0].info.acHitInfo->toucher.dmgFlags & DMG_ICE);
+        if (fireHit && !this->onFire) {
+            TransformKeese_Ignite(this);
+        }
+        else if (iceHit && !this->onBlueFire) {
+            TransformKeese_BlueIgnite(this);
+        }
+        else if ((iceHit && this->onFire) || (fireHit && this->onBlueFire)) {
+            TransformKeese_Extinguish(this);
+        }
     }
 
     Math_ScaledStepToS(&this->actor.shape.rot.x, this->targetPitch, 0x100);
@@ -272,12 +347,14 @@ void TransformKeese_Update(Actor* thisx, PlayState* play) {
 
     CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
 
-    if ((this->actionFunc == TransformKeese_Action_DiveAttack)) {
+    if ((this->actionFunc == TransformKeese_Action_DiveAttack) || this->onFire) {
         CollisionCheck_SetAT(play, &play->colChkCtx, &this->collider.base);
     }
     if (gSaveContext.save.info.playerData.health > 0 && (this->actor.colorFilterTimer == 0)) {
         CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);
     }
+
+    this->timer = (this->timer + 1) % 14;
 }
 
 s32 TransformKeese_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, void* thisx,

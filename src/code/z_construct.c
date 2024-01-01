@@ -12,6 +12,8 @@ void Interface_Init(PlayState* play) {
     u16 doActionOffset;
     u8 timerId;
 
+    gSaveContext.stamina = 0x60;
+
     gSaveContext.sunsSongState = SUNSSONG_INACTIVE;
     gSaveContext.nextHudVisibilityMode = gSaveContext.hudVisibilityMode = HUD_VISIBILITY_NO_CHANGE;
 

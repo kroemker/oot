@@ -683,7 +683,7 @@ void __osDisplayArena(Arena* arena) {
     ArenaNode* next;
 
     if (!__osMallocIsInitialized(arena)) {
-        osSyncPrintf("アリーナは初期化されていません\n"); // "Arena is not initialized"
+        osSyncPrintf("Arena is not initialized\n"); // "Arena is not initialized"
         return;
     }
 
@@ -693,9 +693,9 @@ void __osDisplayArena(Arena* arena) {
     freeSize = 0;
     allocatedSize = 0;
 
-    osSyncPrintf("アリーナの内容 (0x%08x)\n", arena); // "Arena contents (0x%08x)"
+    osSyncPrintf("Arena contents (0x%08x)\n", arena); // "Arena contents (0x%08x)"
     // "Memory node range status size [time s ms us ns: TID: src: line]"
-    osSyncPrintf("メモリブロック範囲 status サイズ  [時刻  s ms us ns: TID:src:行]\n");
+    osSyncPrintf("Memory node range status size [time s ms us ns: TID: src: line]]\n");
 
     iter = arena->head;
     while (iter != NULL) {
@@ -703,7 +703,7 @@ void __osDisplayArena(Arena* arena) {
             next = iter->next;
             osSyncPrintf("%08x-%08x%c %s %08x", iter, ((u32)iter + sizeof(ArenaNode) + iter->size),
                          (next == NULL) ? '$' : (iter != next->prev ? '!' : ' '),
-                         iter->isFree ? "空き" : "確保", //? "Free" : "Secure"
+                         iter->isFree ? "Free" : "Secure", //? "Free" : "Secure"
                          iter->size);
 
             if (!iter->isFree) {
@@ -729,11 +729,11 @@ void __osDisplayArena(Arena* arena) {
     }
 
     // "Total reserved node size 0x%08x bytes"
-    osSyncPrintf("確保ブロックサイズの合計 0x%08x バイト\n", allocatedSize);
+    osSyncPrintf("Total reserved node size 0x%08x bytes\n", allocatedSize);
     // "Total free node size 0x%08x bytes"
-    osSyncPrintf("空きブロックサイズの合計 0x%08x バイト\n", freeSize);
+    osSyncPrintf("Total free node size 0x%08x bytes\n", freeSize);
     // "Maximum free node size 0x%08x bytes"
-    osSyncPrintf("最大空きブロックサイズ   0x%08x バイト\n", maxFree);
+    osSyncPrintf("Maximum free node size 0x%08x bytes\n", maxFree);
 
     ArenaImpl_Unlock(arena);
 }

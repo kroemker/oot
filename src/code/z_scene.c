@@ -68,6 +68,7 @@ void Object_InitContext(PlayState* play, ObjectContext* objectCtx) {
     } else {
         spaceSize = 1000 * 1024;
     }
+    spaceSize = 2000 * 1024;
 
     objectCtx->numEntries = objectCtx->numPersistentEntries = 0;
     objectCtx->mainKeepSlot = objectCtx->subKeepSlot = 0;

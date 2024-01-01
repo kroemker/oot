@@ -271,7 +271,7 @@ void TransformOctorok_Action_Jump(TransformOctorok* this, PlayState* play) {
     f32 speedTarget;
     s16 yawTarget;
 
-    Actor_GetMovementSpeedAndYaw(&this->actor, &speedTarget, &yawTarget, 1, play);
+    Actor_GetMovementSpeedAndYaw(&this->actor, &speedTarget, &yawTarget, 1, 0, play);
 
     Math_StepToF(&this->actor.speed, speedTarget / 2.0f, 0.7f);
     if (speedTarget != 0.0f) {
@@ -357,7 +357,7 @@ void TransformOctorok_Action_Float(TransformOctorok* this, PlayState* play) {
     f32 speedTarget;
     s16 yawTarget;
 
-    Actor_GetMovementSpeedAndYaw(&this->actor, &speedTarget, &yawTarget, 1, play);
+    Actor_GetMovementSpeedAndYaw(&this->actor, &speedTarget, &yawTarget, 1, 0, play);
 
     Math_StepToF(&this->actor.speed, speedTarget * 1.4f, 0.9f);
     if (speedTarget != 0.0f) {

@@ -15,13 +15,15 @@ typedef struct TransformKeese {
     /* 0x01B4 */ TransformKeeseActionFunc actionFunc;
     /* 0x01B8 */ u8 auraType;
     /* 0x01B9 */ u8 onFire;
-    /* 0x01BA */ s16 timer;
+    /* 0x01B9 */ u8 onBlueFire;
+    /* 0x01BA */ s16 staminaTimer;
     /* 0x01BC */ s16 targetPitch;
     /* 0x01BE */ Vec3s jointTable[28];
     /* 0x0266 */ Vec3s morphTable[28];
     /* 0x0310 */ f32 maxAltitude;
     /* 0x0314 */ ColliderJntSph collider;
     /* 0x0344 */ ColliderJntSphElement colliderItems[1];
+    s16 timer;
 } TransformKeese; // size = 0x0374
 
 typedef enum {

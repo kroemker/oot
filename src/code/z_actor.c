@@ -5878,7 +5878,7 @@ s32 Actor_TrackPlayer(PlayState* play, Actor* actor, Vec3s* headRot, Vec3s* tors
     return true;
 }
 
-s32 Actor_CalcSpeedAndYawFromControlStick(PlayState* play, Actor* actor, f32* outSpeedTarget, s16* outYawTarget, u8 speedMode) {
+s32 Actor_CalcSpeedAndYawFromControlStick(PlayState* play, Actor* actor, f32* outSpeedTarget, s16* outYawTarget, u8 speedMode, u8 considerSlopes) {
     f32 temp;
     f32 sinFloorPitch;
     f32 floorPitchInfluence;
@@ -5911,23 +5911,23 @@ s32 Actor_CalcSpeedAndYawFromControlStick(PlayState* play, Actor* actor, f32* ou
     }
 
     if (controlStickMagnitude != 0.0f) {
-        u32 floorType = SurfaceType_GetFloorType(&play->colCtx, actor->floorPoly, actor->floorBgId);
+        if (actor->floorPoly == NULL || !considerSlopes) {   
+            floorPitchInfluence = 0.0f;
+        }
+        else {
+            u32 floorType = SurfaceType_GetFloorType(&play->colCtx, actor->floorPoly, actor->floorBgId);
 
-        f32 floorPolyNormalX = COLPOLY_GET_NORMAL(actor->floorPoly->normal.x);
-        f32 invFloorPolyNormalY = 1.0f / COLPOLY_GET_NORMAL(actor->floorPoly->normal.y);
-        f32 floorPolyNormalZ = COLPOLY_GET_NORMAL(actor->floorPoly->normal.z);
+            f32 floorPolyNormalX = COLPOLY_GET_NORMAL(actor->floorPoly->normal.x);
+            f32 invFloorPolyNormalY = 1.0f / COLPOLY_GET_NORMAL(actor->floorPoly->normal.y);
+            f32 floorPolyNormalZ = COLPOLY_GET_NORMAL(actor->floorPoly->normal.z);
 
-        f32 floorPitch =
-            Math_Atan2S(1.0f, (-(floorPolyNormalX * Math_SinS(actor->shape.rot.y)) - (floorPolyNormalZ * Math_CosS(actor->shape.rot.y))) * invFloorPolyNormalY);
+            f32 floorPitch =
+                Math_Atan2S(1.0f, (-(floorPolyNormalX * Math_SinS(actor->shape.rot.y)) - (floorPolyNormalZ * Math_CosS(actor->shape.rot.y))) * invFloorPolyNormalY);
 
-        sinFloorPitch = Math_SinS(floorPitch);
+            sinFloorPitch = Math_SinS(floorPitch);
+            floorPitchInfluence = CLAMP(sinFloorPitch, 0.0f, 0.6f);
+        }
         speedCap = actor->speedCap;
-        floorPitchInfluence = CLAMP(sinFloorPitch, 0.0f, 0.6f);
-
-        /*if (this->unk_6C4 != 0.0f) {
-            speedCap -= this->unk_6C4 * 0.008f;
-            speedCap = CLAMP_MIN(speedCap, 2.0f);
-        }*/
 
         *outSpeedTarget = (*outSpeedTarget * 0.14f) - (8.0f * floorPitchInfluence * floorPitchInfluence);
         *outSpeedTarget = CLAMP(*outSpeedTarget, 0.0f, speedCap);
@@ -5938,9 +5938,8 @@ s32 Actor_CalcSpeedAndYawFromControlStick(PlayState* play, Actor* actor, f32* ou
     return false;
 }
 
-s32 Actor_GetMovementSpeedAndYaw(Actor* actor, f32* outSpeedTarget, s16* outYawTarget, u8 speedMode,
-                                  PlayState* play) {
-    if (!Actor_CalcSpeedAndYawFromControlStick(play, actor, outSpeedTarget, outYawTarget, speedMode)) {
+s32 Actor_GetMovementSpeedAndYaw(Actor* actor, f32* outSpeedTarget, s16* outYawTarget, u8 speedMode, u8 considerSlopes, PlayState* play) {
+    if (!Actor_CalcSpeedAndYawFromControlStick(play, actor, outSpeedTarget, outYawTarget, speedMode, considerSlopes)) {
         *outYawTarget = actor->shape.rot.y;
         return false;
     } else {

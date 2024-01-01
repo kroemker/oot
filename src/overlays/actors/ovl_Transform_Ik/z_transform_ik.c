@@ -291,7 +291,7 @@ void TransformIk_Action_Run(TransformIk* this, PlayState* play) {
     f32 speedTarget;
     s16 yawTarget;
 
-    Actor_GetMovementSpeedAndYaw(&this->actor, &speedTarget, &yawTarget, 1, play);
+    Actor_GetMovementSpeedAndYaw(&this->actor, &speedTarget, &yawTarget, 1, 1, play);
 
     this->actor.world.rot.y = this->actor.shape.rot.y = yawTarget;
     Math_StepToF(&this->actor.speed, speedTarget, 0.9f);
@@ -317,7 +317,7 @@ void TransformIk_Action_Walk(TransformIk* this, PlayState* play) {
     f32 speedTarget;
     s16 yawTarget;
 
-    Actor_GetMovementSpeedAndYaw(&this->actor, &speedTarget, &yawTarget, 1, play);
+    Actor_GetMovementSpeedAndYaw(&this->actor, &speedTarget, &yawTarget, 1, 1, play);
 
     this->actor.world.rot.y = this->actor.shape.rot.y = yawTarget;
     Math_StepToF(&this->actor.speed, speedTarget, 0.9f);
@@ -343,7 +343,7 @@ void TransformIk_Action_Idle(TransformIk* this, PlayState* play) {
     f32 speedTarget;
     s16 yawTarget;
 
-    Actor_GetMovementSpeedAndYaw(&this->actor, &speedTarget, &yawTarget, 1, play);
+    Actor_GetMovementSpeedAndYaw(&this->actor, &speedTarget, &yawTarget, 1, 1, play);
 
     if (speedTarget != 0.0f) {
         TransformIk_SetupAction(this, play, TransformIk_Action_Walk);

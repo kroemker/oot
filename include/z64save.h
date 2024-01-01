@@ -294,7 +294,7 @@ typedef struct {
     /* 0x141A */ u16 skyboxTime;
     /* 0x141C */ u8 dogIsLost;
     /* 0x141D */ u8 nextTransitionType;
-    /* 0x141E */ char unk_141E[0x0002];
+    /* 0x141E */ s16 stamina; //char unk_141E[0x0002];
     /* 0x1420 */ s16 worldMapArea;
     /* 0x1422 */ s16 sunsSongState; // controls the effects of suns song
     /* 0x1424 */ s16 healthAccumulator;

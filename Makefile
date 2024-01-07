@@ -103,7 +103,7 @@ AS         := $(MIPS_BINUTILS_PREFIX)as
 LD         := $(MIPS_BINUTILS_PREFIX)ld
 OBJCOPY    := $(MIPS_BINUTILS_PREFIX)objcopy
 OBJDUMP    := $(MIPS_BINUTILS_PREFIX)objdump
-EMULATOR   ?= 
+EMULATOR   ?= '/mnt/e/Programs/Project64-v2.4.0/Project64.exe'
 EMU_FLAGS  ?= 
 
 INC := -Iinclude -Iinclude/libc -Isrc -Ibuild -I.
@@ -251,8 +251,11 @@ build/src/%.o: CC := $(CC) -fexec-charset=euc-jp
 endif
 
 #### Main Targets ###
+all:
+	python3 install_mod_assets.py
+	make -j8 build
 
-all: $(ROM)
+build: $(ROM)
 ifeq ($(COMPARE),1)
 	@md5sum $(ROM)
 	@md5sum -c checksum.md5
@@ -278,11 +281,12 @@ setup:
 	python3 extract_baserom.py
 	python3 extract_assets.py -j$(N_THREADS)
 
-run: $(ROM)
+run:
+	make
 ifeq ($(EMULATOR),)
 	$(error Emulator path not set. Set EMULATOR in the Makefile or define it as an environment variable)
 endif
-	$(EMULATOR) $(EMU_FLAGS) $<
+	$(EMULATOR) $(EMU_FLAGS) $(ROM)
 
 
 .PHONY: all clean setup run distclean assetclean

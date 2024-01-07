@@ -136,7 +136,7 @@ typedef enum {
     /* 0x0A */ SLOT_ARROW_ICE,
     /* 0x0B */ SLOT_FARORES_WIND,
     /* 0x0C */ SLOT_BOOMERANG,
-    SLOT_HAMMERANG = 0x0E,
+    SLOT_HAMMERANG = 0x0C,
     /* 0x0D */ SLOT_LENS_OF_TRUTH,
     /* 0x0E */ SLOT_MAGIC_BEAN,
     /* 0x0F */ SLOT_HAMMER,

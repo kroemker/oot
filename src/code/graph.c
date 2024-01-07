@@ -418,21 +418,21 @@ void Graph_ThreadEntry(void* arg0) {
     GameStateOverlay* ovl;
     char faultMsg[0x50];
 
-    osSyncPrintf("グラフィックスレッド実行開始\n"); // "Start graphic thread execution"
+    osSyncPrintf("Start graphic thread execution\n"); // "Start graphic thread execution"
     Graph_Init(&gfxCtx);
 
 #ifdef DEVELOPMENT
     nextOvl = &gGameStateOverlayTable[GAMESTATE_PLAY];
     Sram_InitDebugSave();
-    gSaveContext.save.entranceIndex = ENTR_TEST01_0;
+    gSaveContext.save.entranceIndex = ENTR_HM_COMP_0;
     gSaveContext.respawnFlag = 0;
-    gSaveContext.respawn[RESPAWN_MODE_DOWN].entranceIndex = ENTR_TEST01_0;
+    gSaveContext.respawn[RESPAWN_MODE_DOWN].entranceIndex = ENTR_HM_COMP_0;
     gSaveContext.seqId = (u8)NA_BGM_DISABLED;
     gSaveContext.natureAmbienceId = 0xFF;
-    gSaveContext.showTitleCard = false;
+    gSaveContext.showTitleCard = true;
     gSaveContext.magicFillTarget = gSaveContext.save.info.playerData.magic;
-    gSaveContext.magicCapacity = 0;
-    gSaveContext.save.info.playerData.magicLevel = gSaveContext.save.info.playerData.magic = 0;
+    gSaveContext.magicCapacity = 0x60;
+    gSaveContext.save.info.playerData.magicLevel = gSaveContext.save.info.playerData.magic = 0x60;
 
     gVisMonoColor.r = 255;
     gVisMonoColor.g = 255;

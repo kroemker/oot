@@ -3030,7 +3030,20 @@ static u16 D_808543DC[] = { NA_SE_IT_BOW_FLICK, NA_SE_IT_SLING_FLICK };
 
 s32 Player_CheckChangeArrowType(PlayState* play, Player* this) {
     if (CHECK_BTN_ALL(sControlInput->press.button, BTN_L) && this->heldItemAction >= PLAYER_IA_BOW && this->heldItemAction <= PLAYER_IA_BOW_LIGHT) {
-        this->itemAction = this->heldItemAction = PLAYER_IA_BOW + (this->heldItemAction - PLAYER_IA_BOW + 1) % 4;
+        s32 action, magicArrowItem;
+        s32 i = 1;
+        do {
+            action = PLAYER_IA_BOW + (this->heldItemAction - PLAYER_IA_BOW + i) % 4;
+            magicArrowItem = action == PLAYER_IA_BOW_FIRE ? ITEM_ARROW_FIRE : (action == PLAYER_IA_BOW_ICE ? ITEM_ARROW_ICE : ITEM_ARROW_FOREST); 
+            osSyncPrintf("i = %d, action = %d, magicArrowItem = %d, INV_CONTENT(mai) = %d\n", i, action, magicArrowItem, INV_CONTENT(magicArrowItem));
+            i++;
+        } while (action != PLAYER_IA_BOW && INV_CONTENT(magicArrowItem) != magicArrowItem);
+
+        if (action == this->heldItemAction) {
+            return 0;
+        }
+
+        this->itemAction = this->heldItemAction = action;
         this->heldItemId = gSaveContext.save.info.equips.buttonItems[this->heldItemButton] = 
             this->heldItemAction == PLAYER_IA_BOW ? ITEM_BOW : ITEM_BOW_FIRE + (this->heldItemAction - PLAYER_IA_BOW_FIRE);
         Interface_LoadItemIcon1(play, this->heldItemButton);
@@ -4658,6 +4671,8 @@ void func_80838940(Player* this, LinkAnimationHeader* anim, f32 arg2, PlayState*
     func_80832698(this, sfxId);
 
     this->stateFlags1 |= PLAYER_STATE1_18;
+    
+    this->doubleJumped = 0;
 }
 
 void func_808389E8(Player* this, LinkAnimationHeader* anim, f32 arg2, PlayState* play) {
@@ -9044,6 +9059,8 @@ void func_8084409C(PlayState* play, Player* this, f32 speedXZ, f32 velocityY) {
     }
 }
 
+LinkAnimationHeader* testAnim = &gPlayerAnim_link_fighter_backturn_jump;
+
 void Player_Action_8084411C(Player* this, PlayState* play) {
     f32 speedTarget;
     s16 yawTarget;
@@ -9064,6 +9081,18 @@ void Player_Action_8084411C(Player* this, PlayState* play) {
                 CHECK_BTN_ANY(sControlInput->press.button, BTN_A | BTN_B | BTN_CLEFT | BTN_CRIGHT | BTN_CDOWN)) {
                 func_8084409C(play, this, this->speedXZ + 2.0f, this->actor.velocity.y + 2.0f);
             }
+        }
+        else if (CHECK_BTN_ANY(sControlInput->press.button, BTN_L) && !this->doubleJumped) {
+            s16 lastFrame = Animation_GetLastFrame(&gPlayerAnim_link_fighter_backturn_jump);
+            func_80838940(this, NULL, 4.5f, play, NA_SE_VO_LI_AUTO_JUMP);
+            if (!(this->stateFlags2 & PLAYER_STATE2_19)) {
+                LinkAnimation_Change(play, &this->skelAnime, &gPlayerAnim_link_fighter_backturn_jump, -PLAYER_ANIM_ADJUSTED_SPEED, lastFrame, 0.0f, ANIMMODE_ONCE, 0.0f);
+            }
+            else {
+                LinkAnimation_Change(play, &this->skelAnime, &gPlayerAnim_link_fighter_backturn_jump, PLAYER_ANIM_ADJUSTED_SPEED, 0.0f, lastFrame, ANIMMODE_ONCE, 0.0f);
+            }
+            this->av2.actionVar2 = 1;
+            this->doubleJumped = 1;
         }
 
         LinkAnimation_Update(play, &this->skelAnime);
@@ -11112,6 +11141,13 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
 
     sControlInput = input;
 
+    if (CHECK_BTN_ALL(sControlInput->press.button, BTN_DUP)) {
+        testAnim++;
+    }
+    else if (CHECK_BTN_ALL(sControlInput->press.button, BTN_DDOWN)) {
+        testAnim--;
+    }
+
     if (this->unk_A86 < 0) {
         this->unk_A86++;
         if (this->unk_A86 == 0) {
@@ -11605,9 +11641,9 @@ void Player_DrawDebugInfo(PlayState* play, Player* this) {
     GfxPrint_Printf(&printer, "AF: %s", this->debugActionFuncName);
     GfxPrint_SetPos(&printer, 4, 10);
     // GfxPrint_Printf(&printer, "UpperAF: %s", this->debugUpperActionFuncName);
-    GfxPrint_Printf(&printer, "actionVar1: %x", this->av1.actionVar1);
+    GfxPrint_Printf(&printer, "skelAnime.curFrame: %.2f", this->skelAnime.curFrame);
     GfxPrint_SetPos(&printer, 4, 12);
-    GfxPrint_Printf(&printer, "bbuttonitem: %d", gSaveContext.save.info.equips.buttonItems[0]);
+    GfxPrint_Printf(&printer, "testAnim: %08x", testAnim);
 
     gfx = GfxPrint_Close(&printer);
     GfxPrint_Destroy(&printer);

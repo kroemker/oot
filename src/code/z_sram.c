@@ -188,8 +188,8 @@ static SavePlayerData sDebugSavePlayerData = {
 };
 
 static ItemEquips sDebugSaveEquips = {
-    { ITEM_BOW, ITEM_BOW, ITEM_HAMMERANG, ITEM_LONGSHOT }, // buttonItems
-    { SLOT_BOW, SLOT_HAMMERANG, SLOT_HOOKSHOT },                          // cButtonSlots
+    { ITEM_BOW, ITEM_NONE, ITEM_NONE, ITEM_NONE },      // buttonItems
+    { SLOT_BOW, SLOT_HAMMERANG, SLOT_HOOKSHOT },        // cButtonSlots
     // equipment
     (EQUIP_VALUE_SWORD_MASTER << (EQUIP_TYPE_SWORD * 4)) | (EQUIP_VALUE_SHIELD_HYLIAN << (EQUIP_TYPE_SHIELD * 4)) |
         (EQUIP_VALUE_TUNIC_KOKIRI << (EQUIP_TYPE_TUNIC * 4)) | (EQUIP_VALUE_BOOTS_KOKIRI << (EQUIP_TYPE_BOOTS * 4)),
@@ -202,19 +202,19 @@ static Inventory sDebugSaveInventory = {
         ITEM_DEKU_NUT,            // SLOT_DEKU_NUT
         ITEM_BOMB,                // SLOT_BOMB
         ITEM_BOW,                 // SLOT_BOW
-        ITEM_ARROW_FIRE,          // SLOT_ARROW_FIRE
+        ITEM_NONE,                // SLOT_ARROW_FIRE
         ITEM_DINS_FIRE,           // SLOT_DINS_FIRE
         ITEM_SLINGSHOT,           // SLOT_SLINGSHOT
         ITEM_OCARINA_FAIRY,       // SLOT_OCARINA
         ITEM_BOMBCHU,             // SLOT_BOMBCHU
         ITEM_HOOKSHOT,            // SLOT_HOOKSHOT
-        ITEM_ARROW_ICE,           // SLOT_ARROW_ICE
+        ITEM_NONE,                // SLOT_ARROW_ICE
         ITEM_FARORES_WIND,        // SLOT_FARORES_WIND
         ITEM_HAMMERANG,           // SLOT_BOOMERANG
         ITEM_LENS_OF_TRUTH,       // SLOT_LENS_OF_TRUTH
         ITEM_MAGIC_BEAN,          // SLOT_MAGIC_BEAN
         ITEM_HAMMER,              // SLOT_HAMMER
-        ITEM_ARROW_LIGHT,         // SLOT_ARROW_LIGHT
+        ITEM_NONE,                // SLOT_ARROW_LIGHT
         ITEM_NAYRUS_LOVE,         // SLOT_NAYRUS_LOVE
         ITEM_BOTTLE_EMPTY,        // SLOT_BOTTLE_1
         ITEM_BOTTLE_POTION_RED,   // SLOT_BOTTLE_2

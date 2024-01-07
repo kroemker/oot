@@ -66,7 +66,7 @@ static ColliderCylinderInit sCylinderInit = {
     {
         ELEMTYPE_UNK0,
         { 0x00000002, 0x00, 0x01 },
-        { 0x4FC1FFFE, 0x00, 0x00 },
+        { 0x4FC1FFFE | DMG_UNBLOCKABLE, 0x00, 0x00 },
         TOUCH_ON | TOUCH_SFX_NORMAL,
         BUMP_ON,
         OCELEM_ON,
@@ -247,7 +247,7 @@ void ObjTsubo_Idle(ObjTsubo* this, PlayState* play) {
         Actor_Kill(&this->actor);
     } else if ((this->collider.base.acFlags & AC_HIT) &&
                (this->collider.info.acHitInfo->toucher.dmgFlags &
-                (DMG_SWORD | DMG_RANGED | DMG_HAMMER | DMG_BOOMERANG | DMG_EXPLOSIVE))) {
+                (DMG_UNBLOCKABLE | DMG_RANGED | DMG_HAMMER | DMG_BOOMERANG | DMG_EXPLOSIVE))) {
         ObjTsubo_AirBreak(this, play);
         ObjTsubo_SpawnCollectible(this, play);
         SfxSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 20, NA_SE_EV_POT_BROKEN);

@@ -745,6 +745,7 @@ void ObjSwitch_DrawFloor(ObjSwitch* this, PlayState* play) {
         gFloorSwitch3DL, // OBJSWITCH_SUBTYPE_TOGGLE
         gFloorSwitch2DL, // OBJSWITCH_SUBTYPE_HOLD
         gFloorSwitch2DL, // OBJSWITCH_SUBTYPE_HOLD_INVERTED
+        gBetaFloorSwitchDL, // OBJSWITCH_SUBTYPE_SWAPPER
     };
 
     Gfx_DrawDListOpa(play, floorSwitchDLists[OBJSWITCH_SUBTYPE(&this->dyna.actor)]);

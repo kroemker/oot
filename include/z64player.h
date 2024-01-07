@@ -863,6 +863,7 @@ typedef struct Player {
     char* debugUpperActionFuncName;
     char* debugActionFuncName;
     Actor* transformActor;
+    u8 doubleJumped;
 } Player; // size = 0xA94
 
 #endif

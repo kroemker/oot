@@ -353,6 +353,10 @@ void TransformKeese_Update(Actor* thisx, PlayState* play) {
     if (gSaveContext.save.info.playerData.health > 0 && (this->actor.colorFilterTimer == 0)) {
         CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);
     }
+    if (this->actor.bgCheckFlags & BGCHECKFLAG_WATER) {
+        Enemy_StartFinishingBlow(play, &this->actor);
+        Actor_Kill(&this->actor);
+    }
 
     this->timer = (this->timer + 1) % 14;
 }

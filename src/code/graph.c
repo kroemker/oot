@@ -424,9 +424,9 @@ void Graph_ThreadEntry(void* arg0) {
 #ifdef DEVELOPMENT
     nextOvl = &gGameStateOverlayTable[GAMESTATE_PLAY];
     Sram_InitDebugSave();
-    gSaveContext.save.entranceIndex = ENTR_HM_COMP_0;
+    gSaveContext.save.entranceIndex = ENTR_HM_COMP_1;
     gSaveContext.respawnFlag = 0;
-    gSaveContext.respawn[RESPAWN_MODE_DOWN].entranceIndex = ENTR_HM_COMP_0;
+    gSaveContext.respawn[RESPAWN_MODE_DOWN].entranceIndex = ENTR_HM_COMP_1;
     gSaveContext.seqId = (u8)NA_BGM_DISABLED;
     gSaveContext.natureAmbienceId = 0xFF;
     gSaveContext.showTitleCard = true;

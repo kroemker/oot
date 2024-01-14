@@ -171,7 +171,7 @@ void* func_800982FC(ObjectContext* objectCtx, s32 slot, s16 objectId) {
     ASSERT(nextPtr < objectCtx->spaceEnd, "nextptr < this->endSegment", "../z_scene.c", 381);
 
     // "Object exchange free size=%08x"
-    osSyncPrintf("オブジェクト入れ替え空きサイズ=%08x\n", (uintptr_t)objectCtx->spaceEnd - (uintptr_t)nextPtr);
+    osSyncPrintf("Object exchange free size=%08x\n", (uintptr_t)objectCtx->spaceEnd - (uintptr_t)nextPtr);
 
     return nextPtr;
 }

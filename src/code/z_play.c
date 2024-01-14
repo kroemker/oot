@@ -1838,3 +1838,35 @@ s32 func_800C0DB4(PlayState* this, Vec3f* pos) {
         return false;
     }
 }
+
+void Debug_Print(PlayState* play, s32 line, const char* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    
+    Gfx* gfx;
+    Gfx* polyOpa;
+    GfxPrint printer;
+    GraphicsContext* gfxCtx = play->state.gfxCtx;
+
+    OPEN_DISPS(gfxCtx, __FILE__, __LINE__);
+
+    polyOpa = POLY_OPA_DISP;
+    gfx = Graph_GfxPlusOne(polyOpa);
+    gSPDisplayList(OVERLAY_DISP++, gfx);
+
+    GfxPrint_Init(&printer);
+    GfxPrint_Open(&printer, gfx);
+
+    GfxPrint_VPrintf(&printer, fmt, args);
+
+    gfx = GfxPrint_Close(&printer);
+    GfxPrint_Destroy(&printer);
+
+    gSPEndDisplayList(gfx++);
+    Graph_BranchDlist(polyOpa, gfx);
+    POLY_OPA_DISP = gfx;
+
+    CLOSE_DISPS(gfxCtx, __FILE__, __LINE__);
+    
+    va_end(args);
+}

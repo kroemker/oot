@@ -35,7 +35,7 @@
     if (1) {                                                              \
         osSyncPrintf(VT_FGCOL(YELLOW));                                   \
         /* padmgr: Controller %d: %s */                                   \
-        osSyncPrintf("padmgr: %dコン: %s\n", (controllerNum) + 1, (msg)); \
+        osSyncPrintf("padmgr: Controller %d: %s\n", (controllerNum) + 1, (msg)); \
         osSyncPrintf(VT_RST);                                             \
     }                                                                     \
     (void)0

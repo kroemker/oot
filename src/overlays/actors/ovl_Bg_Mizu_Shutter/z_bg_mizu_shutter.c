@@ -92,7 +92,8 @@ void BgMizuShutter_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void BgMizuShutter_WaitForSwitch(BgMizuShutter* this, PlayState* play) {
-    if (Flags_GetSwitch(play, BGMIZUSHUTTER_SWITCH_PARAM(&this->dyna.actor))) {
+    if ((BGMIZUSHUTTER_CLEAR_ROOM_PARAM(&this->dyna.actor) && Flags_GetClear(play, this->dyna.actor.room)) || 
+        (!BGMIZUSHUTTER_CLEAR_ROOM_PARAM(&this->dyna.actor) && Flags_GetSwitch(play, BGMIZUSHUTTER_SWITCH_PARAM(&this->dyna.actor)))) {
         if (ABS(this->dyna.actor.world.rot.x) > 0x2C60) {
             OnePointCutscene_Init(play, 4510, -99, &this->dyna.actor, CAM_ID_MAIN);
         } else {
@@ -117,8 +118,10 @@ void BgMizuShutter_Move(BgMizuShutter* this, PlayState* play) {
         Math_SmoothStepToF(&this->dyna.actor.world.pos.z, this->openPos.z, 1.0f, 4.0f, 0.1f);
         if ((this->dyna.actor.world.pos.x == this->openPos.x) && (this->dyna.actor.world.pos.y == this->openPos.y) &&
             (this->dyna.actor.world.pos.z == this->openPos.z)) {
-            this->timer = this->timerMax;
-            this->actionFunc = BgMizuShutter_WaitForTimer;
+            if (BGMIZUSHUTTER_TIMER_PARAM(&this->dyna.actor) != 0) {
+                this->timer = this->timerMax;
+                this->actionFunc = BgMizuShutter_WaitForTimer;
+            }
         }
     } else {
         Math_SmoothStepToF(&this->maxSpeed, 20.0f, 1.0f, 3.0f, 0.1f);

@@ -26,6 +26,111 @@ ActorInit Bg_Hidan_Rsekizou_InitVars = {
     /**/ BgHidanRsekizou_Draw,
 };
 
+static ColliderJntSphElementInit sJntSphElementsInitBig[8] = {
+    {
+        {
+            ELEMTYPE_UNK0,
+            { 0x20000000, 0x01, 0x04 },
+            { 0x00000000, 0x00, 0x00 },
+            TOUCH_ON | TOUCH_SFX_NONE,
+            BUMP_NONE,
+            OCELEM_NONE,
+        },
+        { 1, { { -140, 40, 210 }, 40 }, 100 },
+    },
+    {
+        {
+            ELEMTYPE_UNK0,
+            { 0x20000000, 0x01, 0x04 },
+            { 0x00000000, 0x00, 0x00 },
+            TOUCH_ON | TOUCH_SFX_NONE,
+            BUMP_NONE,
+            OCELEM_NONE,
+        },
+        { 1, { { 140, 40, -210 }, 40 }, 100 },
+    },
+    {
+        {
+            ELEMTYPE_UNK0,
+            { 0x20000000, 0x01, 0x04 },
+            { 0x00000000, 0x00, 0x00 },
+            TOUCH_ON | TOUCH_SFX_NONE,
+            BUMP_NONE,
+            OCELEM_NONE,
+        },
+        { 1, { { 0, 30, 40 }, 25 }, 100 },
+    },
+    {
+        {
+            ELEMTYPE_UNK0,
+            { 0x20000000, 0x01, 0x04 },
+            { 0x00000000, 0x00, 0x00 },
+            TOUCH_ON | TOUCH_SFX_NONE,
+            BUMP_NONE,
+            OCELEM_NONE,
+        },
+        { 1, { { -35, 32, 77 }, 32 }, 100 },
+    },
+    {
+        {
+            ELEMTYPE_UNK0,
+            { 0x20000000, 0x01, 0x04 },
+            { 0x00000000, 0x00, 0x00 },
+            TOUCH_ON | TOUCH_SFX_NONE,
+            BUMP_NONE,
+            OCELEM_NONE,
+        },
+        { 1, { { -80, 35, 130 }, 42 }, 100 },
+    },
+    {
+        {
+            ELEMTYPE_UNK0,
+            { 0x20000000, 0x01, 0x04 },
+            { 0x00000000, 0x00, 0x00 },
+            TOUCH_ON | TOUCH_SFX_NONE,
+            BUMP_NONE,
+            OCELEM_NONE,
+        },
+        { 1, { { 0, 30, -40 }, 25 }, 100 },
+    },
+    {
+        {
+            ELEMTYPE_UNK0,
+            { 0x20000000, 0x01, 0x04 },
+            { 0x00000000, 0x00, 0x00 },
+            TOUCH_ON | TOUCH_SFX_NONE,
+            BUMP_NONE,
+            OCELEM_NONE,
+        },
+        { 1, { { 35, 32, -77 }, 32 }, 100 },
+    },
+    {
+        {
+            ELEMTYPE_UNK0,
+            { 0x20000000, 0x01, 0x04 },
+            { 0x00000000, 0x00, 0x00 },
+            TOUCH_ON | TOUCH_SFX_NONE,
+            BUMP_NONE,
+            OCELEM_NONE,
+        },
+        { 1, { { 80, 35, -130 }, 42 }, 100 },
+    },
+};
+
+static ColliderJntSphInit sJntSphInitBig = {
+    {
+        COLTYPE_NONE,
+        AT_ON | AT_TYPE_ENEMY,
+        AC_NONE,
+        OC1_NONE,
+        OC2_TYPE_2,
+        COLSHAPE_JNTSPH,
+    },
+    6,
+    sJntSphElementsInitBig,
+};
+
+
 static ColliderJntSphElementInit sJntSphElementsInit[6] = {
     {
         {
@@ -131,7 +236,7 @@ void BgHidanRsekizou_Init(Actor* thisx, PlayState* play) {
     CollisionHeader_GetVirtual(&gFireTempleSpinningFlamethrowerCol, &colHeader);
     this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, &this->dyna.actor, colHeader);
     Collider_InitJntSph(play, &this->collider);
-    Collider_SetJntSph(play, &this->collider, &this->dyna.actor, &sJntSphInit, this->colliderItems);
+    Collider_SetJntSph(play, &this->collider, &this->dyna.actor, this->dyna.actor.params & 0x8000 ? &sJntSphInitBig : &sJntSphInit, this->colliderItems);
     for (i = 0; i < ARRAY_COUNT(this->colliderItems); i++) {
         this->collider.elements[i].dim.worldSphere.radius = this->collider.elements[i].dim.modelSphere.radius;
     }
@@ -225,7 +330,7 @@ Gfx* BgHidanRsekizou_DrawFireball(PlayState* play, BgHidanRsekizou* this, s16 fr
 void BgHidanRsekizou_Draw(Actor* thisx, PlayState* play) {
     BgHidanRsekizou* this = (BgHidanRsekizou*)thisx;
     s32 i;
-    s32 pad;
+    s32 fireballs;
     MtxF mf;
 
     OPEN_DISPS(play->state.gfxCtx, "../z_bg_hidan_rsekizou.c", 564);
@@ -239,20 +344,22 @@ void BgHidanRsekizou_Draw(Actor* thisx, PlayState* play) {
 
     POLY_XLU_DISP = Gfx_SetupDL(POLY_XLU_DISP, SETUPDL_20);
 
+    fireballs = this->dyna.actor.params & 0x8000 ? 4 : 3;   
+
     if ((s16)((Camera_GetCamDirYaw(GET_ACTIVE_CAM(play)) - this->dyna.actor.shape.rot.y) - 0x2E6C) >= 0) {
-        for (i = 3; i >= 0; i--) {
+        for (i = fireballs; i >= 0; i--) {
             POLY_XLU_DISP = BgHidanRsekizou_DrawFireball(play, this, i, &mf, 0, POLY_XLU_DISP);
         }
 
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i <= fireballs; i++) {
             POLY_XLU_DISP = BgHidanRsekizou_DrawFireball(play, this, i, &mf, 1, POLY_XLU_DISP);
         }
     } else {
-        for (i = 3; i >= 0; i--) {
+        for (i = fireballs; i >= 0; i--) {
             POLY_XLU_DISP = BgHidanRsekizou_DrawFireball(play, this, i, &mf, 1, POLY_XLU_DISP);
         }
 
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i <= fireballs; i++) {
             POLY_XLU_DISP = BgHidanRsekizou_DrawFireball(play, this, i, &mf, 0, POLY_XLU_DISP);
         }
     }

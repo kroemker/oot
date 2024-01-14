@@ -104,6 +104,7 @@ LD         := $(MIPS_BINUTILS_PREFIX)ld
 OBJCOPY    := $(MIPS_BINUTILS_PREFIX)objcopy
 OBJDUMP    := $(MIPS_BINUTILS_PREFIX)objdump
 EMULATOR   ?= '/mnt/e/Programs/Project64-v2.4.0/Project64.exe'
+EMULATOR_PATH ?= '/mnt/e/Programs/Project64-v2.4.0/'
 EMU_FLAGS  ?= 
 
 INC := -Iinclude -Iinclude/libc -Isrc -Ibuild -I.
@@ -166,9 +167,12 @@ else
 SRC_DIRS := $(shell find src -type d)
 endif
 
+# Hylian Modding actor pack assets folder
+ASSET_BIN_DIRS_HM_PACK := $(shell find assets_hm_pack/* -type d)
+
 ASSET_BIN_DIRS := $(shell find assets/* -type d -not -path "assets/xml*" -not -path "assets/text")
 ASSET_FILES_XML := $(foreach dir,$(ASSET_BIN_DIRS),$(wildcard $(dir)/*.xml))
-ASSET_FILES_BIN := $(foreach dir,$(ASSET_BIN_DIRS),$(wildcard $(dir)/*.bin))
+ASSET_FILES_BIN := $(foreach dir,$(ASSET_BIN_DIRS) $(ASSET_BIN_DIRS_HM_PACK),$(wildcard $(dir)/*.bin))
 ASSET_FILES_OUT := $(foreach f,$(ASSET_FILES_XML:.xml=.c),$f) \
 				   $(foreach f,$(ASSET_FILES_BIN:.bin=.bin.inc.c),build/$f) \
 				   $(foreach f,$(wildcard assets/text/*.c),build/$(f:.c=.o))
@@ -176,7 +180,7 @@ ASSET_FILES_OUT := $(foreach f,$(ASSET_FILES_XML:.xml=.c),$f) \
 UNDECOMPILED_DATA_DIRS := $(shell find data -type d)
 
 # source files
-C_FILES       := $(filter-out %.inc.c,$(foreach dir,$(SRC_DIRS) $(ASSET_BIN_DIRS),$(wildcard $(dir)/*.c)))
+C_FILES       := $(filter-out %.inc.c,$(foreach dir,$(SRC_DIRS) $(ASSET_BIN_DIRS) $(ASSET_BIN_DIRS_HM_PACK),$(wildcard $(dir)/*.c)))
 S_FILES       := $(foreach dir,$(SRC_DIRS) $(UNDECOMPILED_DATA_DIRS),$(wildcard $(dir)/*.s))
 O_FILES       := $(foreach f,$(S_FILES:.s=.o),build/$f) \
                  $(foreach f,$(C_FILES:.c=.o),build/$f) \
@@ -189,13 +193,13 @@ OVL_RELOC_FILES := $(shell $(CPP) $(CPPFLAGS) $(SPEC) | grep -o '[^"]*_reloc.o' 
 DEP_FILES := $(O_FILES:.o=.asmproc.d) $(OVL_RELOC_FILES:.o=.d)
 
 
-TEXTURE_FILES_PNG := $(foreach dir,$(ASSET_BIN_DIRS),$(wildcard $(dir)/*.png))
-TEXTURE_FILES_JPG := $(foreach dir,$(ASSET_BIN_DIRS),$(wildcard $(dir)/*.jpg))
+TEXTURE_FILES_PNG := $(foreach dir,$(ASSET_BIN_DIRS) $(ASSET_BIN_DIRS_HM_PACK),$(wildcard $(dir)/*.png))
+TEXTURE_FILES_JPG := $(foreach dir,$(ASSET_BIN_DIRS) $(ASSET_BIN_DIRS_HM_PACK),$(wildcard $(dir)/*.jpg))
 TEXTURE_FILES_OUT := $(foreach f,$(TEXTURE_FILES_PNG:.png=.inc.c),build/$f) \
 					 $(foreach f,$(TEXTURE_FILES_JPG:.jpg=.jpg.inc.c),build/$f) \
 
 # create build directories
-$(shell mkdir -p build/baserom build/assets/text $(foreach dir,$(SRC_DIRS) $(UNDECOMPILED_DATA_DIRS) $(ASSET_BIN_DIRS),build/$(dir)))
+$(shell mkdir -p build/baserom build/assets/text $(foreach dir,$(SRC_DIRS) $(UNDECOMPILED_DATA_DIRS) $(ASSET_BIN_DIRS) $(ASSET_BIN_DIRS_HM_PACK),build/$(dir)))
 
 ifeq ($(COMPILER),ido)
 build/src/code/fault.o: CFLAGS += -trapuv
@@ -311,7 +315,7 @@ $(O_FILES): | asset_files
 
 .PHONY: o_files asset_files
 
-build/$(SPEC): $(SPEC)
+build/$(SPEC): $(SPEC) spec.hm_pack_actors.inc spec.hm_pack_objects.inc
 	$(CPP) $(CPPFLAGS) $< > $@
 
 build/ldscript.txt: build/$(SPEC)
@@ -341,6 +345,10 @@ build/assets/%.o: assets/%.c
 	$(CC) -c $(CFLAGS) $(MIPS_VERSION) $(OPTFLAGS) -o $@ $<
 	$(OBJCOPY) -O binary $@ $@.bin
 
+build/assets_hm_pack/%.o: assets_hm_pack/%.c
+	$(CC) -c $(CFLAGS) $(MIPS_VERSION) $(OPTFLAGS) -o $@ $<
+	$(OBJCOPY) -O binary $@ $@.bin
+
 build/src/%.o: src/%.s
 	$(CPP) $(CPPFLAGS) -Iinclude $< | $(AS) $(ASFLAGS) -o $@
 
@@ -354,9 +362,9 @@ build/src/dmadata/dmadata.o: build/dmadata_table_spec.h
 # Dependencies for files including from include/tables/
 # TODO remove when full header dependencies are used.
 build/src/code/graph.o: include/tables/gamestate_table.h
-build/src/code/object_table.o: include/tables/object_table.h
-build/src/code/z_actor.o: include/tables/actor_table.h # so uses of ACTOR_ID_MAX update when the table length changes
-build/src/code/z_actor_dlftbls.o: include/tables/actor_table.h
+build/src/code/object_table.o: include/tables/object_table.h include/tables/hm_pack/object_table.h
+build/src/code/z_actor.o: include/tables/actor_table.h include/tables/hm_pack/actor_table.h # so uses of ACTOR_ID_MAX update when the table length changes
+build/src/code/z_actor_dlftbls.o: include/tables/actor_table.h include/tables/hm_pack/actor_table.h
 build/src/code/z_effect_soft_sprite_dlftbls.o: include/tables/effect_ss_table.h
 build/src/code/z_game_dlftbls.o: include/tables/gamestate_table.h
 build/src/code/z_scene_table.o: include/tables/scene_table.h include/tables/entrance_table.h

@@ -34,7 +34,7 @@ static ColliderTrisElementInit sTrisElementInit[4] = {
         {
             ELEMTYPE_UNK0,
             { 0x00000000, 0x00, 0x00 },
-            { 0x00000040, 0x00, 0x00 },
+            { 0x00000040 | DMG_UNBLOCKABLE, 0x00, 0x00 },
             TOUCH_NONE,
             BUMP_ON | BUMP_NO_AT_INFO | BUMP_NO_DAMAGE | BUMP_NO_SWORD_SFX | BUMP_NO_HITMARK,
             OCELEM_NONE,
@@ -45,7 +45,7 @@ static ColliderTrisElementInit sTrisElementInit[4] = {
         {
             ELEMTYPE_UNK0,
             { 0x00000000, 0x00, 0x00 },
-            { 0x00000040, 0x00, 0x00 },
+            { 0x00000040 | DMG_UNBLOCKABLE, 0x00, 0x00 },
             TOUCH_NONE,
             BUMP_ON | BUMP_NO_AT_INFO | BUMP_NO_DAMAGE | BUMP_NO_SWORD_SFX | BUMP_NO_HITMARK,
             OCELEM_NONE,
@@ -56,7 +56,7 @@ static ColliderTrisElementInit sTrisElementInit[4] = {
         {
             ELEMTYPE_UNK0,
             { 0x00000000, 0x00, 0x00 },
-            { 0x00000040, 0x00, 0x00 },
+            { 0x00000040 | DMG_UNBLOCKABLE, 0x00, 0x00 },
             TOUCH_NONE,
             BUMP_ON | BUMP_NO_AT_INFO | BUMP_NO_DAMAGE | BUMP_NO_SWORD_SFX | BUMP_NO_HITMARK,
             OCELEM_NONE,
@@ -67,7 +67,7 @@ static ColliderTrisElementInit sTrisElementInit[4] = {
         {
             ELEMTYPE_UNK0,
             { 0x00000000, 0x00, 0x00 },
-            { 0x00000040, 0x00, 0x00 },
+            { 0x00000040 | DMG_UNBLOCKABLE, 0x00, 0x00 },
             TOUCH_NONE,
             BUMP_ON | BUMP_NO_AT_INFO | BUMP_NO_DAMAGE | BUMP_NO_SWORD_SFX | BUMP_NO_HITMARK,
             OCELEM_NONE,
@@ -129,7 +129,7 @@ s32 BgHidanDalm_HitByHammerang(BgHidanDalm* this, PlayState* play) {
 void BgHidanDalm_Wait(BgHidanDalm* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if ((this->collider.base.acFlags & AC_HIT) && !Player_InCsMode(play) && BgHidanDalm_HitByHammerang(this, play)) {
+    if ((this->collider.base.acFlags & AC_HIT) && !Player_InCsMode(play)) {
         this->collider.base.acFlags &= ~AC_HIT;
         if ((this->collider.elements[0].info.bumperFlags & BUMP_HIT) ||
             (this->collider.elements[1].info.bumperFlags & BUMP_HIT)) {

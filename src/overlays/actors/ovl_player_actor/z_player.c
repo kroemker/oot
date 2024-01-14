@@ -791,6 +791,10 @@ static GetItemEntry sGetItemTable[] = {
     GET_ITEM_NONE,
     // GI_TEXT_0
     GET_ITEM_NONE,
+    // GI_SOUL_IK
+    GET_ITEM(ITEM_IK_SOUL, OBJECT_GI_SUTARU, GID_SOUL_IK, 0x3A, 0x80, CHEST_ANIM_LONG),
+    GET_ITEM(ITEM_OCTOROK_SOUL, OBJECT_GI_SUTARU, GID_SOUL_OCTOROK, 0x3A, 0x80, CHEST_ANIM_LONG),
+    GET_ITEM(ITEM_KEESE_SOUL, OBJECT_GI_SUTARU, GID_SOUL_KEESE, 0x3A, 0x80, CHEST_ANIM_LONG),
 };
 
 #define GET_PLAYER_ANIM(group, type) D_80853914[group * PLAYER_ANIMTYPE_MAX + type]
@@ -2400,7 +2404,7 @@ void Player_SetupTransformBack(Player* this, PlayState* play) {
 }
 
 s32 Player_CheckTransform(Player* this, PlayState* play) {
-    if (CHECK_BTN_ALL(sControlInput->press.button, BTN_CLEFT)) {
+    if (CHECK_BTN_ALL(sControlInput->press.button, BTN_CLEFT) && (INV_CONTENT(ITEM_IK_SOUL) == ITEM_IK_SOUL)) {
         if ((this->transformActor != NULL && this->transformActor->id == ACTOR_TRANSFORM_IK)) {
             Player_SetupTransformBack(this, play);
         }
@@ -2413,9 +2417,12 @@ s32 Player_CheckTransform(Player* this, PlayState* play) {
         }
         return 1;
     }
-    else if (CHECK_BTN_ALL(sControlInput->press.button, BTN_CDOWN)) {
+    else if (CHECK_BTN_ALL(sControlInput->press.button, BTN_CDOWN) && (INV_CONTENT(ITEM_OCTOROK_SOUL) == ITEM_OCTOROK_SOUL)) {
         if (this->transformActor != NULL && this->transformActor->id == ACTOR_TRANSFORM_OCTOROK) {
             Player_SetupTransformBack(this, play);
+        }
+        else if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
+            Sfx_PlaySfxCentered(NA_SE_SY_ERROR);
         }
         else {
             Player_PlaySfx(this, NA_SE_PL_MAGIC_WIND_WARP);
@@ -2426,9 +2433,12 @@ s32 Player_CheckTransform(Player* this, PlayState* play) {
         }
         return 1;
     }
-    else if (CHECK_BTN_ALL(sControlInput->press.button, BTN_CRIGHT)) {
+    else if (CHECK_BTN_ALL(sControlInput->press.button, BTN_CRIGHT) && (INV_CONTENT(ITEM_KEESE_SOUL) == ITEM_KEESE_SOUL)) {
         if ((this->transformActor != NULL && this->transformActor->id == ACTOR_TRANSFORM_KEESE)) {
             Player_SetupTransformBack(this, play);
+        }
+        else if (this->actor.bgCheckFlags & BGCHECKFLAG_WATER) {
+            Sfx_PlaySfxCentered(NA_SE_SY_ERROR);
         }
         else {
             Player_PlaySfx(this, NA_SE_PL_MAGIC_WIND_WARP);
@@ -2445,6 +2455,7 @@ s32 Player_CheckTransform(Player* this, PlayState* play) {
 #define TRANSFORM_SCREEN_FILL_SPEED 50
 
 void Player_DisableTransform(Player* this, PlayState* play) {
+    this->doubleJumped = 1; // don't allow double jump->transform to keese->double jump, etc.
     this->stateFlags2 &= ~(PLAYER_STATE2_DISABLE_DRAW | PLAYER_STATE2_PAUSE_MOST_UPDATING);
     this->stateFlags3 &= ~(PLAYER_STATE3_TRANSFORMED);
     play->interfaceCtx.unk_1FA = false; // disable B button text
@@ -5626,6 +5637,7 @@ void func_8083AE40(Player* this, s16 objectId) {
     u32 size;
 
     if (objectId != OBJECT_INVALID) {
+        osSyncPrintf("Loading get item object: 0x%x\n", objectId);
         this->giObjectLoading = true;
         osCreateMesgQueue(&this->giObjectLoadQueue, &this->giObjectLoadMsg, 1);
 
@@ -6925,6 +6937,7 @@ s32 Player_ActionChange_2(Player* this, PlayState* play) {
 
             if (this->getItemId < GI_MAX) {
                 GetItemEntry* giEntry = &sGetItemTable[this->getItemId - 1];
+                osSyncPrintf("Player_GetItem: getItemId = %d\n", this->getItemId);
 
                 if ((interactedActor != &this->actor) && !iREG(67)) {
                     interactedActor->parent = &this->actor;
@@ -9084,13 +9097,8 @@ void Player_Action_8084411C(Player* this, PlayState* play) {
         }
         else if (CHECK_BTN_ANY(sControlInput->press.button, BTN_L) && !this->doubleJumped) {
             s16 lastFrame = Animation_GetLastFrame(&gPlayerAnim_link_fighter_backturn_jump);
-            func_80838940(this, NULL, 4.5f, play, NA_SE_VO_LI_AUTO_JUMP);
-            if (!(this->stateFlags2 & PLAYER_STATE2_19)) {
-                LinkAnimation_Change(play, &this->skelAnime, &gPlayerAnim_link_fighter_backturn_jump, -PLAYER_ANIM_ADJUSTED_SPEED, lastFrame, 0.0f, ANIMMODE_ONCE, 0.0f);
-            }
-            else {
-                LinkAnimation_Change(play, &this->skelAnime, &gPlayerAnim_link_fighter_backturn_jump, PLAYER_ANIM_ADJUSTED_SPEED, 0.0f, lastFrame, ANIMMODE_ONCE, 0.0f);
-            }
+            func_80838940(this, NULL, 6.0f, play, NA_SE_VO_LI_AUTO_JUMP);
+            LinkAnimation_Change(play, &this->skelAnime, &gPlayerAnim_link_fighter_backturn_jump, PLAYER_ANIM_ADJUSTED_SPEED, 0.0f, lastFrame, ANIMMODE_ONCE, 0.0f);
             this->av2.actionVar2 = 1;
             this->doubleJumped = 1;
         }
@@ -11621,40 +11629,6 @@ static Gfx* sMaskDlists[PLAYER_MASK_MAX - 1] = {
 
 static Vec3s D_80854864 = { 0, 0, 0 };
 
-void Player_DrawDebugInfo(PlayState* play, Player* this) {
-    Gfx* gfx;
-    Gfx* polyOpa;
-    GfxPrint printer;
-    GraphicsContext* gfxCtx = play->state.gfxCtx;
-
-    OPEN_DISPS(gfxCtx, __FILE__, __LINE__);
-
-    polyOpa = POLY_OPA_DISP;
-    gfx = Graph_GfxPlusOne(polyOpa);
-    gSPDisplayList(OVERLAY_DISP++, gfx);
-
-    GfxPrint_Init(&printer);
-    GfxPrint_Open(&printer, gfx);
-
-    GfxPrint_SetColor(&printer, 50, 250, 250, 255);
-    GfxPrint_SetPos(&printer, 4, 8);
-    GfxPrint_Printf(&printer, "AF: %s", this->debugActionFuncName);
-    GfxPrint_SetPos(&printer, 4, 10);
-    // GfxPrint_Printf(&printer, "UpperAF: %s", this->debugUpperActionFuncName);
-    GfxPrint_Printf(&printer, "skelAnime.curFrame: %.2f", this->skelAnime.curFrame);
-    GfxPrint_SetPos(&printer, 4, 12);
-    GfxPrint_Printf(&printer, "testAnim: %08x", testAnim);
-
-    gfx = GfxPrint_Close(&printer);
-    GfxPrint_Destroy(&printer);
-
-    gSPEndDisplayList(gfx++);
-    Graph_BranchDlist(polyOpa, gfx);
-    POLY_OPA_DISP = gfx;
-
-    CLOSE_DISPS(gfxCtx, __FILE__, __LINE__);
-}
-
 void Player_DrawGameplay(PlayState* play, Player* this, s32 lod, Gfx* cullDList, OverrideLimbDrawOpa overrideLimbDraw) {
     static s32 D_8085486C = 255;
 
@@ -11737,8 +11711,6 @@ void Player_Draw(Actor* thisx, PlayState* play2) {
     Player* this = (Player*)thisx;
 
     OPEN_DISPS(play->state.gfxCtx, "../z_player.c", 19346);
-
-    Player_DrawDebugInfo(play, this);
 
     if (!(this->stateFlags2 & PLAYER_STATE2_DISABLE_DRAW)) {
         OverrideLimbDrawOpa overrideLimbDraw = Player_OverrideLimbDrawGameplayDefault;

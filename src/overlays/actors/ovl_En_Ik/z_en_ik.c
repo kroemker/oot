@@ -9,7 +9,7 @@
 #include "assets/objects/object_ik/object_ik.h"
 #include "terminal.h"
 
-#define FLAGS ACTOR_FLAG_4
+#define FLAGS (ACTOR_FLAG_4 | ACTOR_FLAG_5)
 
 typedef void (*EnIkDrawFunc)(struct EnIk*, PlayState*);
 
@@ -60,6 +60,9 @@ void EnIk_SetupStopAndBlock(EnIk* this);
 void EnIk_StopAndBlock(EnIk* this, PlayState* play);
 void EnIk_ReactToAttack(EnIk* this, PlayState* play);
 void EnIk_Die(EnIk* this, PlayState* play);
+void EnIk_SitAndTalk(EnIk* this, PlayState* play);
+void EnIk_WaitForDieInFlames(EnIk* this, PlayState* play);
+void EnIk_DieInFlames(EnIk* this, PlayState* play);
 
 void EnIk_HandleCsCues(EnIk* this, PlayState* play);
 void EnIk_ChangeToEnemy(EnIk* this, PlayState* play);
@@ -215,10 +218,21 @@ void EnIk_InitImpl(Actor* thisx, PlayState* play) {
     this->isBreakingProp = false;
     thisx->colChkInfo.health = 30;
     thisx->gravity = -1.0f;
+    osSyncPrintf("IK INIT: params = %04x\n", thisx->params);
+    this->npc = IK_IS_NPC(thisx);
+    osSyncPrintf("IK IS NPC: %04x\n", this->npc);
     this->switchFlag = IK_GET_SWITCH_FLAG(thisx);
+    osSyncPrintf("IK SWITCH FLAG: %04x\n", this->switchFlag);
     thisx->params = IK_GET_ARMOR_TYPE(thisx);
+    osSyncPrintf("IK ARMOR TYPE: %04x\n", thisx->params);
 
-    if (thisx->params == IK_TYPE_NABOORU) {
+    if (this->npc) {
+        this->actor.flags |= ACTOR_FLAG_0 | ACTOR_FLAG_3;
+        this->actor.flags &= ~ACTOR_FLAG_10;
+        Actor_SetScale(thisx, 0.014f);
+        Actor_ChangeCategory(play, &play->actorCtx, thisx, ACTORCAT_NPC);
+    }
+    else if (thisx->params == IK_TYPE_NABOORU) {
         thisx->colChkInfo.health += 20;
         thisx->naviEnemyId = NAVI_ENEMY_IRON_KNUCKLE_NABOORU;
     } else {
@@ -241,7 +255,11 @@ void EnIk_InitImpl(Actor* thisx, PlayState* play) {
     blureInit.calcMode = 2;
 
     Effect_Add(play, &this->blureIdx, EFFECT_BLURE1, 0, 0, &blureInit);
-    EnIk_SetupStandUp(this);
+    if (this->npc) {
+        EnIk_SetupAction(this, EnIk_SitAndTalk);
+    } else {
+        EnIk_SetupStandUp(this);
+    }
 
     if (this->switchFlag != 0xFF) {
         if (Flags_GetSwitch(play, this->switchFlag)) {
@@ -797,6 +815,64 @@ void EnIk_UpdateDamage(EnIk* this, PlayState* play) {
     }
 }
 
+typedef enum {
+    IK_MESSAGE_1 = 0x71B3,
+} IK_MESSAGES;
+
+u16 EnIk_GetNextTextId(PlayState* play, Actor* actor) {
+    return IK_MESSAGE_1;
+}
+
+s16 EnIk_UpdateTalkState(PlayState* play, Actor* actor) {
+    EnIk* this = (EnIk*)actor;
+    
+    switch(Message_GetState(&play->msgCtx)) {
+        case TEXT_STATE_CLOSING: {
+            Actor_OfferGetItem(actor, play, GI_SOUL_IK, actor->xzDistToPlayer + 1.0f, fabsf(actor->yDistToPlayer) + 1.0f);
+            EnIk_SetupAction(this, EnIk_DieInFlames);
+            this->dieTimer = 30;
+            return NPC_TALK_STATE_IDLE;
+        }
+    }
+
+    return NPC_TALK_STATE_TALKING;
+}
+
+void EnIk_SitAndTalk(EnIk* this, PlayState* play) {
+    Npc_UpdateTalking(
+        play,
+        &this->actor,
+        &this->interactInfo.talkState,
+        75.0f,
+        EnIk_GetNextTextId,
+        EnIk_UpdateTalkState);
+}
+
+void EnIk_WaitForDieInFlames(EnIk* this, PlayState* play) {
+    Player* player = GET_PLAYER(play);
+
+    if (!(player->stateFlags1 & PLAYER_STATE1_10)) {
+        EnIk_SetupAction(this, EnIk_DieInFlames);
+    }
+}
+
+void EnIk_DieInFlames(EnIk* this, PlayState* play) {
+    s32 i;
+    Vec3f pos;
+    Vec3f velAndAccel = { 0.0f, 0.5f, 0.0f };
+    for (i = 0; i < 4; i++) {
+        pos.x = Rand_CenteredFloat(60.0f) + this->actor.world.pos.x;
+        pos.z = Rand_CenteredFloat(60.0f) + this->actor.world.pos.z;
+        pos.y = Rand_CenteredFloat(50.0f) + (this->actor.world.pos.y + 20.0f);
+        EffectSsDeadDb_Spawn(play, &pos, &velAndAccel, &velAndAccel, 100, 0, 255, 255, 255, 255, 0, 0, 255, 1, 9,
+                                true);
+    }
+
+    if (DECR(this->dieTimer) == 0) {
+        Actor_Kill(&this->actor);
+    }
+}
+
 void EnIk_UpdateEnemy(Actor* thisx, PlayState* play) {
     EnIk* this = (EnIk*)thisx;
     s32 pad;
@@ -892,6 +968,8 @@ s32 EnIk_OverrideLimbDrawEnemy(PlayState* play, s32 limbIndex, Gfx** dList, Vec3
         if (!(this->drawArmorFlag & ARMOR_BROKEN)) {
             *dList = NULL;
         }
+    } else if ((limbIndex == IRON_KNUCKLE_LIMB_AXE) && (this->npc)) {
+        *dList = NULL;
     }
 
     return false;

@@ -38,7 +38,7 @@ static ColliderCylinderInit sCylinderInit = {
     {
         COLTYPE_NONE,
         AT_ON | AT_TYPE_PLAYER,
-        AC_ON | AC_TYPE_PLAYER,
+        AC_ON | AC_TYPE_PLAYER | AC_TYPE_ENEMY,
         OC1_ON | OC1_TYPE_ALL,
         OC2_TYPE_2,
         COLSHAPE_CYLINDER,
@@ -46,7 +46,7 @@ static ColliderCylinderInit sCylinderInit = {
     {
         ELEMTYPE_UNK0,
         { 0x00000002, 0x00, 0x01 },
-        { 0x4FC00748, 0x00, 0x00 },
+        { 0xFFFFFFFF, 0x01, 0x00 },
         TOUCH_ON | TOUCH_SFX_NORMAL,
         BUMP_ON,
         OCELEM_ON,

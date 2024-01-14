@@ -7,7 +7,7 @@
 #include "z_bg_hidan_kousi.h"
 #include "assets/objects/object_hidan_objects/object_hidan_objects.h"
 
-#define FLAGS ACTOR_FLAG_4
+#define FLAGS (ACTOR_FLAG_4 | ACTOR_FLAG_5)
 
 void BgHidanKousi_Init(Actor* thisx, PlayState* play);
 void BgHidanKousi_Destroy(Actor* thisx, PlayState* play);
@@ -62,6 +62,10 @@ void BgHidanKousi_SetupAction(BgHidanKousi* this, BgHidanKousiActionFunc actionF
     this->actionFunc = actionFunc;
 }
 
+s32 BgHidanKousi_IsOpenFlagSet(BgHidanKousi* this, PlayState* play) {
+    return (this->dyna.actor.params & 0x8000) ? Flags_GetClear(play, this->dyna.actor.room) : Flags_GetSwitch(play, (this->dyna.actor.params >> 8) & 0xFF);
+}
+
 void BgHidanKousi_Init(Actor* thisx, PlayState* play) {
     BgHidanKousi* this = (BgHidanKousi*)thisx;
     s32 pad;
@@ -80,7 +84,7 @@ void BgHidanKousi_Init(Actor* thisx, PlayState* play) {
     CollisionHeader_GetVirtual(sMetalFencesCollisions[thisx->params & 0xFF], &colHeader);
     this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, thisx, colHeader);
     thisx->world.rot.y = D_80889E7C[this->dyna.actor.params & 0xFF] + thisx->shape.rot.y;
-    if (Flags_GetSwitch(play, (thisx->params >> 8) & 0xFF)) {
+    if (BgHidanKousi_IsOpenFlagSet(this, play)) {
         func_80889ACC(this);
         BgHidanKousi_SetupAction(this, func_80889D28);
     } else {
@@ -104,7 +108,7 @@ void func_80889ACC(BgHidanKousi* this) {
 }
 
 void func_80889B5C(BgHidanKousi* this, PlayState* play) {
-    if (Flags_GetSwitch(play, (this->dyna.actor.params >> 8) & 0xFF)) {
+    if (BgHidanKousi_IsOpenFlagSet(this, play)) {
         BgHidanKousi_SetupAction(this, func_80889BC0);
         OnePointCutscene_Attention(play, &this->dyna.actor);
         this->unk_168 = 0xC8;

@@ -1682,6 +1682,7 @@ s32 Actor_OfferGetItem(Actor* actor, PlayState* play, s32 getItemId, f32 xzRange
                     player->getItemId = getItemId;
                     player->interactRangeActor = actor;
                     player->getItemDirection = absYawDiff;
+                    osSyncPrintf("Item successfully offered: 0x%x, From Actor: 0x%x\n", getItemId, actor->id);
                     return true;
                 }
             }

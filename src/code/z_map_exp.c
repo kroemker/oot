@@ -204,7 +204,7 @@ void Map_InitRoomData(PlayState* play, s16 room) {
                 interfaceCtx->unk_25A = mapIndex;
                 Map_SetPaletteData(play, room);
                 osSyncPrintf(VT_FGCOL(YELLOW));
-                osSyncPrintf("部屋部屋＝%d\n", room); // "Room Room = %d"
+                osSyncPrintf("Room Room＝%d\n", room); // "Room Room = %d"
                 osSyncPrintf(VT_RST);
                 Map_InitData(play, room);
                 break;

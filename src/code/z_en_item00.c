@@ -149,7 +149,9 @@ void EnItem00_Init(Actor* thisx, PlayState* play) {
 
     this->actor.params &= 0xFF;
 
+    osSyncPrintf("EnItem00_Init: collectibleFlag = %02x, spawnParam = %04x, actorParam = %02x\n", this->collectibleFlag, spawnParam8000, this->actor.params);
     if (Flags_GetCollectible(play, this->collectibleFlag)) {
+        osSyncPrintf("Killing collectable item already collected, Flag: %02x\n", this->collectibleFlag);
         Actor_Kill(&this->actor);
         return;
     }
@@ -263,6 +265,16 @@ void EnItem00_Init(Actor* thisx, PlayState* play) {
             shadowScale = 0.6f;
             this->actor.world.rot.x = 0x4000;
             break;
+        case ITEM00_SOUL_IK:
+        case ITEM00_SOUL_OCTOROK:
+        case ITEM00_SOUL_KEESE:
+            this->actor.objectSlot = Object_GetSlot(&play->objectCtx, OBJECT_GI_SUTARU);
+            Actor_SetObjectDependency(play, &this->actor);
+            Actor_SetScale(&this->actor, 0.5f);
+            this->scale = 0.5f;
+            yOffset = 0.0f;
+            shadowScale = 0.6f;
+            break;
     }
 
     this->unk_156 = 0;
@@ -274,8 +286,10 @@ void EnItem00_Init(Actor* thisx, PlayState* play) {
     if (!spawnParam8000) {
         EnItem00_SetupAction(this, func_8001DFC8);
         this->despawnTimer = -1;
+        osSyncPrintf("EnItem00_Init: spawnParam = 0\n");
         return;
     }
+    osSyncPrintf("EnItem00_Init: spawnParam != 0!!\n");
 
     this->despawnTimer = 15;
     this->unk_154 = 35;
@@ -346,6 +360,9 @@ void EnItem00_Init(Actor* thisx, PlayState* play) {
         case ITEM00_SHIELD_HYLIAN:
         case ITEM00_TUNIC_ZORA:
         case ITEM00_TUNIC_GORON:
+        case ITEM00_SOUL_IK:
+        case ITEM00_SOUL_OCTOROK:
+        case ITEM00_SOUL_KEESE:
         case ITEM00_BOMBS_SPECIAL:
             break;
     }
@@ -361,10 +378,13 @@ void EnItem00_Init(Actor* thisx, PlayState* play) {
 void EnItem00_Destroy(Actor* thisx, PlayState* play) {
     EnItem00* this = (EnItem00*)thisx;
 
+    osSyncPrintf("EnItem00_Destroy\n");
+
     Collider_DestroyCylinder(play, &this->collider);
 }
 
 void func_8001DFC8(EnItem00* this, PlayState* play) {
+    osSyncPrintf("EnItem00_Update: actionFunc = %08x\n", this->actionFunc);
     if ((this->actor.params <= ITEM00_RUPEE_RED) ||
         ((this->actor.params == ITEM00_RECOVERY_HEART) && (this->despawnTimer < 0)) ||
         (this->actor.params == ITEM00_HEART_PIECE)) {
@@ -402,6 +422,7 @@ void func_8001DFC8(EnItem00* this, PlayState* play) {
     if (this->despawnTimer == 0) {
         if ((this->actor.params != ITEM00_SMALL_KEY) && (this->actor.params != ITEM00_HEART_PIECE) &&
             (this->actor.params != ITEM00_HEART_CONTAINER)) {
+            osSyncPrintf("EnItem00_Update: despawnTimer = 0\n");
             Actor_Kill(&this->actor);
         }
     }
@@ -539,6 +560,8 @@ void EnItem00_Update(Actor* thisx, PlayState* play) {
     EnItem00* this = (EnItem00*)thisx;
     s32 pad;
 
+    osSyncPrintf("EnItem00_Update\n");
+
     if (this->despawnTimer > 0) {
         this->despawnTimer--;
     }
@@ -595,7 +618,7 @@ void EnItem00_Update(Actor* thisx, PlayState* play) {
     CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);
 
     if ((this->actor.params == ITEM00_SHIELD_DEKU) || (this->actor.params == ITEM00_SHIELD_HYLIAN) ||
-        (this->actor.params == ITEM00_TUNIC_ZORA) || (this->actor.params == ITEM00_TUNIC_GORON)) {
+        (this->actor.params == ITEM00_TUNIC_ZORA) || (this->actor.params == ITEM00_TUNIC_GORON) || this->actor.params >= ITEM00_SOUL_IK) {
         this->actor.shape.yOffset = Math_CosS(this->actor.shape.rot.x) * 37.0f;
         this->actor.shape.yOffset = ABS(this->actor.shape.yOffset);
     }
@@ -689,6 +712,15 @@ void EnItem00_Update(Actor* thisx, PlayState* play) {
         case ITEM00_TUNIC_GORON:
             getItemId = GI_TUNIC_GORON;
             break;
+        case ITEM00_SOUL_IK:
+            getItemId = GI_SOUL_IK;
+            break;
+        case ITEM00_SOUL_OCTOROK:
+            getItemId = GI_SOUL_OCTOROK;
+            break;
+        case ITEM00_SOUL_KEESE:
+            getItemId = GI_SOUL_KEESE;
+            break;
         case ITEM00_BOMBS_SPECIAL:
             break;
     }
@@ -707,6 +739,9 @@ void EnItem00_Update(Actor* thisx, PlayState* play) {
         case ITEM00_SHIELD_HYLIAN:
         case ITEM00_TUNIC_ZORA:
         case ITEM00_TUNIC_GORON:
+        case ITEM00_SOUL_IK:
+        case ITEM00_SOUL_OCTOROK:
+        case ITEM00_SOUL_KEESE:
             if (Actor_HasParent(&this->actor, play)) {
                 Flags_SetCollectible(play, this->collectibleFlag);
                 Actor_Kill(&this->actor);
@@ -806,6 +841,15 @@ void EnItem00_Draw(Actor* thisx, PlayState* play) {
                 break;
             case ITEM00_TUNIC_GORON:
                 GetItem_Draw(play, GID_TUNIC_GORON);
+                break;
+            case ITEM00_SOUL_IK:
+                GetItem_Draw(play, GID_SOUL_IK);
+                break;
+            case ITEM00_SOUL_OCTOROK:
+                GetItem_Draw(play, GID_SOUL_OCTOROK);
+                break;
+            case ITEM00_SOUL_KEESE:
+                GetItem_Draw(play, GID_SOUL_KEESE);
                 break;
             case ITEM00_FLEXIBLE:
                 break;

@@ -382,6 +382,43 @@ void ObjSwitch_FloorUpInit(ObjSwitch* this) {
     this->actionFunc = ObjSwitch_FloorUp;
 }
 
+s32 ObjSwitch_IsSwapper(ObjSwitch* this) {
+    return (this->dyna.actor.params >> 15) & 1;
+}
+
+s32 ObjSwitch_AreAllSwappersDown(ObjSwitch* this, PlayState* play) {
+    s32 i;
+    Actor* actor = play->actorCtx.actorLists[ACTORCAT_SWITCH].head;
+    while (actor != NULL) {
+        if (actor->id == ACTOR_OBJ_SWITCH) {
+            ObjSwitch* switchActor = (ObjSwitch*)actor;
+            if (ObjSwitch_IsSwapper(switchActor) && switchActor->actionFunc != ObjSwitch_FloorDown) {
+                return false;
+            }
+        }
+        actor = actor->next;
+    }
+    return true;
+}
+
+void ObjSwitch_FlipNearbySwappers(ObjSwitch* this, PlayState* play) {
+    s32 i;
+    Actor* actor = play->actorCtx.actorLists[ACTORCAT_SWITCH].head;
+    while (actor != NULL) {
+        if (actor->id == ACTOR_OBJ_SWITCH) {
+            ObjSwitch* switchActor = (ObjSwitch*)actor;
+            if (this != switchActor && ObjSwitch_IsSwapper(switchActor) && Math_Vec3f_DistXZ(&this->dyna.actor.world.pos, &switchActor->dyna.actor.world.pos) < 100.0f) {
+                if (switchActor->actionFunc == ObjSwitch_FloorDown) {
+                    ObjSwitch_FloorUpInit(switchActor);
+                } else {
+                    ObjSwitch_FloorDownInit(switchActor);
+                }
+            }
+        }
+        actor = actor->next;
+    }
+}
+
 void ObjSwitch_FloorUp(ObjSwitch* this, PlayState* play) {
     if (OBJSWITCH_TYPE(&this->dyna.actor) == OBJSWITCH_TYPE_FLOOR_RUSTY) {
         if (this->tris.col.base.acFlags & AC_HIT) {
@@ -392,6 +429,14 @@ void ObjSwitch_FloorUp(ObjSwitch* this, PlayState* play) {
             CollisionCheck_SetAC(play, &play->colChkCtx, &this->tris.col.base);
         }
     } else {
+        if (ObjSwitch_IsSwapper(this)) {
+            if (DynaPolyActor_IsPlayerOnTop(&this->dyna)) {
+                ObjSwitch_FloorPressInit(this);
+                ObjSwitch_FlipNearbySwappers(this, play);
+            }
+            return;
+        }
+
         switch (OBJSWITCH_SUBTYPE(&this->dyna.actor)) {
             case OBJSWITCH_SUBTYPE_ONCE:
                 if (DynaPolyActor_IsPlayerOnTop(&this->dyna)) {
@@ -449,6 +494,13 @@ void ObjSwitch_FloorDownInit(ObjSwitch* this) {
 }
 
 void ObjSwitch_FloorDown(ObjSwitch* this, PlayState* play) {
+    if (ObjSwitch_IsSwapper(this)) {
+        if (ObjSwitch_AreAllSwappersDown(this, play) && !Flags_GetSwitch(play, OBJSWITCH_SWITCH_FLAG(&this->dyna.actor))) {
+            ObjSwitch_SetOn(this, play);
+        }
+        return;
+    }
+
     switch (OBJSWITCH_SUBTYPE(&this->dyna.actor)) {
         case OBJSWITCH_SUBTYPE_ONCE:
             if (!Flags_GetSwitch(play, OBJSWITCH_SWITCH_FLAG(&this->dyna.actor))) {
@@ -745,10 +797,14 @@ void ObjSwitch_DrawFloor(ObjSwitch* this, PlayState* play) {
         gFloorSwitch3DL, // OBJSWITCH_SUBTYPE_TOGGLE
         gFloorSwitch2DL, // OBJSWITCH_SUBTYPE_HOLD
         gFloorSwitch2DL, // OBJSWITCH_SUBTYPE_HOLD_INVERTED
-        gBetaFloorSwitchDL, // OBJSWITCH_SUBTYPE_SWAPPER
     };
 
-    Gfx_DrawDListOpa(play, floorSwitchDLists[OBJSWITCH_SUBTYPE(&this->dyna.actor)]);
+    if (ObjSwitch_IsSwapper(this)) {
+        Gfx_DrawDListOpa(play, gBetaFloorSwitchDL);
+    }
+    else {
+        Gfx_DrawDListOpa(play, floorSwitchDLists[OBJSWITCH_SUBTYPE(&this->dyna.actor)]);
+    }
 }
 
 void ObjSwitch_DrawFloorRusty(ObjSwitch* this, PlayState* play) {

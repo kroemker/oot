@@ -8081,7 +8081,7 @@ s16 Camera_RequestSettingImpl(Camera* camera, s16 requestedSetting, s16 flags) {
     }
 
     if ((requestedSetting == CAM_SET_NONE) || (requestedSetting >= CAM_SET_MAX)) {
-        osSyncPrintf(VT_COL(RED, WHITE) "camera: error: illegal camera set (%d) !!!!\n" VT_RST, requestedSetting);
+        //osSyncPrintf(VT_COL(RED, WHITE) "camera: error: illegal camera set (%d) !!!!\n" VT_RST, requestedSetting);
         return -99;
     }
 

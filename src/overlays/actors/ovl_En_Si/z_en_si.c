@@ -1,22 +1,23 @@
 /*
  * File: z_en_si.c
  * Overlay: En_Si
- * Description: Gold Skulltula token
+ * Description: Gold Skulltula token and souls
+ * Params: 0x000F: Type (0 = token, 1 = ik soul, 2 = octorok soul, 3 = keese soul)
  */
 
 #include "z_en_si.h"
 
-#define FLAGS (ACTOR_FLAG_0 | ACTOR_FLAG_9)
+#define FLAGS ACTOR_FLAG_9
 
 void EnSi_Init(Actor* thisx, PlayState* play);
 void EnSi_Destroy(Actor* thisx, PlayState* play);
 void EnSi_Update(Actor* thisx, PlayState* play);
 void EnSi_Draw(Actor* thisx, PlayState* play);
 
-s32 func_80AFB748(EnSi* this, PlayState* play);
-void func_80AFB768(EnSi* this, PlayState* play);
-void func_80AFB89C(EnSi* this, PlayState* play);
-void func_80AFB950(EnSi* this, PlayState* play);
+s32 EnSi_ResetAcHit(EnSi* this, PlayState* play);
+void EnSi_Action_Idle(EnSi* this, PlayState* play);
+void EnSi_Action_GrabbedByItem(EnSi* this, PlayState* play);
+void EnSi_Action_WaitForMessageClosing(EnSi* this, PlayState* play);
 
 static ColliderCylinderInit sCylinderInit = {
     {
@@ -55,13 +56,21 @@ ActorInit En_Si_InitVars = {
 void EnSi_Init(Actor* thisx, PlayState* play) {
     EnSi* this = (EnSi*)thisx;
 
+    this->type = this->actor.params & 0xF;
+    if (this->type != SI_TOKEN) {
+        if (INV_CONTENT(ITEM_IK_SOUL + this->type - 1) == ITEM_IK_SOUL + this->type - 1) {
+            Actor_Kill(&this->actor);
+            return;
+        }
+    }
+
     Collider_InitCylinder(play, &this->collider);
     Collider_SetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
     CollisionCheck_SetInfo2(&this->actor.colChkInfo, NULL, &D_80AFBADC);
-    Actor_SetScale(&this->actor, 0.025f);
+    Actor_SetScale(&this->actor, this->type != SI_TOKEN ? 0.2f : 0.025f);
     this->unk_19C = 0;
-    this->actionFunc = func_80AFB768;
-    this->actor.shape.yOffset = 42.0f;
+    this->actionFunc = EnSi_Action_Idle;
+    this->actor.shape.yOffset = this->type != SI_TOKEN ? 60.0f : 42.0f;
 }
 
 void EnSi_Destroy(Actor* thisx, PlayState* play) {
@@ -70,33 +79,43 @@ void EnSi_Destroy(Actor* thisx, PlayState* play) {
     Collider_DestroyCylinder(play, &this->collider);
 }
 
-s32 func_80AFB748(EnSi* this, PlayState* play) {
+s32 EnSi_ResetAcHit(EnSi* this, PlayState* play) {
     if (this->collider.base.acFlags & AC_HIT) {
         this->collider.base.acFlags &= ~AC_HIT;
     }
     return 0;
 }
 
-void func_80AFB768(EnSi* this, PlayState* play) {
+void EnSi_Action_Idle(EnSi* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if (CHECK_FLAG_ALL(this->actor.flags, ACTOR_FLAG_13)) {
-        this->actionFunc = func_80AFB89C;
+        this->actionFunc = EnSi_Action_GrabbedByItem;
     } else {
         Math_SmoothStepToF(&this->actor.scale.x, 0.25f, 0.4f, 1.0f, 0.0f);
         Actor_SetScale(&this->actor, this->actor.scale.x);
         this->actor.shape.rot.y += 0x400;
+        this->actor.shape.yOffset = Math_SinS(this->actor.shape.rot.y) * 40.0f + 60.0f;
 
         if (!Player_InCsMode(play)) {
-            func_80AFB748(this, play);
-
+            EnSi_ResetAcHit(this, play);
             if (this->collider.base.ocFlags2 & OC2_HIT_PLAYER) {
                 this->collider.base.ocFlags2 &= ~OC2_HIT_PLAYER;
-                Item_Give(play, ITEM_SKULL_TOKEN);
-                player->actor.freezeTimer = 10;
-                Message_StartTextbox(play, 0xB4, NULL);
-                Audio_PlayFanfare(NA_BGM_SMALL_ITEM_GET);
-                this->actionFunc = func_80AFB950;
+                if (this->type == SI_TOKEN) {
+                    Item_Give(play, ITEM_SKULL_TOKEN);
+                    Message_StartTextbox(play, 0xB4, NULL);
+                    Audio_PlayFanfare(NA_BGM_SMALL_ITEM_GET);
+                    this->actionFunc = EnSi_Action_WaitForMessageClosing;
+                    player->actor.freezeTimer = 10;
+                }
+                else if (!Actor_HasParent(&this->actor, play)) {
+                    if (this->type == SI_SOUL_IK || this->type == SI_SOUL_OCTOROK || this->type == SI_SOUL_KEESE) {
+                        if (Actor_OfferGetItemNearby(&this->actor, play, GI_SOUL_IK + (this->type - SI_SOUL_IK))) {
+                            Player_SetCsActionWithHaltedActors(play, NULL, PLAYER_CSACTION_7);
+                            Actor_Kill(&this->actor);
+                        }
+                    }
+                }
             } else {
                 Collider_UpdateCylinder(&this->actor, &this->collider);
                 CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);
@@ -106,7 +125,7 @@ void func_80AFB768(EnSi* this, PlayState* play) {
     }
 }
 
-void func_80AFB89C(EnSi* this, PlayState* play) {
+void EnSi_Action_GrabbedByItem(EnSi* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     Math_SmoothStepToF(&this->actor.scale.x, 0.25f, 0.4f, 1.0f, 0.0f);
@@ -118,11 +137,11 @@ void func_80AFB89C(EnSi* this, PlayState* play) {
         player->actor.freezeTimer = 10;
         Message_StartTextbox(play, 0xB4, NULL);
         Audio_PlayFanfare(NA_BGM_SMALL_ITEM_GET);
-        this->actionFunc = func_80AFB950;
+        this->actionFunc = EnSi_Action_WaitForMessageClosing;
     }
 }
 
-void func_80AFB950(EnSi* this, PlayState* play) {
+void EnSi_Action_WaitForMessageClosing(EnSi* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if (Message_GetState(&play->msgCtx) != TEXT_STATE_CLOSING) {
@@ -145,7 +164,7 @@ void EnSi_Update(Actor* thisx, PlayState* play) {
 void EnSi_Draw(Actor* thisx, PlayState* play) {
     EnSi* this = (EnSi*)thisx;
 
-    if (this->actionFunc != func_80AFB950) {
+    if (this->actionFunc != EnSi_Action_WaitForMessageClosing) {
         func_8002ED80(&this->actor, play, 0);
         func_8002EBCC(&this->actor, play, 0);
         GetItem_Draw(play, GID_SKULL_TOKEN_2);

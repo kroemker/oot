@@ -1508,7 +1508,7 @@ u8 Item_Give(PlayState* play, u8 item) {
         gSaveContext.save.info.inventory.questItems |= gBitFlags[item - ITEM_MEDALLION_FOREST + QUEST_MEDALLION_FOREST];
 
         osSyncPrintf(VT_FGCOL(YELLOW));
-        osSyncPrintf("封印 = %x\n", gSaveContext.save.info.inventory.questItems); // "Seals = %x"
+        osSyncPrintf("Seals = %x\n", gSaveContext.save.info.inventory.questItems); // "Seals = %x"
         osSyncPrintf(VT_RST);
 
         if (item == ITEM_MEDALLION_WATER) {
@@ -1520,9 +1520,9 @@ u8 Item_Give(PlayState* play, u8 item) {
         gSaveContext.save.info.inventory.questItems |= gBitFlags[item - ITEM_SONG_MINUET + QUEST_SONG_MINUET];
 
         osSyncPrintf(VT_FGCOL(YELLOW));
-        osSyncPrintf("楽譜 = %x\n", gSaveContext.save.info.inventory.questItems); // "Musical scores = %x"
+        osSyncPrintf("Musical scores = %x\n", gSaveContext.save.info.inventory.questItems); // "Musical scores = %x"
         // "Musical scores = %x (%x) (%x)"
-        osSyncPrintf("楽譜 = %x (%x) (%x)\n", gSaveContext.save.info.inventory.questItems,
+        osSyncPrintf("Musical scores = %x (%x) (%x)\n", gSaveContext.save.info.inventory.questItems,
                      gBitFlags[item - ITEM_SONG_MINUET + QUEST_SONG_MINUET], gBitFlags[item - ITEM_SONG_MINUET]);
         osSyncPrintf(VT_RST);
 
@@ -1531,7 +1531,7 @@ u8 Item_Give(PlayState* play, u8 item) {
         gSaveContext.save.info.inventory.questItems |= gBitFlags[item - ITEM_KOKIRI_EMERALD + QUEST_KOKIRI_EMERALD];
 
         osSyncPrintf(VT_FGCOL(YELLOW));
-        osSyncPrintf("精霊石 = %x\n", gSaveContext.save.info.inventory.questItems); // "Spiritual Stones = %x"
+        osSyncPrintf("Spiritual Stones = %x\n", gSaveContext.save.info.inventory.questItems); // "Spiritual Stones = %x"
         osSyncPrintf(VT_RST);
 
         return ITEM_NONE;
@@ -1539,7 +1539,7 @@ u8 Item_Give(PlayState* play, u8 item) {
         gSaveContext.save.info.inventory.questItems |= gBitFlags[item - ITEM_STONE_OF_AGONY + QUEST_STONE_OF_AGONY];
 
         osSyncPrintf(VT_FGCOL(YELLOW));
-        osSyncPrintf("アイテム = %x\n", gSaveContext.save.info.inventory.questItems); // "Items = %x"
+        osSyncPrintf("Items = %x\n", gSaveContext.save.info.inventory.questItems); // "Items = %x"
         osSyncPrintf(VT_RST);
 
         return ITEM_NONE;
@@ -1549,7 +1549,7 @@ u8 Item_Give(PlayState* play, u8 item) {
 
         osSyncPrintf(VT_FGCOL(YELLOW));
         // "N Coins = %x(%d)"
-        osSyncPrintf("Ｎコイン = %x(%d)\n", gSaveContext.save.info.inventory.questItems,
+        osSyncPrintf("N Coins = %x(%d)\n", gSaveContext.save.info.inventory.questItems,
                      gSaveContext.save.info.inventory.gsTokens);
         osSyncPrintf(VT_RST);
 
@@ -1577,8 +1577,11 @@ u8 Item_Give(PlayState* play, u8 item) {
             gSaveContext.save.info.equips.equipment |= EQUIP_VALUE_SWORD_MASTER << (EQUIP_TYPE_SWORD * 4);
             Interface_LoadItemIcon1(play, 0);
         }
-
         return ITEM_NONE;
+    } else if (item == ITEM_IK_SOUL || item == ITEM_OCTOROK_SOUL || item == ITEM_KEESE_SOUL) {
+            s32 index = item - ITEM_IK_SOUL;
+            gSaveContext.save.info.equips.buttonItems[index + 1] = item;
+            Interface_LoadItemIcon1(play, index + 1);
     } else if ((item >= ITEM_SHIELD_DEKU) && (item <= ITEM_SHIELD_MIRROR)) {
         gSaveContext.save.info.inventory.equipment |= OWNED_EQUIP_FLAG(EQUIP_TYPE_SHIELD, item - ITEM_SHIELD_DEKU);
         return ITEM_NONE;
@@ -3137,7 +3140,7 @@ void Interface_DrawAmmoCount(PlayState* play, s16 button, s16 alpha) {
     i = gSaveContext.save.info.equips.buttonItems[button];
 
     if ((i == ITEM_DEKU_STICK) || (i == ITEM_DEKU_NUT) || (i == ITEM_BOMB) || (i == ITEM_BOW) ||
-        ((i >= ITEM_BOW_FIRE) && (i <= ITEM_BOW_LIGHT)) || (i == ITEM_SLINGSHOT) || (i == ITEM_BOMBCHU) ||
+        ((i >= ITEM_BOW_FIRE) && (i <= ITEM_BOW_LIGHT)) || (i == ITEM_SLINGSHOT) ||
         (i == ITEM_MAGIC_BEAN)) {
 
         if ((i >= ITEM_BOW_FIRE) && (i <= ITEM_BOW_LIGHT)) {

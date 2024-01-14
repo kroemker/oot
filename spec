@@ -3406,6 +3406,8 @@ beginseg
     include "build/src/overlays/actors/ovl_Shot_Sun/ovl_Shot_Sun_reloc.o"
 endseg
 
+#include "spec.hm_pack_actors.inc"
+
 beginseg
     name "gameplay_keep"
     romalign 0x1000
@@ -6078,6 +6080,8 @@ beginseg
     include "build/assets/objects/object_zl4/object_zl4.o"
     number 6
 endseg
+
+#include "spec.hm_pack_objects.inc"
 
 beginseg
     name "g_pn_01"

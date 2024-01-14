@@ -1589,7 +1589,7 @@ void BgCheck_Allocate(CollisionContext* colCtx, PlayState* play, CollisionHeader
             colCtx->memSize = 0x1CC00;
         }
         // "/* BGCheck Normal Size %dbyte  */\n"
-        osSyncPrintf("/* BGCheck ノーマルサイズ %dbyte  */\n", colCtx->memSize);
+        osSyncPrintf("/* BGCheck Normal Size %dbyte  */\n", colCtx->memSize);
         colCtx->dyna.polyNodesMax = 1000;
         colCtx->dyna.polyListMax = 512;
         colCtx->dyna.vtxListMax = 512;

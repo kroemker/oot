@@ -297,13 +297,9 @@ void TransformKeese_Update(Actor* thisx, PlayState* play) {
 
     Math_Vec3f_Copy(&player->actor.world.pos, &this->actor.world.pos);
     Math_Vec3f_Copy(&player->actor.home.pos, &this->actor.world.pos);
-    Math_Vec3f_Copy(&player->actor.prevPos, &this->actor.world.pos); 
-    player->actor.world.rot.x = this->actor.world.rot.x;
+    Math_Vec3f_Copy(&player->actor.prevPos, &this->actor.world.pos);
     player->actor.world.rot.y = this->actor.world.rot.y;
-    player->actor.world.rot.z = this->actor.world.rot.z;
-    player->actor.shape.rot.x = this->actor.shape.rot.x;
     player->actor.shape.rot.y = this->actor.shape.rot.y;
-    player->actor.shape.rot.z = this->actor.shape.rot.z;
 
     if (this->collider.base.acFlags & AC_HIT) {
         this->collider.base.acFlags &= ~AC_HIT;

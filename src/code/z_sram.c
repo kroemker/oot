@@ -205,9 +205,9 @@ static Inventory sDebugSaveInventory = {
         ITEM_ARROW_FIRE,          // SLOT_ARROW_FIRE
         ITEM_DINS_FIRE,           // SLOT_DINS_FIRE
         ITEM_SLINGSHOT,           // SLOT_SLINGSHOT
-        ITEM_OCARINA_FAIRY,       // SLOT_OCARINA
-        ITEM_BOMBCHU,             // SLOT_BOMBCHU
-        ITEM_HOOKSHOT,            // SLOT_HOOKSHOT
+        ITEM_IK_SOUL,             // SLOT_OCARINA
+        ITEM_OCTOROK_SOUL,        // SLOT_BOMBCHU
+        ITEM_KEESE_SOUL,          // SLOT_HOOKSHOT
         ITEM_NONE,                // SLOT_ARROW_ICE
         ITEM_FARORES_WIND,        // SLOT_FARORES_WIND
         ITEM_HAMMERANG,           // SLOT_BOOMERANG

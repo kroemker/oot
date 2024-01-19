@@ -8,7 +8,13 @@
 #include "assets/objects/object_jya_iron/object_jya_iron.h"
 #include "overlays/actors/ovl_En_Ik/z_en_ik.h"
 
-#define FLAGS 0
+#define FLAGS ACTOR_FLAG_5
+
+#define IS_TSP_PUZZLE(thisx) ((thisx->params >> 0xF) & 1)
+#define IS_TSP_PUZZLE_MASTER(thisx) ((thisx->params >> 0xE) & 1)
+#define SWITCH_FLAG(thisx) ((thisx->params >> 8) & 0x3F)
+
+#define TSP_PUZZLE_DURATION 45
 
 typedef void (*BgJyaIronobjIkFunc)(BgJyaIronobj*, PlayState*, EnIk*, s32);
 
@@ -16,8 +22,8 @@ void BgJyaIronobj_Init(Actor* thisx, PlayState* play);
 void BgJyaIronobj_Destroy(Actor* thisx, PlayState* play);
 void BgJyaIronobj_Update(Actor* thisx, PlayState* play);
 void BgJyaIronobj_Draw(Actor* thisx, PlayState* play);
-void func_808992D8(BgJyaIronobj* this);
-void func_808992E8(BgJyaIronobj* this, PlayState* play);
+void BgJyaIronobj_Setup_Action_Idle(BgJyaIronobj* this);
+void BgJyaIronobj_Action_Idle(BgJyaIronobj* this, PlayState* play);
 
 void BgJyaIronobj_SpawnPillarParticles(BgJyaIronobj* this, PlayState* play, EnIk* enIk, s32 hitByPlayer);
 void BgJyaIronobj_SpawnThroneParticles(BgJyaIronobj* this, PlayState* play, EnIk* enIk, s32 hitByPlayer);
@@ -89,6 +95,10 @@ void BgJyaIronobj_InitCylinder(BgJyaIronobj* this, PlayState* play) {
         this->colCylinder.dim.height = 100;
     }
     Collider_UpdateCylinder(&this->dyna.actor, colCylinder);
+}
+
+void BgJyaIronobj_StartTspPuzzle(BgJyaIronobj* this, PlayState* play) {
+    Interface_SetTimer(TSP_PUZZLE_DURATION);
 }
 
 /*
@@ -222,26 +232,47 @@ void BgJyaIronobj_Init(Actor* thisx, PlayState* play) {
     s32 pad;
     CollisionHeader* colHeader = NULL;
 
-    DynaPolyActor_Init(&this->dyna, 0);
-    Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
-    BgJyaIronobj_InitCylinder(this, play);
-    CollisionHeader_GetVirtual(sCollisionHeaders[thisx->params & 1], &colHeader);
-    this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, &this->dyna.actor, colHeader);
-    func_808992D8(this);
+    this->tspPuzzle = IS_TSP_PUZZLE(thisx);
+    this->tspPuzzleMaster = IS_TSP_PUZZLE_MASTER(thisx);
+    this->switchFlag = SWITCH_FLAG(thisx);
+
+    if (this->tspPuzzle && Flags_GetSwitch(play, this->switchFlag)) {
+        Actor_Kill(&this->dyna.actor);
+    }
+    else if (this->tspPuzzle && this->tspPuzzleMaster) {
+        this->actionFunc = NULL;
+        this->dyna.actor.draw = NULL;
+        this->dyna.actor.flags |= ACTOR_FLAG_4;
+        BgJyaIronobj_StartTspPuzzle(this, play);
+    }
+    else {
+        DynaPolyActor_Init(&this->dyna, 0);
+        Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
+        BgJyaIronobj_InitCylinder(this, play);
+        CollisionHeader_GetVirtual(sCollisionHeaders[thisx->params & 1], &colHeader);
+        this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, &this->dyna.actor, colHeader);
+        
+        BgJyaIronobj_Setup_Action_Idle(this);
+    }
 }
 
 void BgJyaIronobj_Destroy(Actor* thisx, PlayState* play) {
     BgJyaIronobj* this = (BgJyaIronobj*)thisx;
 
-    Collider_DestroyCylinder(play, &this->colCylinder);
-    DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
+    if (this->tspPuzzle && this->tspPuzzleMaster && gSaveContext.timerSeconds > 0) {
+        gSaveContext.timerState = TIMER_STATE_STOP;
+    }
+    else {
+        Collider_DestroyCylinder(play, &this->colCylinder);
+        DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
+    }
 }
 
-void func_808992D8(BgJyaIronobj* this) {
-    this->actionFunc = func_808992E8;
+void BgJyaIronobj_Setup_Action_Idle(BgJyaIronobj* this) {
+    this->actionFunc = BgJyaIronobj_Action_Idle;
 }
 
-void func_808992E8(BgJyaIronobj* this, PlayState* play) {
+void BgJyaIronobj_Action_Idle(BgJyaIronobj* this, PlayState* play) {
     static BgJyaIronobjIkFunc particleFunc[] = { BgJyaIronobj_SpawnPillarParticles, BgJyaIronobj_SpawnThroneParticles };
     Actor* actor;
     Vec3f dropPos;
@@ -260,6 +291,7 @@ void func_808992E8(BgJyaIronobj* this, PlayState* play) {
                 Item_DropCollectible(play, &dropPos, ITEM00_RECOVERY_HEART);
                 dropPos.y += 18.0f;
             }
+
             Actor_Kill(&this->dyna.actor);
             return;
         }
@@ -270,8 +302,29 @@ void func_808992E8(BgJyaIronobj* this, PlayState* play) {
 
 void BgJyaIronobj_Update(Actor* thisx, PlayState* play) {
     BgJyaIronobj* this = (BgJyaIronobj*)thisx;
+    Player* player = GET_PLAYER(play);
 
-    this->actionFunc(this, play);
+    if (this->tspPuzzle && this->tspPuzzleMaster) {
+        if (gSaveContext.timerSeconds == 0) {
+            player->actor.freezeTimer = 50;
+            if (player->transformActor != NULL) {
+                player->transformActor->freezeTimer = 50;
+            }
+            Play_TriggerVoidOut(play);
+            SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0);
+            play->transitionType = TRANS_TYPE_FADE_BLACK;
+            Sfx_PlaySfxCentered2(NA_SE_OC_ABYSS);
+        }
+        else if (!Actor_FindNearby(play, &this->dyna.actor, ACTOR_BG_JYA_IRONOBJ, ACTORCAT_PROP, 0.0f)) {
+            Sfx_PlaySfxCentered(NA_SE_SY_CORRECT_CHIME);
+            gSaveContext.timerState = TIMER_STATE_STOP;
+            Flags_SetSwitch(play, this->switchFlag);
+            Actor_Kill(&this->dyna.actor);
+        }
+    }
+    else {
+        this->actionFunc(this, play);
+    }
 }
 
 void BgJyaIronobj_Draw(Actor* thisx, PlayState* play) {

@@ -126,10 +126,22 @@ s32 BgHidanDalm_HitByHammerang(BgHidanDalm* this, PlayState* play) {
     return this->collider.base.ac != NULL && this->collider.base.ac->id == ACTOR_EN_BOOM;
 }
 
+s32 BgHidanDalm_OtherHidanDalmHit(BgHidanDalm* this, PlayState* play) {
+    Actor* other = play->actorCtx.actorLists[this->dyna.actor.category].head;
+
+    while (other != NULL) {
+        if (other != this && other->id == ACTOR_BG_HIDAN_DALM && ((BgHidanDalm*)other)->actionFunc != BgHidanDalm_Wait) {
+            return true;
+        }
+        other = other->next;
+    }
+    return false;
+}
+
 void BgHidanDalm_Wait(BgHidanDalm* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    if ((this->collider.base.acFlags & AC_HIT) && !Player_InCsMode(play)) {
+    if ((this->collider.base.acFlags & AC_HIT) && !BgHidanDalm_OtherHidanDalmHit(this, play)) {
         this->collider.base.acFlags &= ~AC_HIT;
         if ((this->collider.elements[0].info.bumperFlags & BUMP_HIT) ||
             (this->collider.elements[1].info.bumperFlags & BUMP_HIT)) {
@@ -140,7 +152,7 @@ void BgHidanDalm_Wait(BgHidanDalm* this, PlayState* play) {
         this->dyna.actor.world.pos.x += 32.5f * Math_SinS(this->dyna.actor.world.rot.y);
         this->dyna.actor.world.pos.z += 32.5f * Math_CosS(this->dyna.actor.world.rot.y);
 
-        Player_SetCsActionWithHaltedActors(play, &this->dyna.actor, PLAYER_CSACTION_8);
+        //Player_SetCsActionWithHaltedActors(play, &this->dyna.actor, PLAYER_CSACTION_8);
         this->dyna.actor.flags |= ACTOR_FLAG_4;
         this->actionFunc = BgHidanDalm_Shrink;
         this->dyna.actor.bgCheckFlags &= ~BGCHECKFLAG_GROUND_TOUCH;

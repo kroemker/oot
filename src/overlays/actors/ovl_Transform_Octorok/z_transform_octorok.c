@@ -283,6 +283,7 @@ void TransformOctorok_Action_Jump(TransformOctorok* this, PlayState* play) {
     }
 
     if (this->actor.bgCheckFlags & BGCHECKFLAG_WATER) {
+        Actor_PlaySfx(&this->actor, NA_SE_EN_OCTAROCK_LAND);
         TransformOctorok_SpawnSplash(this, play);
         TransformOctorok_SetupAction(this, play, TransformOctorok_Action_Float);
     }
@@ -326,6 +327,8 @@ void TransformOctorok_Action_WaitForJumpRelease(TransformOctorok* this, PlayStat
 
 void TransformOctorok_Action_JumpOutOfWater(TransformOctorok* this, PlayState* play) {
     if (SkelAnime_Update(&this->skelAnime) || (!(this->actor.bgCheckFlags & BGCHECKFLAG_WATER) && (this->actor.yDistToWater < -5.0f))) {
+        TransformOctorok_SpawnSplash(this, play);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_OCTAROCK_JUMP);
         TransformOctorok_SetupAction(this, play, TransformOctorok_Action_Jump);
         Actor_SetScale(&this->actor, 0.01f);
     }
@@ -379,6 +382,10 @@ void TransformOctorok_Action_Float(TransformOctorok* this, PlayState* play) {
     TransformOctorok_SpawnRipple(this, play);
 
     SkelAnime_Update(&this->skelAnime);
+
+    if (Animation_OnFrame(&this->skelAnime, 0.5f)) {
+        Actor_PlaySfx(&this->actor, NA_SE_EN_OCTAROCK_FLOAT);
+    }
 }
 
 void TransformOctorok_Action_GetHit(TransformOctorok* this, PlayState* play) {

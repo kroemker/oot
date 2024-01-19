@@ -4298,6 +4298,10 @@ s32 func_80837B18(PlayState* play, Player* this, s32 damage) {
         return 1;
     }
 
+    if (this->stateFlags3 & PLAYER_STATE3_TRANSFORMED) {
+        damage = damage >> 1;
+    }
+
     return Health_ChangeBy(play, damage);
 }
 
@@ -4509,6 +4513,7 @@ void func_808382BC(Player* this) {
     }
 }
 
+//handle void out
 s32 func_808382DC(Player* this, PlayState* play) {
     s32 pad;
     s32 sp68 = false;
@@ -7466,22 +7471,39 @@ void func_8083FB14(Player* this, PlayState* play) {
     Player_AnimPlayOnce(play, this, GET_PLAYER_ANIM(PLAYER_ANIMGROUP_pull_start, this->modelAnimType));
 }
 
+// drop down from vines/ladder
 void func_8083FB7C(Player* this, PlayState* play) {
     this->stateFlags1 &= ~(PLAYER_STATE1_21 | PLAYER_STATE1_27);
     func_80837B9C(this, play);
     this->speedXZ = -0.4f;
 }
 
+void Player_JumpFromVinesLadder(Player* this, PlayState* play) {
+    this->stateFlags1 &= ~0x8200000;
+    func_80838940(this, &gPlayerAnim_link_normal_run_jump, 10.0f, play, NA_SE_VO_LI_AUTO_JUMP);
+    this->actor.shape.rot.y += 0x8000;
+    this->yaw = this->actor.shape.rot.y;
+    this->speedXZ = 4.0f;
+    this->doubleJumped = 0;
+}
+
 s32 func_8083FBC0(Player* this, PlayState* play) {
-    if (!CHECK_BTN_ALL(sControlInput->press.button, BTN_A) &&
+    u8 lPressed = CHECK_BTN_ALL(sControlInput->press.button, BTN_L);
+
+    if (!lPressed && !CHECK_BTN_ALL(sControlInput->press.button, BTN_A) &&
         (this->actor.bgCheckFlags & BGCHECKFLAG_PLAYER_WALL_INTERACT) &&
         ((sTouchedWallFlags & WALL_FLAG_3) || (sTouchedWallFlags & WALL_FLAG_1) ||
          SurfaceType_CheckWallFlag2(&play->colCtx, this->actor.wallPoly, this->actor.wallBgId))) {
         return false;
     }
 
-    func_8083FB7C(this, play);
-    func_80832698(this, NA_SE_VO_LI_AUTO_JUMP);
+    if (lPressed) {
+        Player_JumpFromVinesLadder(this, play);
+    }
+    else {
+        func_8083FB7C(this, play);
+        func_80832698(this, NA_SE_VO_LI_AUTO_JUMP);
+    }
     return true;
 }
 
@@ -11214,6 +11236,17 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
 
     if (this->stateFlags3 & (PLAYER_STATE3_TRANSFORMED | PLAYER_STATE3_TRANSFORMING)) {
         this->actionFunc(this, play);
+        
+        if (this->csAction != PLAYER_CSACTION_NONE) {
+            if ((this->csAction != PLAYER_CSACTION_7) ||
+                !(this->stateFlags1 & (PLAYER_STATE1_13 | PLAYER_STATE1_14 | PLAYER_STATE1_21 | PLAYER_STATE1_26))) {
+                this->unk_6AD = 3;
+            } else if (Player_Action_CsAction != this->actionFunc) {
+                func_80852944(play, this, NULL);
+            }
+        } else {
+            this->prevCsAction = PLAYER_CSACTION_NONE;
+        }
         return;
     }
 

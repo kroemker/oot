@@ -337,6 +337,17 @@ void TransformKeese_Update(Actor* thisx, PlayState* play) {
     this->collider.elements[0].dim.worldSphere.center.y = this->actor.world.pos.y + 10.0f;
     this->collider.elements[0].dim.worldSphere.center.z = this->actor.world.pos.z;
 
+    if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
+        s32 floorType = SurfaceType_GetFloorType(&play->colCtx, this->actor.floorPoly, this->actor.floorBgId);
+        if (floorType == FLOOR_TYPE_9) {
+            player->actor.freezeTimer = this->actor.freezeTimer = 50;
+            Play_TriggerVoidOut(play);
+            SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0);
+            play->transitionType = TRANS_TYPE_FADE_BLACK;
+            Sfx_PlaySfxCentered2(NA_SE_OC_ABYSS);
+        }
+    }
+
     Actor_SetFocus(&this->actor, 10.0f);
 
     this->actionFunc(this, play);

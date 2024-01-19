@@ -223,9 +223,7 @@ void FloorSpikes_Update(Actor* thisx, PlayState* play) {
 
         if ((this->useVoidOut) && (this->playerCollider.base.at->id == ACTOR_PLAYER)) {
             player->actor.freezeTimer = 50;
-            play->damagePlayer(play, -16);
-            Play_TriggerRespawn(play);
-            gSaveContext.respawnFlag = -2;
+            Play_TriggerVoidOut(play);
             SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0);
             play->transitionType = TRANS_TYPE_FADE_BLACK;
             Sfx_PlaySfxCentered2(NA_SE_OC_ABYSS);

@@ -221,13 +221,15 @@ void EnIk_InitImpl(Actor* thisx, PlayState* play) {
     osSyncPrintf("IK INIT: params = %04x\n", thisx->params);
     this->npc = IK_IS_NPC(thisx);
     osSyncPrintf("IK IS NPC: %04x\n", this->npc);
+    this->activateOnSwitch = IK_ACTIVATE_ON_SWITCH_FLAG(thisx);
+    osSyncPrintf("IK ACTIVATE ON SWITCH FLAG: %04x\n", this->activateOnSwitch);
     this->switchFlag = IK_GET_SWITCH_FLAG(thisx);
     osSyncPrintf("IK SWITCH FLAG: %04x\n", this->switchFlag);
     thisx->params = IK_GET_ARMOR_TYPE(thisx);
     osSyncPrintf("IK ARMOR TYPE: %04x\n", thisx->params);
 
     if (this->npc) {
-        this->actor.flags |= ACTOR_FLAG_0 | ACTOR_FLAG_3;
+        this->actor.flags |= ACTOR_FLAG_3;
         this->actor.flags &= ~ACTOR_FLAG_10;
         Actor_SetScale(thisx, 0.014f);
         Actor_ChangeCategory(play, &play->actorCtx, thisx, ACTORCAT_NPC);
@@ -261,7 +263,7 @@ void EnIk_InitImpl(Actor* thisx, PlayState* play) {
         EnIk_SetupStandUp(this);
     }
 
-    if (this->switchFlag != 0xFF) {
+    if (this->switchFlag != 0x3F && !this->activateOnSwitch) {
         if (Flags_GetSwitch(play, this->switchFlag)) {
             Actor_Kill(thisx);
         }
@@ -317,7 +319,7 @@ void EnIk_SetupStandUp(EnIk* this) {
 void EnIk_StandUp(EnIk* this, PlayState* play) {
     Vec3f sparksPos;
 
-    if (this->bodyCollider.base.acFlags & AC_HIT) {
+    if ((this->activateOnSwitch && Flags_GetSwitch(play, this->switchFlag)) || (!this->activateOnSwitch && (this->bodyCollider.base.acFlags & AC_HIT))) {
         sparksPos = this->actor.world.pos;
         Actor_PlaySfx(&this->actor, NA_SE_EN_IRONNACK_ARMOR_HIT);
         sparksPos.y += 30.0f;
@@ -713,7 +715,7 @@ void EnIk_Die(EnIk* this, PlayState* play) {
             if (this->animationTimer == 0) {
                 Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0xB0);
 
-                if (this->switchFlag != 0xFF) {
+                if (this->switchFlag != 0x3F && !this->activateOnSwitch) {
                     Flags_SetSwitch(play, this->switchFlag);
                 }
 
@@ -776,7 +778,7 @@ void EnIk_UpdateDamage(EnIk* this, PlayState* play) {
         } else if (this->actor.colChkInfo.health <= 10) {
             Actor_ChangeCategory(play, &play->actorCtx, &this->actor, ACTORCAT_BOSS);
             SfxSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 20, NA_SE_EN_LAST_DAMAGE);
-            if (this->switchFlag != 0xFF) {
+            if (this->switchFlag != 0x3F && !this->activateOnSwitch) {
                 Flags_SetSwitch(play, this->switchFlag);
             }
             return;

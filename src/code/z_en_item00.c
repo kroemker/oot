@@ -286,10 +286,8 @@ void EnItem00_Init(Actor* thisx, PlayState* play) {
     if (!spawnParam8000) {
         EnItem00_SetupAction(this, func_8001DFC8);
         this->despawnTimer = -1;
-        osSyncPrintf("EnItem00_Init: spawnParam = 0\n");
         return;
     }
-    osSyncPrintf("EnItem00_Init: spawnParam != 0!!\n");
 
     this->despawnTimer = 15;
     this->unk_154 = 35;
@@ -378,13 +376,10 @@ void EnItem00_Init(Actor* thisx, PlayState* play) {
 void EnItem00_Destroy(Actor* thisx, PlayState* play) {
     EnItem00* this = (EnItem00*)thisx;
 
-    osSyncPrintf("EnItem00_Destroy\n");
-
     Collider_DestroyCylinder(play, &this->collider);
 }
 
 void func_8001DFC8(EnItem00* this, PlayState* play) {
-    osSyncPrintf("EnItem00_Update: actionFunc = %08x\n", this->actionFunc);
     if ((this->actor.params <= ITEM00_RUPEE_RED) ||
         ((this->actor.params == ITEM00_RECOVERY_HEART) && (this->despawnTimer < 0)) ||
         (this->actor.params == ITEM00_HEART_PIECE)) {
@@ -422,7 +417,6 @@ void func_8001DFC8(EnItem00* this, PlayState* play) {
     if (this->despawnTimer == 0) {
         if ((this->actor.params != ITEM00_SMALL_KEY) && (this->actor.params != ITEM00_HEART_PIECE) &&
             (this->actor.params != ITEM00_HEART_CONTAINER)) {
-            osSyncPrintf("EnItem00_Update: despawnTimer = 0\n");
             Actor_Kill(&this->actor);
         }
     }
@@ -559,8 +553,6 @@ void EnItem00_Update(Actor* thisx, PlayState* play) {
     u32* temp;
     EnItem00* this = (EnItem00*)thisx;
     s32 pad;
-
-    osSyncPrintf("EnItem00_Update\n");
 
     if (this->despawnTimer > 0) {
         this->despawnTimer--;

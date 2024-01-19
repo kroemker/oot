@@ -4235,7 +4235,7 @@ Actor* Actor_FindNearby(PlayState* play, Actor* refActor, s16 actorId, u8 actorC
         if (actor == refActor || ((actorId != -1) && (actorId != actor->id))) {
             actor = actor->next;
         } else {
-            if (Actor_WorldDistXYZToActor(refActor, actor) <= range) {
+            if (range == 0.0f || Actor_WorldDistXYZToActor(refActor, actor) <= range) {
                 return actor;
             } else {
                 actor = actor->next;

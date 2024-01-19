@@ -34,6 +34,7 @@ typedef struct TransformIk {
     Actor* zTargetActor;
     AnimationHeader* recoverAnimation;
     s32 animationTimer;
+    u8 previousFrameInWater;
 } TransformIk;
 
 extern const ActorInit Transform_Ik_InitVars;

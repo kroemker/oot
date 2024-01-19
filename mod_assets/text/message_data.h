@@ -41046,8 +41046,8 @@ DEFINE_MESSAGE(0x71B2, TEXTBOX_TYPE_BLACK, TEXTBOX_POS_VARIABLE,
 )
 
 DEFINE_MESSAGE(0x71B3, TEXTBOX_TYPE_BLACK, TEXTBOX_POS_VARIABLE,
-UNSKIPPABLE "I can smell it..."
-BOX_BREAK_DELAYED("\x14")
+UNSKIPPABLE "I can sense it" TEXT_SPEED("\x02") "...\n" TEXT_SPEED("\x00")
+BOX_BREAK
 UNSKIPPABLE "Your inner " COLOR(RED) "fury" COLOR(DEFAULT) TEXT_SPEED("\x02") "...\n" TEXT_SPEED("\x00")
 BOX_BREAK
 UNSKIPPABLE "Your deepest " COLOR(BLUE) "desires" COLOR(DEFAULT) TEXT_SPEED("\x02") "...\n" TEXT_SPEED("\x00")
@@ -41058,7 +41058,7 @@ UNSKIPPABLE "Everything can be hidden.\n"
 "But nothing can escape.\n"
 "You can only free yourself."
 BOX_BREAK
-"Please take my soul with you and\n"
+UNSKIPPABLE "Please take my soul with you and\n"
 "save it from this cursed place."
 , ""
 , ""

@@ -3380,6 +3380,7 @@ void Interface_Draw(PlayState* play) {
             case SCENE_GANONS_TOWER_COLLAPSE_INTERIOR:
             case SCENE_INSIDE_GANONS_CASTLE_COLLAPSE:
             case SCENE_TREASURE_BOX_SHOP:
+            case SCENE_HM_COMP:
                 if (gSaveContext.save.info.inventory.dungeonKeys[gSaveContext.mapIndex] >= 0) {
                     // Small Key Icon
                     gDPPipeSync(OVERLAY_DISP++);

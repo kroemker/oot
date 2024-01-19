@@ -28,6 +28,7 @@ void TransformIk_Action_Block(TransformIk* this, PlayState* play);
 void TransformIk_Action_GetHit(TransformIk* this, PlayState* play);
 void TransformIk_Action_VerticalAttack(TransformIk* this, PlayState* play);
 void TransformIk_Action_PullOutAxe(TransformIk* this, PlayState* play);
+void TransformIk_Action_Fall(TransformIk* this, PlayState* play);
 
 const ActorInit Transform_Ik_InitVars = {
     ACTOR_TRANSFORM_IK,
@@ -191,6 +192,24 @@ void TransformIk_SetupAction(TransformIk* this, PlayState* play, TransformIkActi
         Interface_SetDoAction(play, DO_ACTION_NONE);
         Interface_LoadActionLabelB(play, DO_ACTION_NONE);
     }
+    else if (this->actionFunc == TransformIk_Action_Fall) {
+        this->shieldState = 1;
+        Animation_Change(&this->skelAnime, &gIronKnuckleBlockAnim, 1.0f, 0.0f, Animation_GetLastFrame(&gIronKnuckleBlockAnim), ANIMMODE_ONCE_INTERP, -4.0f);
+        Interface_SetDoAction(play, DO_ACTION_NONE);
+        Interface_LoadActionLabelB(play, DO_ACTION_NONE);
+    }
+}
+
+void TransformIk_SetUnderwaterProperties(TransformIk* this, PlayState* play, f32* speedTarget, f32 originalPlaySpeed) {
+    if (this->actor.bgCheckFlags & BGCHECKFLAG_WATER) {
+        if (speedTarget != NULL) {
+            *speedTarget *= 0.75f;
+        }
+        this->skelAnime.playSpeed = originalPlaySpeed * 0.75f;
+    }
+    else {
+        this->skelAnime.playSpeed = originalPlaySpeed;
+    }
 }
 
 void TransformIk_CheckAxeSwing(TransformIk* this, PlayState* play) {
@@ -216,6 +235,8 @@ void TransformIk_Action_ReturnToIdleAfterAnimFinished(TransformIk* this, PlaySta
 
 void TransformIk_Action_VerticalAttack(TransformIk* this, PlayState* play) {
     Vec3f sparksPos;
+
+    TransformIk_SetUnderwaterProperties(this, play, NULL, 1.0f);
 
     if (this->skelAnime.curFrame == 15.0f) {
         Actor_PlaySfx(&this->actor, NA_SE_EN_IRONNACK_SWING_AXE);
@@ -257,6 +278,8 @@ void TransformIk_Action_SwingAxe(TransformIk* this, PlayState* play) {
         this->queuedAttack = 1;
         this->skelAnime.endFrame = Animation_GetLastFrame(&gIronKnuckleHorizontalAttackAnim);
     }
+
+    TransformIk_SetUnderwaterProperties(this, play, NULL, 0.5f);
      
     if ((this->skelAnime.curFrame > 1.0f) && (this->skelAnime.curFrame < 9.0f)) {
         if (this->playedSfx < 1) {
@@ -293,8 +316,11 @@ void TransformIk_Action_Run(TransformIk* this, PlayState* play) {
 
     Actor_GetMovementSpeedAndYaw(&this->actor, &speedTarget, &yawTarget, 1, 1, play);
 
+    TransformIk_SetUnderwaterProperties(this, play, &speedTarget, 1.0f);
+
     this->actor.world.rot.y = this->actor.shape.rot.y = yawTarget;
     Math_StepToF(&this->actor.speed, speedTarget, 0.9f);
+
 
     if (this->actor.speed == 0.0f) {
         TransformIk_SetupAction(this, play, TransformIk_Action_Idle);
@@ -318,6 +344,8 @@ void TransformIk_Action_Walk(TransformIk* this, PlayState* play) {
     s16 yawTarget;
 
     Actor_GetMovementSpeedAndYaw(&this->actor, &speedTarget, &yawTarget, 1, 1, play);
+
+    TransformIk_SetUnderwaterProperties(this, play, &speedTarget, 1.0f);
 
     this->actor.world.rot.y = this->actor.shape.rot.y = yawTarget;
     Math_StepToF(&this->actor.speed, speedTarget, 0.9f);
@@ -376,6 +404,27 @@ void TransformIk_Action_GetHit(TransformIk* this, PlayState* play) {
         TransformIk_SetupAction(this, play, TransformIk_Action_Idle);
     }
 }
+
+void TransformIk_Action_Fall(TransformIk* this, PlayState* play) {
+    if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
+        if (!(this->actor.bgCheckFlags & BGCHECKFLAG_WATER)) {
+            Actor_PlaySfx(&this->actor, NA_SE_EV_STONE_BOUND);
+            Actor_RequestQuakeAndRumble(&this->actor, play, 5, 5);
+        }
+        TransformIk_SetupAction(this, play, TransformIk_Action_Idle);
+    }
+    else if ((this->actor.bgCheckFlags & BGCHECKFLAG_WATER) && !this->previousFrameInWater) {
+        Actor_PlaySfx(&this->actor, NA_SE_EN_OCTAROCK_JUMP);
+        EffectSsGSplash_Spawn(play, &this->actor.world.pos, NULL, NULL, 0, 1500);
+    }
+    
+    Math_SmoothStepToF(&this->actor.speed, 0.0f, 1.0f, 1.0f, 0.0f);
+
+    CollisionCheck_SetAC(play, &play->colChkCtx, &this->shieldCollider.base);
+
+    SkelAnime_Update(&this->skelAnime);
+}
+
 
 void TransformIk_Init(Actor* thisx, PlayState* play) {
     TransformIk* this = THIS;
@@ -455,7 +504,7 @@ void TransformIk_Update(Actor* thisx, PlayState* play) {
         this->bodyCollider.base.acFlags &= ~AC_HIT;
     } else if (this->axeCollider.base.atFlags & AT_HIT) {
         this->axeCollider.base.atFlags &= ~AT_HIT;
-    } else if (this->bodyCollider.base.acFlags & AC_HIT) {
+    } else if (this->bodyCollider.base.acFlags & AC_HIT && !(this->bodyCollider.base.ac != NULL && this->bodyCollider.base.ac->id == ACTOR_BG_JYA_HAHENIRON)) {
         this->bodyCollider.base.acFlags &= ~AC_HIT;
 
         Actor_SetColorFilter(&this->actor, COLORFILTER_COLORFLAG_RED, 255, COLORFILTER_BUFFLAG_OPA, 12);
@@ -481,6 +530,27 @@ void TransformIk_Update(Actor* thisx, PlayState* play) {
                             UPDBGCHECKINFO_FLAG_0 | UPDBGCHECKINFO_FLAG_2 | UPDBGCHECKINFO_FLAG_3 |
                                 UPDBGCHECKINFO_FLAG_4);
 
+    if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
+        s32 floorType = SurfaceType_GetFloorType(&play->colCtx, this->actor.floorPoly, this->actor.floorBgId);
+        if (floorType == FLOOR_TYPE_9) {
+            player->actor.freezeTimer = this->actor.freezeTimer = 50;
+            Play_TriggerVoidOut(play);
+            SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0);
+            play->transitionType = TRANS_TYPE_FADE_BLACK;
+            Sfx_PlaySfxCentered2(NA_SE_OC_ABYSS);
+        }
+    }
+    else if (this->actionFunc != TransformIk_Action_Fall) {
+        TransformIk_SetupAction(this, play, TransformIk_Action_Fall);
+    }
+
+    if (this->actor.bgCheckFlags & BGCHECKFLAG_WATER) {
+        thisx->gravity = -0.4f;
+    }
+    else {
+        thisx->gravity = -1.0f;
+    }
+
     this->actor.focus.pos = this->actor.world.pos;
     this->actor.focus.pos.y += 45.0f;
 
@@ -500,6 +570,8 @@ void TransformIk_Update(Actor* thisx, PlayState* play) {
     if (this->shieldState > 0) {
         CollisionCheck_SetAC(play, &play->colChkCtx, &this->shieldCollider.base);
     }
+
+    this->previousFrameInWater = !!(this->actor.bgCheckFlags & BGCHECKFLAG_WATER);
 }
 
 Gfx* TransformIk_SetPrimEnvColors(GraphicsContext* gfxCtx, u8 primR, u8 primG, u8 primB, u8 envR, u8 envG, u8 envB) {

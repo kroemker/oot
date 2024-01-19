@@ -208,6 +208,33 @@ void Map_InitRoomData(PlayState* play, s16 room) {
                 osSyncPrintf(VT_RST);
                 Map_InitData(play, room);
                 break;
+            case SCENE_HM_COMP:
+                osSyncPrintf(VT_FGCOL(YELLOW));
+                switch (room) {
+                    case 0:
+                    case 1:
+                        osSyncPrintf("Set Spirit Temple BGM: room=%d\n", room);
+                        func_800F5ACC(NA_BGM_SPIRIT_TEMPLE);
+                        break;
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 6:
+                        osSyncPrintf("Set Forest Temple BGM: room=%d\n", room);
+                        func_800F5ACC(NA_BGM_FOREST_TEMPLE);
+                        break;
+                    case 8:
+                    case 9:
+                        osSyncPrintf("Set Fire Temple BGM: room=%d\n", room);
+                        func_800F5ACC(NA_BGM_FIRE_TEMPLE);
+                        break;
+                    default:
+                        osSyncPrintf("Disabling BGM: room=%d\n", room);
+                        Audio_StopBgmAndFanfare(20);
+                        break;
+                }
+                osSyncPrintf(VT_RST);
+                break;
         }
     } else {
         interfaceCtx->mapRoomNum = 0;

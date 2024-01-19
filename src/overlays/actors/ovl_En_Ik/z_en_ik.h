@@ -12,6 +12,7 @@ typedef void (*EnIkActionFunc)(struct EnIk*, PlayState*);
 #define IK_GET_ARMOR_TYPE(thisx) ((thisx)->params & 0xFF)
 #define IK_GET_SWITCH_FLAG(thisx) (((thisx)->params >> 8) & 0x3F)
 #define IK_IS_NPC(thisx) (((thisx)->params >> 0xE) & 1)
+#define IK_ACTIVATE_ON_SWITCH_FLAG(thisx) (((thisx)->params >> 0xF) & 1)
 
 typedef enum {
     /* 0 */ IK_TYPE_NABOORU,
@@ -120,6 +121,7 @@ typedef struct EnIk {
     NpcInteractInfo interactInfo;
     u8 npc;
     s32 dieTimer;
+    u8 activateOnSwitch;
 } EnIk; // size = 0x04DC
 
 #endif

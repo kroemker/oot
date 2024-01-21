@@ -71,7 +71,7 @@ static Inventory sNewSaveInventory = {
         ITEM_NONE, // SLOT_DEKU_STICK
         ITEM_NONE, // SLOT_DEKU_NUT
         ITEM_NONE, // SLOT_BOMB
-        ITEM_NONE, // SLOT_BOW
+        ITEM_BOW, // SLOT_BOW
         ITEM_NONE, // SLOT_ARROW_FIRE
         ITEM_NONE, // SLOT_DINS_FIRE
         ITEM_NONE, // SLOT_SLINGSHOT
@@ -207,14 +207,14 @@ static Inventory sDebugSaveInventory = {
         ITEM_SLINGSHOT,           // SLOT_SLINGSHOT
         ITEM_IK_SOUL,             // SLOT_OCARINA
         ITEM_OCTOROK_SOUL,        // SLOT_BOMBCHU
-        ITEM_KEESE_SOUL,          // SLOT_HOOKSHOT
-        ITEM_NONE,                // SLOT_ARROW_ICE
+        ITEM_NONE,          // SLOT_HOOKSHOT
+        ITEM_ARROW_ICE,           // SLOT_ARROW_ICE
         ITEM_FARORES_WIND,        // SLOT_FARORES_WIND
         ITEM_HAMMERANG,           // SLOT_BOOMERANG
         ITEM_LENS_OF_TRUTH,       // SLOT_LENS_OF_TRUTH
         ITEM_MAGIC_BEAN,          // SLOT_MAGIC_BEAN
         ITEM_HAMMER,              // SLOT_HAMMER
-        ITEM_NONE,                // SLOT_ARROW_LIGHT
+        ITEM_ARROW_FOREST,        // SLOT_ARROW_LIGHT
         ITEM_NAYRUS_LOVE,         // SLOT_NAYRUS_LOVE
         ITEM_BOTTLE_EMPTY,        // SLOT_BOTTLE_1
         ITEM_BOTTLE_POTION_RED,   // SLOT_BOTTLE_2

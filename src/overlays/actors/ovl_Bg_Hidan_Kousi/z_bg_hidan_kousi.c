@@ -63,7 +63,7 @@ void BgHidanKousi_SetupAction(BgHidanKousi* this, BgHidanKousiActionFunc actionF
 }
 
 s32 BgHidanKousi_IsOpenFlagSet(BgHidanKousi* this, PlayState* play) {
-    return (this->dyna.actor.params & 0x8000) ? Flags_GetClear(play, this->dyna.actor.room) : Flags_GetSwitch(play, (this->dyna.actor.params >> 8) & 0xFF);
+    return ((this->dyna.actor.params >> 0xF) & 1) ? Flags_GetClear(play, this->dyna.actor.room) : Flags_GetSwitch(play, (this->dyna.actor.params >> 8) & 0xFF);
 }
 
 void BgHidanKousi_Init(Actor* thisx, PlayState* play) {
@@ -73,12 +73,12 @@ void BgHidanKousi_Init(Actor* thisx, PlayState* play) {
 
     DynaPolyActor_Init(&this->dyna, 0);
     Actor_SetFocus(thisx, 50.0f);
-    osSyncPrintf("◯◯◯炎の神殿オブジェクト【格子(arg_data : %0x)】出現 (%d %d)\n", thisx->params, thisx->params & 0xFF,
+    osSyncPrintf("BG_HIDAN_KOUSI (arg_data : %0x) (%d %d)\n", thisx->params, thisx->params & 0xFF,
                  ((s32)thisx->params >> 8) & 0xFF);
 
     Actor_ProcessInitChain(thisx, sInitChain);
     if (((thisx->params & 0xFF) < 0) || ((thisx->params & 0xFF) >= 3)) {
-        osSyncPrintf("arg_data おかしい 【格子】\n");
+        osSyncPrintf("arg_data (thisx->params & 0xFF) < 0) || ((thisx->params & 0xFF) >= 3)\n");
     }
 
     CollisionHeader_GetVirtual(sMetalFencesCollisions[thisx->params & 0xFF], &colHeader);

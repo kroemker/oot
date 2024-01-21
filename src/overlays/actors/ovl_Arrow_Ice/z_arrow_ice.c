@@ -174,7 +174,7 @@ void ArrowIce_Fly(ArrowIce* this, PlayState* play) {
             this->actor.world.pos.y + this->actor.yDistToWater,
             this->actor.world.pos.z,
             0, 0, 0,
-            200);
+            500);
         Actor_Kill(&this->actor);
         return;
     }

@@ -9,8 +9,10 @@ struct EnIk;
 typedef void (*EnIkActionFunc)(struct EnIk*, PlayState*);
 
 #define IK_GET_UPPER_PARAMS(thisx) ((thisx)->params & 0xFF00)
-#define IK_GET_ARMOR_TYPE(thisx) ((thisx)->params & 0xFF)
-#define IK_GET_SWITCH_FLAG(thisx) (((thisx)->params >> 8) & 0x3F)
+#define IK_GET_ARMOR_TYPE(thisx) ((thisx)->params & 0xF)
+#define IK_GET_SWITCH_FLAG(thisx) (((thisx)->params >> 8) & 0x1F)
+#define IK_IS_PUZZLE_KNUCKLE(thisx) (((thisx)->params >> 0xD) & 1)
+#define IK_GET_PUZZLE_ELEMENT(thisx) (((thisx)->params >> 4) & 0xF)
 #define IK_IS_NPC(thisx) (((thisx)->params >> 0xE) & 1)
 #define IK_ACTIVATE_ON_SWITCH_FLAG(thisx) (((thisx)->params >> 0xF) & 1)
 
@@ -91,6 +93,15 @@ typedef enum {
     /* 0x1E */ IRON_KNUCKLE_DEFEAT_LIMB_MAX
 } IronKnuckleDefeatLimb;
 
+typedef enum {
+    IK_ELEMENT_LIGHT,
+    IK_ELEMENT_FOREST,
+    IK_ELEMENT_FIRE,
+    IK_ELEMENT_WATER,
+    IK_ELEMENT_SHADOW,
+    IK_ELEMENT_SPIRIT,
+} IronKnucklePuzzleElement;
+
 typedef struct EnIk {
     /* 0x0000 */ Actor actor;
     /* 0x014C */ SkelAnime skelAnime;
@@ -122,6 +133,12 @@ typedef struct EnIk {
     u8 npc;
     s32 dieTimer;
     u8 activateOnSwitch;
+    u8 puzzleKnuckle;
+    u8 element;
+    Vec3f targetLocation;
+    u8 enableMoving;
+    u16 puzzleIndex;
+    u8 burn;
 } EnIk; // size = 0x04DC
 
 #endif

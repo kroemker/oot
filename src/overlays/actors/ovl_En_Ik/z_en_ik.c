@@ -68,6 +68,13 @@ void EnIk_HandleCsCues(EnIk* this, PlayState* play);
 void EnIk_ChangeToEnemy(EnIk* this, PlayState* play);
 void EnIk_StartDefeatCutscene(Actor* thisx, PlayState* play);
 
+void EnIk_SetupWaitForPuzzleAction(EnIk* this);
+
+void EnIk_WaitForPuzzleAction(EnIk* this, PlayState* play);
+void EnIk_MoveToNewLocation(EnIk* this, PlayState* play);
+
+void EnIk_UpdatePuzzleKnuckle(Actor* thisx, PlayState* play);
+
 static ColliderCylinderInit sCylinderInit = {
     {
         COLTYPE_NONE,
@@ -188,9 +195,11 @@ void EnIk_Destroy(Actor* thisx, PlayState* play) {
         func_800F5B58();
     }
 
-    Collider_DestroyTris(play, &this->shieldCollider);
-    Collider_DestroyCylinder(play, &this->bodyCollider);
-    Collider_DestroyQuad(play, &this->axeCollider);
+    if (!this->puzzleKnuckle) {
+        Collider_DestroyTris(play, &this->shieldCollider);
+        Collider_DestroyCylinder(play, &this->bodyCollider);
+        Collider_DestroyQuad(play, &this->axeCollider);
+    }
 }
 
 void EnIk_SetupAction(EnIk* this, EnIkActionFunc actionFunc) {
@@ -205,14 +214,6 @@ void EnIk_InitImpl(Actor* thisx, PlayState* play) {
     thisx->update = EnIk_UpdateEnemy;
     thisx->draw = EnIk_DrawEnemy;
     thisx->flags |= ACTOR_FLAG_10;
-
-    Collider_InitCylinder(play, &this->bodyCollider);
-    Collider_SetCylinder(play, &this->bodyCollider, thisx, &sCylinderInit);
-    Collider_InitTris(play, &this->shieldCollider);
-    Collider_SetTris(play, &this->shieldCollider, thisx, &sTrisInit, this->shieldColliderItems);
-    Collider_InitQuad(play, &this->axeCollider);
-    Collider_SetQuad(play, &this->axeCollider, thisx, &sQuadInit);
-
     thisx->colChkInfo.damageTable = &sDamageTable;
     thisx->colChkInfo.mass = MASS_HEAVY;
     this->isBreakingProp = false;
@@ -225,14 +226,30 @@ void EnIk_InitImpl(Actor* thisx, PlayState* play) {
     osSyncPrintf("IK ACTIVATE ON SWITCH FLAG: %04x\n", this->activateOnSwitch);
     this->switchFlag = IK_GET_SWITCH_FLAG(thisx);
     osSyncPrintf("IK SWITCH FLAG: %04x\n", this->switchFlag);
+    this->puzzleKnuckle = IK_IS_PUZZLE_KNUCKLE(thisx);
+    osSyncPrintf("IK PUZZLEKNUCKLE: %04x\n", this->puzzleKnuckle);
+    this->element = IK_GET_PUZZLE_ELEMENT(thisx);
+    osSyncPrintf("IK PUZZLEKNUCKLE ELEMENT: %04x\n", this->element);
     thisx->params = IK_GET_ARMOR_TYPE(thisx);
     osSyncPrintf("IK ARMOR TYPE: %04x\n", thisx->params);
 
-    if (this->npc) {
+    Collider_InitCylinder(play, &this->bodyCollider);
+    Collider_SetCylinder(play, &this->bodyCollider, thisx, &sCylinderInit);
+    Collider_InitTris(play, &this->shieldCollider);
+    Collider_SetTris(play, &this->shieldCollider, thisx, &sTrisInit, this->shieldColliderItems);
+    Collider_InitQuad(play, &this->axeCollider);
+    Collider_SetQuad(play, &this->axeCollider, thisx, &sQuadInit);
+
+    if (this->npc || this->puzzleKnuckle) {
+        this->puzzleIndex = this->actor.home.rot.x;
+        this->actor.world.rot.x = 0;
         this->actor.flags |= ACTOR_FLAG_3;
         this->actor.flags &= ~ACTOR_FLAG_10;
         Actor_SetScale(thisx, 0.014f);
-        Actor_ChangeCategory(play, &play->actorCtx, thisx, ACTORCAT_NPC);
+        Actor_ChangeCategory(play, &play->actorCtx, thisx, this->npc ? ACTORCAT_NPC : ACTORCAT_PROP);
+        if (this->puzzleKnuckle) {
+            this->actor.update = EnIk_UpdatePuzzleKnuckle;
+        }
     }
     else if (thisx->params == IK_TYPE_NABOORU) {
         thisx->colChkInfo.health += 20;
@@ -259,11 +276,13 @@ void EnIk_InitImpl(Actor* thisx, PlayState* play) {
     Effect_Add(play, &this->blureIdx, EFFECT_BLURE1, 0, 0, &blureInit);
     if (this->npc) {
         EnIk_SetupAction(this, EnIk_SitAndTalk);
+    } else if (this->puzzleKnuckle) {
+        EnIk_SetupWaitForPuzzleAction(this);
     } else {
         EnIk_SetupStandUp(this);
     }
 
-    if (this->switchFlag != 0x3F && !this->activateOnSwitch) {
+    if (this->switchFlag != 0x1F && !this->activateOnSwitch) {
         if (Flags_GetSwitch(play, this->switchFlag)) {
             Actor_Kill(thisx);
         }
@@ -715,7 +734,7 @@ void EnIk_Die(EnIk* this, PlayState* play) {
             if (this->animationTimer == 0) {
                 Item_DropCollectibleRandom(play, &this->actor, &this->actor.world.pos, 0xB0);
 
-                if (this->switchFlag != 0x3F && !this->activateOnSwitch) {
+                if (this->switchFlag != 0x1F && !this->activateOnSwitch) {
                     Flags_SetSwitch(play, this->switchFlag);
                 }
 
@@ -778,7 +797,7 @@ void EnIk_UpdateDamage(EnIk* this, PlayState* play) {
         } else if (this->actor.colChkInfo.health <= 10) {
             Actor_ChangeCategory(play, &play->actorCtx, &this->actor, ACTORCAT_BOSS);
             SfxSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 20, NA_SE_EN_LAST_DAMAGE);
-            if (this->switchFlag != 0x3F && !this->activateOnSwitch) {
+            if (this->switchFlag != 0x1F && !this->activateOnSwitch) {
                 Flags_SetSwitch(play, this->switchFlag);
             }
             return;
@@ -814,6 +833,65 @@ void EnIk_UpdateDamage(EnIk* this, PlayState* play) {
             Actor_PlaySfx(&this->actor, NA_SE_EN_IRONNACK_DAMAGE);
             CollisionCheck_SpawnShieldParticles(play, &sparksPos);
         }
+    }
+}
+
+s32 EnIk_TurnToAngle(EnIk* this, PlayState* play, s16 angle, s16 speed) {
+    if (ABS(this->actor.shape.rot.y - angle) < speed) {
+        this->actor.shape.rot.y = angle;
+        return true;
+    }
+    else {
+        return Math_StepToAngleS(&this->actor.shape.rot.y, angle, speed);
+    }
+}
+
+void EnIk_SetupMoveToNewLocation(EnIk* this) {
+    Animation_Change(&this->skelAnime, &gIronKnuckleWalkAnim, 1.0f, 0.0f,
+                         Animation_GetLastFrame(&gIronKnuckleWalkAnim), ANIMMODE_LOOP, -4.0f);
+    EnIk_SetupAction(this, EnIk_MoveToNewLocation);
+}
+
+void EnIk_SetupWaitForPuzzleAction(EnIk* this) {
+    f32 endFrame = Animation_GetLastFrame(&gIronKnuckleStandUpAnim);
+
+    Animation_Change(&this->skelAnime, &gIronKnuckleStandUpAnim, 0.0f, endFrame - 1.0f, endFrame, ANIMMODE_ONCE, 0.0f);
+    this->actor.speed = 0.0f;
+    this->enableMoving = false;
+    EnIk_SetupAction(this, EnIk_WaitForPuzzleAction);
+}
+
+void EnIk_WaitForPuzzleAction(EnIk* this, PlayState* play) {
+    if (this->enableMoving) {
+        EnIk_SetupMoveToNewLocation(this);
+    }
+    if (this->burn) {
+        this->dieTimer = 30;
+        EnIk_SetupAction(this, EnIk_DieInFlames);
+    }
+
+    SkelAnime_Update(&this->skelAnime);
+}
+
+void EnIk_MoveToNewLocation(EnIk* this, PlayState* play) {
+    f32 dist = Math_Vec3f_DistXZ(&this->actor.world.pos, &this->targetLocation);
+
+    if (dist < 1.0f) {
+        if (EnIk_TurnToAngle(this, play, this->actor.home.rot.y, 0x150)) {
+            EnIk_SetupWaitForPuzzleAction(this);
+        }
+    }
+    else {
+        EnIk_TurnToAngle(this, play, Math_Vec3f_Yaw(&this->actor.world.pos, &this->targetLocation), 0x700);
+        Math_StepToF(&this->actor.speed, 2.0f, 0.4f);
+        this->actor.world.pos.x += this->actor.speed * Math_SinS(this->actor.shape.rot.y);
+        this->actor.world.pos.z += this->actor.speed * Math_CosS(this->actor.shape.rot.y);
+    }
+
+    SkelAnime_Update(&this->skelAnime);
+    
+    if (((s16)this->skelAnime.curFrame == 0) || ((s16)this->skelAnime.curFrame == 16)) {
+        Actor_PlaySfx(&this->actor, NA_SE_EN_IRONNACK_WALK);
     }
 }
 
@@ -873,6 +951,13 @@ void EnIk_DieInFlames(EnIk* this, PlayState* play) {
     if (DECR(this->dieTimer) == 0) {
         Actor_Kill(&this->actor);
     }
+}
+
+void EnIk_UpdatePuzzleKnuckle(Actor* thisx, PlayState* play) {
+    EnIk* this = (EnIk*)thisx;
+    this->drawArmorFlag = 1;
+
+    this->actionFunc(this, play);
 }
 
 void EnIk_UpdateEnemy(Actor* thisx, PlayState* play) {
@@ -1082,6 +1167,15 @@ void EnIk_PostLimbDrawEnemy(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* 
     CLOSE_DISPS(play->state.gfxCtx, "../z_en_ik_inFight.c", 1294);
 }
 
+static Color_RGB8 sPuzzleIkColors[6] = {
+    { 116, 125, 15 }, // LIGHT
+    { 26, 125, 15 },  // FOREST
+    { 125, 15, 15 },  // FIRE
+    { 15, 39, 125 },  // WATER
+    { 81, 15, 125 },  // SHADOW
+    { 125, 48, 15 },  // SPIRIT
+};
+
 void EnIk_DrawEnemy(Actor* thisx, PlayState* play) {
     EnIk* this = (EnIk*)thisx;
 
@@ -1090,7 +1184,15 @@ void EnIk_DrawEnemy(Actor* thisx, PlayState* play) {
     Gfx_SetupDL_25Opa(play->state.gfxCtx);
     Gfx_SetupDL_25Xlu(play->state.gfxCtx);
 
-    if (this->actor.params == IK_TYPE_NABOORU) {
+    if (this->puzzleKnuckle) {
+        gSPSegment(POLY_OPA_DISP++, 0x08, EnIk_SetPrimEnvColors(play->state.gfxCtx, 
+            sPuzzleIkColors[this->element].r * 1.4, sPuzzleIkColors[this->element].g * 1.4, sPuzzleIkColors[this->element].b * 1.4f, 
+            sPuzzleIkColors[this->element].r/4, sPuzzleIkColors[this->element].g/4, sPuzzleIkColors[this->element].b/4));
+        gSPSegment(POLY_OPA_DISP++, 0x09, EnIk_SetPrimEnvColors(play->state.gfxCtx, 
+            sPuzzleIkColors[this->element].r, sPuzzleIkColors[this->element].g, sPuzzleIkColors[this->element].b, 
+            sPuzzleIkColors[this->element].r/4, sPuzzleIkColors[this->element].g/4, sPuzzleIkColors[this->element].b/4));
+        gSPSegment(POLY_OPA_DISP++, 0x0A, EnIk_SetPrimEnvColors(play->state.gfxCtx, 255, 255, 255, 20, 40, 30));
+    } else if (this->actor.params == IK_TYPE_NABOORU) {
         gSPSegment(POLY_OPA_DISP++, 0x08, EnIk_SetPrimEnvColors(play->state.gfxCtx, 245, 225, 155, 30, 30, 0));
         gSPSegment(POLY_OPA_DISP++, 0x09, EnIk_SetPrimEnvColors(play->state.gfxCtx, 255, 40, 0, 40, 0, 0));
         gSPSegment(POLY_OPA_DISP++, 0x0A, EnIk_SetPrimEnvColors(play->state.gfxCtx, 255, 255, 255, 20, 40, 30));

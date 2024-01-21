@@ -103,8 +103,8 @@ AS         := $(MIPS_BINUTILS_PREFIX)as
 LD         := $(MIPS_BINUTILS_PREFIX)ld
 OBJCOPY    := $(MIPS_BINUTILS_PREFIX)objcopy
 OBJDUMP    := $(MIPS_BINUTILS_PREFIX)objdump
-EMULATOR   ?= '/mnt/e/Programs/Project64-v2.4.0/Project64.exe'
-EMULATOR_PATH ?= '/mnt/e/Programs/Project64-v2.4.0/'
+EMULATOR   ?= '/mnt/c/Users/leokr/Documents/Freetime/ares-windows/ares-v134/ares.exe'
+EMULATOR_PATH ?= '/mnt/c/Users/leokr/Documents/Freetime/ares-windows/ares-v134/'
 EMU_FLAGS  ?= 
 
 INC := -Iinclude -Iinclude/libc -Isrc -Ibuild -I.
@@ -120,7 +120,11 @@ ZAPD       := tools/ZAPD/ZAPD.out
 FADO       := tools/fado/fado.elf
 
 ifeq ($(COMPILER),gcc)
-  OPTFLAGS := -Os -ffast-math -fno-unsafe-math-optimizations
+  ifeq ($(DEVELOPMENT),1)
+    OPTFLAGS := -Os -ggdb -ffast-math -fno-unsafe-math-optimizations
+  else
+    OPTFLAGS := -Os -ffast-math -fno-unsafe-math-optimizations
+  endif
 else
   OPTFLAGS := -O2
 endif
@@ -128,7 +132,7 @@ endif
 ASFLAGS := -march=vr4300 -32 -no-pad-sections -Iinclude
 
 ifeq ($(COMPILER),gcc)
-  CFLAGS += -G 0 -nostdinc $(INC) -march=vr4300 -mfix4300 -mabi=32 -mno-abicalls -mdivide-breaks -fno-zero-initialized-in-bss -fno-toplevel-reorder -ffreestanding -fno-common -fno-merge-constants -mno-explicit-relocs -mno-split-addresses $(CHECK_WARNINGS) -funsigned-char
+  CFLAGS += -G 0 -nostdinc $(INC) -march=vr4300 -mfix4300 -mabi=32 -mno-abicalls -mdivide-breaks -fno-zero-initialized-in-bss -fno-toplevel-reorder -ffreestanding -fno-common -fno-merge-constants -mno-explicit-relocs -mno-split-addresses $(CHECK_WARNINGS) -funsigned-char -fno-PIC
   MIPS_VERSION := -mips3
 else
   # we support Microsoft extensions such as anonymous structs, which the compiler does support but warns for their usage. Surpress the warnings with -woff.
@@ -264,7 +268,7 @@ ifeq ($(COMPARE),1)
 	@md5sum $(ROM)
 	@md5sum -c checksum.md5
 endif
-	cp $(ROM) /mnt/c/Users/Leo/Desktop/
+	cp $(ROM) /mnt/c/Users/leokr/Documents/Freetime/
 
 clean:
 	$(RM) -r $(ROM) $(ELF) build

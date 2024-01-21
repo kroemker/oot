@@ -1173,7 +1173,7 @@ s32 LinkAnimation_Once(PlayState* play, SkelAnime* skelAnime) {
         return 1;
     }
     skelAnime->curFrame += skelAnime->playSpeed * updateRate;
-    if ((skelAnime->startFrame <= skelAnime->endFrame) && ((skelAnime->curFrame - skelAnime->endFrame) * skelAnime->playSpeed > 0.0f)) {
+    if ((skelAnime->curFrame - skelAnime->endFrame) * skelAnime->playSpeed > 0.0f) {
         skelAnime->curFrame = skelAnime->endFrame;
     } else if (skelAnime->curFrame < 0.0f) {
         skelAnime->curFrame += skelAnime->animLength;

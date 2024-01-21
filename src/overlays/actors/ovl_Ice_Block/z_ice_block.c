@@ -87,7 +87,7 @@ void IceBlock_Destroy(Actor* thisx, PlayState* play) {
 
 void IceBlock_Update(Actor* thisx, PlayState* play) {
     IceBlock* this = THIS;
-    s32 maxLifetime = this->dyna.actor.params & 0xFF;
+    s32 maxLifetime = this->dyna.actor.params & 0xFFFF;
 
     Actor_UpdateBgCheckInfo(play, &this->dyna.actor, 0, 0, 0, 0x3F);
     if (this->dyna.actor.floorPoly != 0) {

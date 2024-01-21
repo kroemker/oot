@@ -29,11 +29,13 @@ void EnMm2_Init(Actor* thisx, PlayState* play2);
 void EnMm2_Destroy(Actor* thisx, PlayState* play);
 void EnMm2_Update(Actor* thisx, PlayState* play);
 void EnMm2_Draw(Actor* thisx, PlayState* play);
-void func_80AAF3C0(EnMm2* this, PlayState* play);
+void EnMm2_HandleTalking(EnMm2* this, PlayState* play);
 void func_80AAF57C(EnMm2* this, PlayState* play);
 void func_80AAF668(EnMm2* this, PlayState* play);
 s32 EnMm2_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, void* thisx);
 void EnMm2_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, void* thisx);
+
+void EnMm2_Action_WaitForTalk(EnMm2* this, PlayState* play);
 
 ActorInit En_Mm2_InitVars = {
     /**/ ACTOR_EN_MM2,
@@ -99,7 +101,7 @@ void EnMm2_ChangeAnim(EnMm2* this, s32 index, s32* currentIndex) {
     *currentIndex = index;
 }
 
-void func_80AAEF70(EnMm2* this, PlayState* play) {
+void EnMm2_SetActorTextId(EnMm2* this, PlayState* play) {
     if (!GET_EVENTCHKINF_CARPENTERS_FREE_ALL()) {
         this->actor.textId = 0x6086;
     } else if (GET_INFTABLE(INFTABLE_17F)) {
@@ -141,8 +143,10 @@ void EnMm2_Init(Actor* thisx, PlayState* play2) {
     this->actor.gravity = -1.0f;
     if (this->actor.params == 1) {
         this->actionFunc = func_80AAF668;
+    } else if (this->actor.params == 3) {
+        this->actionFunc = EnMm2_Action_WaitForTalk;
     } else {
-        func_80AAEF70(this, play);
+        EnMm2_SetActorTextId(this, play);
         this->actionFunc = func_80AAF57C;
     }
     if (!LINK_IS_ADULT) {
@@ -162,7 +166,7 @@ void EnMm2_Destroy(Actor* thisx, PlayState* play) {
     Collider_DestroyCylinder(play, &this->collider);
 }
 
-s32 func_80AAF224(EnMm2* this, PlayState* play, EnMm2ActionFunc actionFunc) {
+s32 EnMm2_SwitchActionOnTalk(EnMm2* this, PlayState* play, EnMm2ActionFunc actionFunc) {
     s16 yawDiff;
 
     if (Actor_TalkOfferAccepted(&this->actor, play)) {
@@ -174,6 +178,33 @@ s32 func_80AAF224(EnMm2* this, PlayState* play, EnMm2ActionFunc actionFunc) {
         Actor_OfferTalk(&this->actor, play, 100.0f);
     }
     return 0;
+}
+
+typedef enum {
+    RG_MESSAGE_HELLO = 0x71B4,
+    RG_MESSAGE_USELESS = 0x71B5,
+    RG_MESSAGE_HELPFUL = 0x71B6,
+    RG_MESSAGE_TELL_ME = 0x71B7,
+    RG_MESSAGE_YOU_AGAIN = 0x71B8,
+} RUNNERGUY_MESSAGES;
+
+#define EVENTINF_USELESS 0x10
+#define EVENTINF_TELLME 0x11
+
+void EnMm2_Action_WaitForTalk(EnMm2* this, PlayState* play) {
+    SkelAnime_Update(&this->skelAnime);
+
+    if (GET_EVENTINF(EVENTINF_TELLME)) {
+        this->actor.textId = RG_MESSAGE_TELL_ME;
+    }
+    else if (GET_EVENTINF(EVENTINF_USELESS)) {
+        this->actor.textId = RG_MESSAGE_YOU_AGAIN;
+    }
+    else {
+        this->actor.textId = RG_MESSAGE_HELLO;
+    }
+
+    EnMm2_SwitchActionOnTalk(this, play, EnMm2_HandleTalking);
 }
 
 void func_80AAF2BC(EnMm2* this, PlayState* play) {
@@ -198,10 +229,33 @@ void func_80AAF330(EnMm2* this, PlayState* play) {
     }
 }
 
-void func_80AAF3C0(EnMm2* this, PlayState* play) {
+void EnMm2_HandleTalking(EnMm2* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
 
     switch (this->actor.textId) {
+        case RG_MESSAGE_HELLO:
+        case RG_MESSAGE_YOU_AGAIN:
+            if ((Message_GetState(&play->msgCtx) == TEXT_STATE_CHOICE) && Message_ShouldAdvance(play)) {
+                switch (play->msgCtx.choiceIndex) {
+                    case 1:
+                        Message_ContinueTextbox(play, RG_MESSAGE_USELESS);
+                        this->actor.textId = RG_MESSAGE_USELESS;
+                        SET_EVENTINF(EVENTINF_USELESS);
+                        break;
+                    case 0:
+                        Message_ContinueTextbox(play, RG_MESSAGE_HELPFUL);
+                        this->actor.textId = RG_MESSAGE_HELPFUL;
+                        break;
+                }
+            }
+            break;
+        case RG_MESSAGE_HELPFUL:
+            if ((Message_GetState(&play->msgCtx) == TEXT_STATE_CLOSING)) {
+                Actor_OfferGetItem(&this->actor, play, GI_SOUL_KEESE, this->actor.xzDistToPlayer + 1.0f, fabsf(this->actor.yDistToPlayer) + 1.0f);
+                SET_EVENTINF(EVENTINF_TELLME);
+                this->actionFunc = EnMm2_Action_WaitForTalk;
+            }
+            break;
         case 0x607D:
         case 0x607E:
             if ((Message_GetState(&play->msgCtx) == TEXT_STATE_CHOICE) && Message_ShouldAdvance(play)) {
@@ -235,6 +289,11 @@ void func_80AAF3C0(EnMm2* this, PlayState* play) {
 
         default:
             if (Actor_TextboxIsClosing(&this->actor, play)) {
+                if (this->actor.textId >= RG_MESSAGE_HELLO) {
+                    this->actionFunc = EnMm2_Action_WaitForTalk;
+                    break;
+                }
+
                 if (this->actor.textId == 0x607F) {
                     Interface_SetSubTimer(0);
                     this->actionFunc = func_80AAF57C;
@@ -242,7 +301,7 @@ void func_80AAF3C0(EnMm2* this, PlayState* play) {
                     this->actionFunc = func_80AAF57C;
                 }
                 this->actionFunc = func_80AAF57C;
-                func_80AAEF70(this, play);
+                EnMm2_SetActorTextId(this, play);
             }
             break;
     }
@@ -250,8 +309,8 @@ void func_80AAF3C0(EnMm2* this, PlayState* play) {
 
 void func_80AAF57C(EnMm2* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
-    func_80AAEF70(this, play);
-    if ((func_80AAF224(this, play, func_80AAF3C0)) && (this->actor.textId == 0x607D)) {
+    EnMm2_SetActorTextId(this, play);
+    if ((EnMm2_SwitchActionOnTalk(this, play, EnMm2_HandleTalking)) && (this->actor.textId == 0x607D)) {
         SET_INFTABLE(INFTABLE_17F);
     }
 }
@@ -274,7 +333,7 @@ void func_80AAF668(EnMm2* this, PlayState* play) {
     } else {
         this->actor.textId = 0x6084;
     }
-    if (func_80AAF224(this, play, func_80AAF5EC)) {
+    if (EnMm2_SwitchActionOnTalk(this, play, func_80AAF5EC)) {
         this->unk_1F6 = 0;
         if (((void)0, gSaveContext.subTimerSeconds) < HIGH_SCORE(HS_MARATHON)) {
             HIGH_SCORE(HS_MARATHON) = gSaveContext.subTimerSeconds;

@@ -340,7 +340,7 @@ void EnArrow_Fly(EnArrow* this, PlayState* play) {
                         osSyncPrintf("Rotation: %d, %d, %d\n", xRot, yRot, zRot);
 
                         Actor_Spawn(&play->actorCtx, play, ACTOR_VINE_SPOT, this->actor.world.pos.x + normal.x * dist,
-                            this->actor.world.pos.y + normal.y * dist, this->actor.world.pos.z + normal.z * dist, xRot, yRot, zRot, 0);
+                            this->actor.world.pos.y + normal.y * dist, this->actor.world.pos.z + normal.z * dist, xRot, yRot, zRot, 400);
                     }
                 }
 

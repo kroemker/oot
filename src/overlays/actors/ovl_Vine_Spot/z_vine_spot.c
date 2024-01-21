@@ -90,7 +90,7 @@ void VineSpot_Destroy(Actor* thisx, PlayState* play) {
 
 void VineSpot_Update(Actor* thisx, PlayState* play) {
     VineSpot* this = THIS;
-    s32 maxLifetime = this->dyna.actor.params == 0 ? 220 : this->dyna.actor.params & 0xFF;
+    s32 maxLifetime = this->dyna.actor.params == 0 ? 220 : this->dyna.actor.params & 0xFFFF;
     f32 maxSize = 5.0f;
     f32 sizeStep = 0.1f;
 

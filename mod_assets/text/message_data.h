@@ -1219,37 +1219,24 @@ UNSKIPPABLE  ITEM_ICON("\x08") "Press " COLOR(YELLOW) "[C] " COLOR(DEFAULT) "to 
 )
 
 DEFINE_MESSAGE(0x003B, TEXTBOX_TYPE_BLUE, TEXTBOX_POS_BOTTOM,
-"You cast Farore's Wind!\n"
-THREE_CHOICE  COLOR(ADJUSTABLE) "Return to the Warp Point\n"
-"Dispel the Warp Point\n"
-"Exit" COLOR(DEFAULT)
+UNSKIPPABLE  ITEM_ICON("\x09")  QUICKTEXT_ENABLE "You got the " COLOR(RED) "octorok soul" COLOR(DEFAULT) "!" QUICKTEXT_DISABLE "\n"
+"Press " COLOR(YELLOW) "[C] " COLOR(DEFAULT) "to surf\n"
+"on water."
 ,
-"Du hast Farores Kräfte beschworen!\n"
-THREE_CHOICE  COLOR(ADJUSTABLE) "Zum Teleporter zurück\n"
-"Teleporter entfernen\n"
-"Zurück" COLOR(DEFAULT)
+""
 ,
-"Vous invoquez le Vent de Farore!\n"
-THREE_CHOICE  COLOR(ADJUSTABLE) "Retourner au téléporteur\n"
-"Dissiper le téléporteur\n"
-"Quitter" COLOR(DEFAULT)
+""
 )
 
 DEFINE_MESSAGE(0x003C, TEXTBOX_TYPE_BLUE, TEXTBOX_POS_BOTTOM,
-UNSKIPPABLE  ITEM_ICON("\x67")  QUICKTEXT_ENABLE "You received the " COLOR(RED) "Fire\n"
-"Medallion" COLOR(DEFAULT) "!" QUICKTEXT_DISABLE "\n"
-"Darunia awakens as a Sage and\n"
-"adds his power to yours!"
+UNSKIPPABLE  ITEM_ICON("\x0A")  QUICKTEXT_ENABLE "You got the " COLOR(RED) "keese soul" COLOR(DEFAULT) "!" QUICKTEXT_DISABLE "\n"
+"Press " COLOR(YELLOW) "[C] " COLOR(DEFAULT) "to ascend into\n"
+"the skies and reach places\n"
+"you couldn't reach before!"
 ,
-UNSKIPPABLE  ITEM_ICON("\x67")  QUICKTEXT_ENABLE "Das " COLOR(RED) "Amulett des Feuers" COLOR(DEFAULT) "!" QUICKTEXT_DISABLE "\n"
-"Darunia gibt sich als einer\n"
-"der Weisen zu erkennen und\n"
-"überträgt Dir seine Kraft!"
+""
 ,
-UNSKIPPABLE  ITEM_ICON("\x67")  QUICKTEXT_ENABLE "Vous recevez le " COLOR(RED) "Médaillon du \n"
-"Feu" COLOR(DEFAULT) "!" QUICKTEXT_DISABLE " Darunia se révèle être un\n"
-"des Sages et vous confie son \n"
-"pouvoir!"
+""
 )
 
 DEFINE_MESSAGE(0x003D, TEXTBOX_TYPE_BLUE, TEXTBOX_POS_BOTTOM,
@@ -41048,11 +41035,11 @@ DEFINE_MESSAGE(0x71B2, TEXTBOX_TYPE_BLACK, TEXTBOX_POS_VARIABLE,
 DEFINE_MESSAGE(0x71B3, TEXTBOX_TYPE_BLACK, TEXTBOX_POS_VARIABLE,
 UNSKIPPABLE "I can sense it" TEXT_SPEED("\x02") "...\n" TEXT_SPEED("\x00")
 BOX_BREAK
-UNSKIPPABLE "Your inner " COLOR(RED) "fury" COLOR(DEFAULT) TEXT_SPEED("\x02") "...\n" TEXT_SPEED("\x00")
+UNSKIPPABLE "Your " COLOR(RED) "sorrows" COLOR(DEFAULT) TEXT_SPEED("\x02") "...\n" TEXT_SPEED("\x00")
 BOX_BREAK
-UNSKIPPABLE "Your deepest " COLOR(BLUE) "desires" COLOR(DEFAULT) TEXT_SPEED("\x02") "...\n" TEXT_SPEED("\x00")
+UNSKIPPABLE "Your " COLOR(BLUE) "desires" COLOR(DEFAULT) TEXT_SPEED("\x02") "...\n" TEXT_SPEED("\x00")
 BOX_BREAK
-UNSKIPPABLE "Your biggest " COLOR(PURPLE) "fears" COLOR(DEFAULT) TEXT_SPEED("\x02") "...\n" TEXT_SPEED("\x00")
+UNSKIPPABLE "Your " COLOR(PURPLE) "fears" COLOR(DEFAULT) TEXT_SPEED("\x02") "...\n" TEXT_SPEED("\x00")
 BOX_BREAK
 UNSKIPPABLE "Everything can be hidden.\n"
 "But nothing can escape.\n"
@@ -41063,6 +41050,64 @@ UNSKIPPABLE "Please take my soul with you and\n"
 , ""
 , ""
 )
+
+DEFINE_MESSAGE(0x71B4, TEXTBOX_TYPE_BLACK, TEXTBOX_POS_VARIABLE,
+UNSKIPPABLE "Huh, who are you?"
+BOX_BREAK
+UNSKIPPABLE "Well, they call me Runnerguy.\n"
+"I've been running all over this\n"
+"place but can't find a way out.\n"
+"Seems like I'm trapped..."
+BOX_BREAK
+UNSKIPPABLE "What have you been up to?\n"
+"\n"
+TWO_CHOICE  COLOR(ADJUSTABLE) "I found some helpful stuff\n"
+"But Runnerguy you have the ocarina!" COLOR(DEFAULT)
+, ""
+, ""
+)
+
+DEFINE_MESSAGE(0x71B5, TEXTBOX_TYPE_BLACK, TEXTBOX_POS_VARIABLE,
+UNSKIPPABLE "And what am I gonna do with that?\n"
+"Play warp songs or what?!\n"
+"Guess what, they don't work\n"
+"here genius. They are just useless!"
+BOX_BREAK
+"U " TEXT_SPEED("\x02") "S E L E S S ! ! !" TEXT_SPEED("\x00")
+, ""
+, ""
+)
+
+DEFINE_MESSAGE(0x71B6, TEXTBOX_TYPE_BLACK, TEXTBOX_POS_VARIABLE,
+UNSKIPPABLE "Helpful stuff huh?\n"
+"I've got a weird burning thing\n"
+"from a weird looking creature.\n"
+"No idea what to do about it."
+BOX_BREAK
+"Actually, let's make a deal.\n"
+"I give you the thing and if\n"
+"you find a way out you'll\n"
+"tell me first!\n"
+, ""
+, ""
+)
+
+DEFINE_MESSAGE(0x71B7, TEXTBOX_TYPE_BLACK, TEXTBOX_POS_VARIABLE,
+UNSKIPPABLE "Tell me if you found\n"
+"a way out."
+, ""
+, ""
+)
+
+DEFINE_MESSAGE(0x71B8, TEXTBOX_TYPE_BLACK, TEXTBOX_POS_VARIABLE,
+UNSKIPPABLE "You again...\n"
+"\n"
+TWO_CHOICE  COLOR(ADJUSTABLE) "I found some helpful stuff\n"
+"But Runnerguy you have the ocarina!" COLOR(DEFAULT)
+, ""
+, ""
+)
+
 
 #ifdef DEFINE_MESSAGE_FFFC
 DEFINE_MESSAGE(0xFFFC, TEXTBOX_TYPE_BLACK, TEXTBOX_POS_VARIABLE,

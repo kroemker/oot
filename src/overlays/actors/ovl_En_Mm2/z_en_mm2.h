@@ -22,6 +22,7 @@ typedef struct EnMm2 {
     /* 0x01F8 */ s32 previousAnimation;
     /* 0x01FC */ Vec3s jointTable[16];
     /* 0x025C */ Vec3s morphTable[16];
+    NpcInteractInfo interactInfo;
 } EnMm2; // size = 0x02BC
 
 #endif

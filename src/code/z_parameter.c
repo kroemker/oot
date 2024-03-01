@@ -4177,6 +4177,8 @@ void Interface_Draw(PlayState* play) {
     CLOSE_DISPS(play->state.gfxCtx, "../z_parameter.c", 4269);
 }
 
+static u8 onceBbuttonLoad = 0;
+
 void Interface_Update(PlayState* play) {
     static u8 D_80125B60 = false;
     static s16 sPrevTimeSpeed = 0;
@@ -4187,6 +4189,11 @@ void Interface_Update(PlayState* play) {
     s16 risingAlpha;
     u16 action;
     Input* debugInput = &play->state.input[2];
+
+    if (!onceBbuttonLoad) {
+        Interface_LoadItemIcon1(play, 0);
+        onceBbuttonLoad = 1;
+    }
 
     if (CHECK_BTN_ALL(debugInput->press.button, BTN_DLEFT)) {
         gSaveContext.language = LANGUAGE_ENG;

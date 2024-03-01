@@ -11,7 +11,7 @@
  * Header Child Day (Default)
 */
 #define LENGTH_HM_COMP_ROOM_4_HEADER00_OBJECTLIST 5
-#define LENGTH_HM_COMP_ROOM_4_HEADER00_ACTORLIST 6
+#define LENGTH_HM_COMP_ROOM_4_HEADER00_ACTORLIST 10
 SceneCmd hm_comp_room_4_header00[] = {
     SCENE_CMD_ECHO_SETTINGS(0x00),
     SCENE_CMD_ROOM_BEHAVIOR(0x00, 0x00, false, false),
@@ -32,36 +32,20 @@ s16 hm_comp_room_4_header00_objectList[LENGTH_HM_COMP_ROOM_4_HEADER00_OBJECTLIST
 };
 
 ActorEntry hm_comp_room_4_header00_actorList[LENGTH_HM_COMP_ROOM_4_HEADER00_ACTORLIST] = {
-    // Metal Gate
+    // Breakable Pot
     {
-        /* Actor ID   */ ACTOR_BG_HIDAN_KOUSI,
-        /* Position   */ { -4722, -61, -2148 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(270.000), DEG_TO_BINANG(0.000) },
+        /* Actor ID   */ ACTOR_OBJ_TSUBO,
+        /* Position   */ { -3842, -61, -1682 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x5E09
+    },
+
+    // Custom Actor
+    {
+        /* Actor ID   */ ACTOR_EN_WIZ,
+        /* Position   */ { -4248, -61, -2086 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x8001
-    },
-
-    // Metal Gate
-    {
-        /* Actor ID   */ ACTOR_BG_HIDAN_KOUSI,
-        /* Position   */ { -4722, -61, -2036 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(90.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x8001
-    },
-
-    // Torch
-    {
-        /* Actor ID   */ ACTOR_OBJ_SYOKUDAI,
-        /* Position   */ { -5461, 187, -2167 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(270.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0400
-    },
-
-    // Treasure Chest
-    {
-        /* Actor ID   */ ACTOR_EN_BOX,
-        /* Position   */ { -5528, 187, -2092 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(270.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0B00
     },
 
     // Torch
@@ -72,12 +56,60 @@ ActorEntry hm_comp_room_4_header00_actorList[LENGTH_HM_COMP_ROOM_4_HEADER00_ACTO
         /* Parameters */ 0x0400
     },
 
-    // Custom Actor
+    // Metal Gate
     {
-        /* Actor ID   */ ACTOR_EN_WIZ,
-        /* Position   */ { -4248, -61, -2086 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Actor ID   */ ACTOR_BG_HIDAN_KOUSI,
+        /* Position   */ { -4722, -61, -2036 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(90.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x8001
+    },
+
+    // Breakable Pot
+    {
+        /* Actor ID   */ ACTOR_OBJ_TSUBO,
+        /* Position   */ { -4653, -61, -1682 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x6009
+    },
+
+    // Breakable Pot
+    {
+        /* Actor ID   */ ACTOR_OBJ_TSUBO,
+        /* Position   */ { -3842, -61, -2484 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x5C09
+    },
+
+    // Breakable Pot
+    {
+        /* Actor ID   */ ACTOR_OBJ_TSUBO,
+        /* Position   */ { -4654, -61, -2484 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x5A09
+    },
+
+    // Treasure Chest
+    {
+        /* Actor ID   */ ACTOR_EN_BOX,
+        /* Position   */ { -5528, 187, -2092 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(270.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0B00
+    },
+
+    // Metal Gate
+    {
+        /* Actor ID   */ ACTOR_BG_HIDAN_KOUSI,
+        /* Position   */ { -4722, -61, -2148 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(270.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x8001
+    },
+
+    // Torch
+    {
+        /* Actor ID   */ ACTOR_OBJ_SYOKUDAI,
+        /* Position   */ { -5461, 187, -2167 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(270.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0400
     },
 };
 

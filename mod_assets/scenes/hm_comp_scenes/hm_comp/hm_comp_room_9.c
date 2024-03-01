@@ -46,14 +46,6 @@ ActorEntry hm_comp_room_9_header00_actorList[LENGTH_HM_COMP_ROOM_9_HEADER00_ACTO
         /* Parameters */ 0x0110
     },
 
-    // Treasure Chest
-    {
-        /* Actor ID   */ ACTOR_EN_BOX,
-        /* Position   */ { 1638, 773, 899 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x7841
-    },
-
     // Iron Knuckle
     {
         /* Actor ID   */ ACTOR_EN_IK,
@@ -81,14 +73,6 @@ ActorEntry hm_comp_room_9_header00_actorList[LENGTH_HM_COMP_ROOM_9_HEADER00_ACTO
     // Brick Pillar (Spirit Temple)
     {
         /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
-        /* Position   */ { 1388, 773, 649 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0000
-    },
-
-    // Brick Pillar (Spirit Temple)
-    {
-        /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
         /* Position   */ { 1888, 773, 1149 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x0000
@@ -100,6 +84,22 @@ ActorEntry hm_comp_room_9_header00_actorList[LENGTH_HM_COMP_ROOM_9_HEADER00_ACTO
         /* Position   */ { 1638, 773, 1343 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x9002
+    },
+
+    // Treasure Chest
+    {
+        /* Actor ID   */ ACTOR_EN_BOX,
+        /* Position   */ { 1638, 773, 899 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x7841
+    },
+
+    // Brick Pillar (Spirit Temple)
+    {
+        /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
+        /* Position   */ { 1388, 773, 649 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0000
     },
 };
 

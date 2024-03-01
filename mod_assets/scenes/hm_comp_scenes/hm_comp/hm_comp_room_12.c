@@ -31,12 +31,36 @@ s16 hm_comp_room_12_header00_objectList[LENGTH_HM_COMP_ROOM_12_HEADER00_OBJECTLI
 };
 
 ActorEntry hm_comp_room_12_header00_actorList[LENGTH_HM_COMP_ROOM_12_HEADER00_ACTORLIST] = {
+    // Deku Baba
+    {
+        /* Actor ID   */ ACTOR_EN_DEKUBABA,
+        /* Position   */ { -3017, -61, -3127 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(271.582), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0001
+    },
+
     // Square Signpost
     {
         /* Actor ID   */ ACTOR_EN_KANBAN,
         /* Position   */ { -3161, -61, -3059 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(91.582), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x0301
+    },
+
+    // Custom Actor
+    {
+        /* Actor ID   */ ACTOR_WALL_PULL_SWITCH,
+        /* Position   */ { -3057, 772, -3032 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0A14
+    },
+
+    // Circle of Bushes
+    {
+        /* Actor ID   */ ACTOR_OBJ_MURE2,
+        /* Position   */ { -2572, -61, -3280 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(271.582), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0701
     },
 
     // Deku Baba
@@ -49,34 +73,10 @@ ActorEntry hm_comp_room_12_header00_actorList[LENGTH_HM_COMP_ROOM_12_HEADER00_AC
 
     // Custom Actor
     {
-        /* Actor ID   */ ACTOR_WALL_PULL_SWITCH,
-        /* Position   */ { -3057, 772, -3032 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0A14
-    },
-
-    // Deku Baba
-    {
-        /* Actor ID   */ ACTOR_EN_DEKUBABA,
-        /* Position   */ { -3017, -61, -3127 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(271.582), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0001
-    },
-
-    // Custom Actor
-    {
         /* Actor ID   */ ACTOR_PLATFORMS,
         /* Position   */ { -2817, 678, -3192 },
         /* Rotation   */ { 0, 0, 10 },
         /* Parameters */ 0x0014
-    },
-
-    // Circle of Bushes
-    {
-        /* Actor ID   */ ACTOR_OBJ_MURE2,
-        /* Position   */ { -2572, -61, -3280 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(271.582), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0701
     },
 };
 

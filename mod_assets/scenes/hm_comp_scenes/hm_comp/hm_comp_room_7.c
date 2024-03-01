@@ -33,14 +33,6 @@ s16 hm_comp_room_7_header00_objectList[LENGTH_HM_COMP_ROOM_7_HEADER00_OBJECTLIST
 };
 
 ActorEntry hm_comp_room_7_header00_actorList[LENGTH_HM_COMP_ROOM_7_HEADER00_ACTORLIST] = {
-    // Iron Knuckle
-    {
-        /* Actor ID   */ ACTOR_EN_IK,
-        /* Position   */ { 902, 736, -997 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(270.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x4801
-    },
-
     // Lower Part of Megaton Statue
     {
         /* Actor ID   */ ACTOR_BG_HIDAN_DALM,
@@ -49,28 +41,12 @@ ActorEntry hm_comp_room_7_header00_actorList[LENGTH_HM_COMP_ROOM_7_HEADER00_ACTO
         /* Parameters */ 0x0900
     },
 
-    // Lower Part of Megaton Statue
+    // Iron Knuckle
     {
-        /* Actor ID   */ ACTOR_BG_HIDAN_DALM,
-        /* Position   */ { 1270, 736, -997 },
+        /* Actor ID   */ ACTOR_EN_IK,
+        /* Position   */ { 902, 736, -997 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(270.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0800
-    },
-
-    // Brick Pillar (Spirit Temple)
-    {
-        /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
-        /* Position   */ { 935, 736, -807 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(270.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0000
-    },
-
-    // Brick Pillar (Spirit Temple)
-    {
-        /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
-        /* Position   */ { 935, 736, -1187 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(270.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0000
+        /* Parameters */ 0x4801
     },
 
     // Brick Pillar (Spirit Temple)
@@ -87,6 +63,30 @@ ActorEntry hm_comp_room_7_header00_actorList[LENGTH_HM_COMP_ROOM_7_HEADER00_ACTO
         /* Position   */ { 1270, 816, -997 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(270.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x0A01
+    },
+
+    // Brick Pillar (Spirit Temple)
+    {
+        /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
+        /* Position   */ { 935, 736, -1187 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(270.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0000
+    },
+
+    // Lower Part of Megaton Statue
+    {
+        /* Actor ID   */ ACTOR_BG_HIDAN_DALM,
+        /* Position   */ { 1270, 736, -997 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(270.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0800
+    },
+
+    // Brick Pillar (Spirit Temple)
+    {
+        /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
+        /* Position   */ { 935, 736, -807 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(270.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0000
     },
 };
 

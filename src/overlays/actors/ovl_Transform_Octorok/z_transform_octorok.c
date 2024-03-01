@@ -273,7 +273,7 @@ void TransformOctorok_Action_Jump(TransformOctorok* this, PlayState* play) {
 
     Actor_GetMovementSpeedAndYaw(&this->actor, &speedTarget, &yawTarget, 1, 0, play);
 
-    Math_StepToF(&this->actor.speed, speedTarget / 2.0f, 0.7f);
+    Math_StepToF(&this->actor.speed, speedTarget, 0.7f);
     if (speedTarget != 0.0f) {
         this->actor.world.rot.y = this->actor.shape.rot.y = yawTarget;
     }

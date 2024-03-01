@@ -31,16 +31,16 @@ static SavePlayerData sNewSavePlayerData = {
     0,                                                  // deaths
     { 0x3E, 0x3E, 0x3E, 0x3E, 0x3E, 0x3E, 0x3E, 0x3E }, // playerName
     0,                                                  // n64ddFlag
-    0x30,                                               // healthCapacity
-    0x30,                                               // defense
-    0,                                                  // magicLevel
-    MAGIC_NORMAL_METER,                                 // magic
+    0x60,                                               // healthCapacity
+    0x60,                                               // defense
+    2,                                                  // magicLevel
+    MAGIC_DOUBLE_METER,                                 // magic
     0,                                                  // rupees
     0,                                                  // swordHealth
     0,                                                  // naviTimer
-    false,                                              // isMagicAcquired
+    true,                                              // isMagicAcquired
     0,                                                  // unk_1F
-    false,                                              // isDoubleMagicAcquired
+    true,                                              // isDoubleMagicAcquired
     false,                                              // isDoubleDefenseAcquired
     0,                                                  // bgsFlag
     0,                                                  // ocarinaGameRoundNum
@@ -56,13 +56,13 @@ static SavePlayerData sNewSavePlayerData = {
     },                                                  // adultEquips
     0,                                                  // unk_38
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },       // unk_3C
-    SCENE_LINKS_HOUSE,                                  // savedSceneId
+    SCENE_HM_COMP,                                  // savedSceneId
 };
 
 static ItemEquips sNewSaveEquips = {
     { ITEM_BOW, ITEM_NONE, ITEM_NONE, ITEM_NONE }, // buttonItems
     { SLOT_NONE, SLOT_NONE, SLOT_NONE },            // cButtonSlots
-    0x1100,                                         // equipment
+    0x1100 | (EQUIP_VALUE_SHIELD_HYLIAN << (EQUIP_TYPE_SHIELD * 4)),                                         // equipment
 };
 
 static Inventory sNewSaveInventory = {
@@ -98,7 +98,7 @@ static Inventory sNewSaveInventory = {
         0, // SLOT_DEKU_STICK
         0, // SLOT_DEKU_NUT
         0, // SLOT_BOMB
-        0, // SLOT_BOW
+        30, // SLOT_BOW
         0, // SLOT_ARROW_FIRE
         0, // SLOT_DINS_FIRE
         0, // SLOT_SLINGSHOT
@@ -115,7 +115,7 @@ static Inventory sNewSaveInventory = {
     // equipment
     (((1 << EQUIP_INV_TUNIC_KOKIRI) << (EQUIP_TYPE_TUNIC * 4)) |
      ((1 << EQUIP_INV_BOOTS_KOKIRI) << (EQUIP_TYPE_BOOTS * 4))),
-    0,                                                              // upgrades
+    0x125249,                                                              // upgrades
     0,                                                              // questItems
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // dungeonItems
     {
@@ -161,8 +161,8 @@ static SavePlayerData sDebugSavePlayerData = {
     0,                                                  // n64ddFlag
     0xE0,                                               // healthCapacity
     0xE0,                                               // health
-    0,                                                  // magicLevel
-    MAGIC_NORMAL_METER,                                 // magic
+    2,                                                  // magicLevel
+    MAGIC_DOUBLE_METER,                                 // magic
     150,                                                // rupees
     8,                                                  // swordHealth
     0,                                                  // naviTimer
@@ -207,7 +207,7 @@ static Inventory sDebugSaveInventory = {
         ITEM_SLINGSHOT,           // SLOT_SLINGSHOT
         ITEM_IK_SOUL,             // SLOT_OCARINA
         ITEM_OCTOROK_SOUL,        // SLOT_BOMBCHU
-        ITEM_NONE,          // SLOT_HOOKSHOT
+        ITEM_KEESE_SOUL,          // SLOT_HOOKSHOT
         ITEM_ARROW_ICE,           // SLOT_ARROW_ICE
         ITEM_FARORES_WIND,        // SLOT_FARORES_WIND
         ITEM_HAMMERANG,           // SLOT_BOOMERANG
@@ -416,9 +416,9 @@ void Sram_OpenSave(SramContext* sramCtx) {
         default:
             if (gSaveContext.save.info.playerData.savedSceneId != SCENE_LINKS_HOUSE) {
                 gSaveContext.save.entranceIndex =
-                    (LINK_AGE_IN_YEARS == YEARS_CHILD) ? ENTR_LINKS_HOUSE_0 : ENTR_TEMPLE_OF_TIME_7;
+                    (LINK_AGE_IN_YEARS == YEARS_CHILD) ? ENTR_HM_COMP_0 : ENTR_HM_COMP_0;
             } else {
-                gSaveContext.save.entranceIndex = ENTR_LINKS_HOUSE_0;
+                gSaveContext.save.entranceIndex = ENTR_HM_COMP_0;
             }
             break;
     }
@@ -478,7 +478,7 @@ void Sram_OpenSave(SramContext* sramCtx) {
 
     if (LINK_AGE_IN_YEARS == YEARS_ADULT && !CHECK_OWNED_EQUIP(EQUIP_TYPE_SWORD, EQUIP_INV_SWORD_MASTER)) {
         gSaveContext.save.info.inventory.equipment |= OWNED_EQUIP_FLAG(EQUIP_TYPE_SWORD, EQUIP_INV_SWORD_MASTER);
-        gSaveContext.save.info.equips.buttonItems[0] = ITEM_SWORD_MASTER;
+        gSaveContext.save.info.equips.buttonItems[0] = ITEM_NONE;
         gSaveContext.save.info.equips.equipment &= ~(0xF << (EQUIP_TYPE_SWORD * 4));
         gSaveContext.save.info.equips.equipment |= EQUIP_VALUE_SWORD_MASTER << (EQUIP_TYPE_SWORD * 4);
     }
@@ -730,16 +730,10 @@ void Sram_InitSave(FileSelectState* fileSelect, SramContext* sramCtx) {
     Sram_InitNewSave();
     #endif
 
-    gSaveContext.save.entranceIndex = ENTR_LINKS_HOUSE_0;
-    gSaveContext.save.linkAge = LINK_AGE_CHILD;
+    gSaveContext.save.entranceIndex = ENTR_HM_COMP_0;
+    gSaveContext.save.linkAge = LINK_AGE_ADULT;
     gSaveContext.save.dayTime = CLOCK_TIME(10, 0);
-    gSaveContext.save.cutsceneIndex = 0xFFF1;
-
-    #ifdef DEVELOPMENT
-    if (fileSelect->buttonIndex == 0) {
-        gSaveContext.save.cutsceneIndex = 0;
-    }
-    #endif
+    gSaveContext.save.cutsceneIndex = 0;
 
     for (offset = 0; offset < 8; offset++) {
         gSaveContext.save.info.playerData.playerName[offset] = fileSelect->fileNames[fileSelect->buttonIndex][offset];

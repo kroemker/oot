@@ -32,12 +32,68 @@ s16 hm_comp_room_8_header00_objectList[LENGTH_HM_COMP_ROOM_8_HEADER00_OBJECTLIST
 };
 
 ActorEntry hm_comp_room_8_header00_actorList[LENGTH_HM_COMP_ROOM_8_HEADER00_ACTORLIST] = {
+    // Silver Rupee/Large Rotating Pot
+    {
+        /* Actor ID   */ ACTOR_EN_G_SWITCH,
+        /* Position   */ { 1390, 736, -997 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0151
+    },
+
+    // Brick Pillar (Spirit Temple)
+    {
+        /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
+        /* Position   */ { 2210, 762, -1560 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0000
+    },
+
+    // Silver Rupee/Large Rotating Pot
+    {
+        /* Actor ID   */ ACTOR_EN_G_SWITCH,
+        /* Position   */ { 2540, 882, -208 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x1151
+    },
+
+    // Bubble
+    {
+        /* Actor ID   */ ACTOR_EN_BB,
+        /* Position   */ { 1884, 592, -969 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x00FE
+    },
+
+    // Metal Gate
+    {
+        /* Actor ID   */ ACTOR_BG_MIZU_SHUTTER,
+        /* Position   */ { 2210, 771, -521 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(99.025), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x000B
+    },
+
     // Sink Stone Platform
     {
         /* Actor ID   */ ACTOR_BG_HIDAN_SIMA,
-        /* Position   */ { 2076, 592, 118 },
+        /* Position   */ { 1756, 592, -1352 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x0000
+    },
+
+    // Bubble
+    {
+        /* Actor ID   */ ACTOR_EN_BB,
+        /* Position   */ { 2397, 592, -118 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x00FE
+    },
+
+    // Dungeon Switches
+    {
+        /* Actor ID   */ ACTOR_OBJ_SWITCH,
+        /* Position   */ { 2436, 678, 135 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0B00
     },
 
     // Breakable Pot
@@ -48,12 +104,44 @@ ActorEntry hm_comp_room_8_header00_actorList[LENGTH_HM_COMP_ROOM_8_HEADER00_ACTO
         /* Parameters */ 0x2403
     },
 
+    // Silver Rupee/Large Rotating Pot
+    {
+        /* Actor ID   */ ACTOR_EN_G_SWITCH,
+        /* Position   */ { 2670, 682, -1039 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x1151
+    },
+
+    // Bubble
+    {
+        /* Actor ID   */ ACTOR_EN_BB,
+        /* Position   */ { 1799, 592, -1260 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x00FE
+    },
+
+    // Stationary Flame Thrower Statue
+    {
+        /* Actor ID   */ ACTOR_BG_HIDAN_SEKIZOU,
+        /* Position   */ { 2158, 771, -668 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(281.689), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0000
+    },
+
     // Breakable Pot
     {
         /* Actor ID   */ ACTOR_OBJ_TSUBO,
         /* Position   */ { 1363, 736, -878 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x2203
+    },
+
+    // Lower Part of Megaton Statue
+    {
+        /* Actor ID   */ ACTOR_BG_HIDAN_DALM,
+        /* Position   */ { 1758, 773, -508 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(90.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0D00
     },
 
     // Breakable Pot
@@ -67,17 +155,17 @@ ActorEntry hm_comp_room_8_header00_actorList[LENGTH_HM_COMP_ROOM_8_HEADER00_ACTO
     // Silver Rupee/Large Rotating Pot
     {
         /* Actor ID   */ ACTOR_EN_G_SWITCH,
-        /* Position   */ { 2192, 762, -1607 },
+        /* Position   */ { 3371, 1094, 0 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x1151
     },
 
-    // Bubble
+    // Brick Pillar (Spirit Temple)
     {
-        /* Actor ID   */ ACTOR_EN_BB,
-        /* Position   */ { 1799, 592, -1260 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x00FE
+        /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
+        /* Position   */ { 2171, 762, -1560 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0000
     },
 
     // Sink Stone Platform
@@ -91,49 +179,17 @@ ActorEntry hm_comp_room_8_header00_actorList[LENGTH_HM_COMP_ROOM_8_HEADER00_ACTO
     // Silver Rupee/Large Rotating Pot
     {
         /* Actor ID   */ ACTOR_EN_G_SWITCH,
-        /* Position   */ { 3371, 1094, 0 },
+        /* Position   */ { 2192, 762, -1607 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x1151
     },
 
-    // Metal Gate
+    // Sink Stone Platform
     {
-        /* Actor ID   */ ACTOR_BG_MIZU_SHUTTER,
-        /* Position   */ { 2210, 771, -521 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(99.025), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x000B
-    },
-
-    // Bubble
-    {
-        /* Actor ID   */ ACTOR_EN_BB,
-        /* Position   */ { 1884, 592, -969 },
+        /* Actor ID   */ ACTOR_BG_HIDAN_SIMA,
+        /* Position   */ { 2076, 592, 118 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x00FE
-    },
-
-    // Breakable Pot
-    {
-        /* Actor ID   */ ACTOR_OBJ_TSUBO,
-        /* Position   */ { 1363, 736, -832 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x2003
-    },
-
-    // Bubble
-    {
-        /* Actor ID   */ ACTOR_EN_BB,
-        /* Position   */ { 2397, 592, -118 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x00FE
-    },
-
-    // Silver Rupee/Large Rotating Pot
-    {
-        /* Actor ID   */ ACTOR_EN_G_SWITCH,
-        /* Position   */ { 2540, 882, -208 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x1151
+        /* Parameters */ 0x0000
     },
 
     // Lower Part of Megaton Statue
@@ -144,68 +200,12 @@ ActorEntry hm_comp_room_8_header00_actorList[LENGTH_HM_COMP_ROOM_8_HEADER00_ACTO
         /* Parameters */ 0x0E00
     },
 
-    // Dungeon Switches
+    // Breakable Pot
     {
-        /* Actor ID   */ ACTOR_OBJ_SWITCH,
-        /* Position   */ { 2436, 678, 135 },
+        /* Actor ID   */ ACTOR_OBJ_TSUBO,
+        /* Position   */ { 1363, 736, -832 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0B00
-    },
-
-    // Silver Rupee/Large Rotating Pot
-    {
-        /* Actor ID   */ ACTOR_EN_G_SWITCH,
-        /* Position   */ { 1390, 736, -997 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0151
-    },
-
-    // Stationary Flame Thrower Statue
-    {
-        /* Actor ID   */ ACTOR_BG_HIDAN_SEKIZOU,
-        /* Position   */ { 2158, 771, -668 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(281.689), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0000
-    },
-
-    // Lower Part of Megaton Statue
-    {
-        /* Actor ID   */ ACTOR_BG_HIDAN_DALM,
-        /* Position   */ { 1758, 853, -508 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(90.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0F01
-    },
-
-    // Silver Rupee/Large Rotating Pot
-    {
-        /* Actor ID   */ ACTOR_EN_G_SWITCH,
-        /* Position   */ { 2670, 682, -1039 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x1151
-    },
-
-    // Silver Rupee/Large Rotating Pot
-    {
-        /* Actor ID   */ ACTOR_EN_G_SWITCH,
-        /* Position   */ { 2560, 678, 168 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x1151
-    },
-
-    // Brick Pillar (Spirit Temple)
-    {
-        /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
-        /* Position   */ { 2210, 762, -1560 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0000
-    },
-
-    // Brick Pillar (Spirit Temple)
-    {
-        /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
-        /* Position   */ { 2171, 762, -1560 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0000
+        /* Parameters */ 0x2003
     },
 
     // Metal Gate
@@ -216,20 +216,20 @@ ActorEntry hm_comp_room_8_header00_actorList[LENGTH_HM_COMP_ROOM_8_HEADER00_ACTO
         /* Parameters */ 0x0011
     },
 
+    // Silver Rupee/Large Rotating Pot
+    {
+        /* Actor ID   */ ACTOR_EN_G_SWITCH,
+        /* Position   */ { 2560, 678, 168 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x1151
+    },
+
     // Lower Part of Megaton Statue
     {
         /* Actor ID   */ ACTOR_BG_HIDAN_DALM,
-        /* Position   */ { 1758, 773, -508 },
+        /* Position   */ { 1758, 853, -508 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(90.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0D00
-    },
-
-    // Sink Stone Platform
-    {
-        /* Actor ID   */ ACTOR_BG_HIDAN_SIMA,
-        /* Position   */ { 1756, 592, -1352 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0000
+        /* Parameters */ 0x0F01
     },
 };
 
@@ -1074,7 +1074,7 @@ Gfx hm_comp_dl_Geometry_mesh_layer_Opaque_tri_0[] = {
 	gsSPEndDisplayList(),
 };
 
-Vtx hm_comp_dl_Geometry_mesh_layer_Opaque_vtx_1[100] = {
+Vtx hm_comp_dl_Geometry_mesh_layer_Opaque_vtx_1[96] = {
 	{{ {1463, 736, -1193}, 0, {-12907, -7932}, {255, 255, 255, 255} }},
 	{{ {1331, 736, -1193}, 0, {-14864, -7932}, {255, 255, 255, 255} }},
 	{{ {1331, 736, -1027}, 0, {-14864, -5470}, {255, 255, 255, 255} }},
@@ -1139,10 +1139,6 @@ Vtx hm_comp_dl_Geometry_mesh_layer_Opaque_vtx_1[100] = {
 	{{ {2845, 818, -718}, 0, {7652, -875}, {255, 255, 255, 255} }},
 	{{ {2729, 818, -737}, 0, {5921, -1153}, {255, 255, 255, 255} }},
 	{{ {2753, 818, -595}, 0, {6280, 957}, {138, 138, 138, 255} }},
-	{{ {1672, 773, 373}, 0, {-9800, 2656}, {94, 94, 94, 255} }},
-	{{ {1612, 773, 373}, 0, {-10692, 2656}, {94, 94, 94, 255} }},
-	{{ {1612, 877, 373}, 0, {-10692, 1116}, {94, 94, 94, 255} }},
-	{{ {1672, 877, 373}, 0, {-9800, 1116}, {94, 94, 94, 255} }},
 	{{ {3090, 744, -1575}, 0, {11284, -13618}, {192, 192, 192, 255} }},
 	{{ {2926, 748, -1575}, 0, {8853, -13618}, {192, 192, 192, 255} }},
 	{{ {2926, 748, -1488}, 0, {8853, -12322}, {254, 254, 254, 255} }},
@@ -1202,19 +1198,17 @@ Gfx hm_comp_dl_Geometry_mesh_layer_Opaque_tri_1[] = {
 	gsSP2Triangles(16, 19, 22, 0, 16, 22, 23, 0),
 	gsSP2Triangles(24, 25, 26, 0, 24, 26, 27, 0),
 	gsSP2Triangles(28, 29, 30, 0, 28, 30, 31, 0),
-	gsSPVertex(hm_comp_dl_Geometry_mesh_layer_Opaque_vtx_1 + 64, 30, 0),
+	gsSPVertex(hm_comp_dl_Geometry_mesh_layer_Opaque_vtx_1 + 64, 32, 0),
 	gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
-	gsSP2Triangles(4, 5, 6, 0, 4, 6, 7, 0),
-	gsSP2Triangles(8, 9, 10, 0, 10, 11, 8, 0),
-	gsSP2Triangles(10, 12, 11, 0, 13, 14, 15, 0),
-	gsSP2Triangles(13, 15, 16, 0, 17, 18, 19, 0),
-	gsSP2Triangles(17, 20, 18, 0, 18, 20, 21, 0),
-	gsSP2Triangles(18, 21, 22, 0, 23, 24, 25, 0),
-	gsSP2Triangles(23, 25, 26, 0, 26, 27, 28, 0),
-	gsSP1Triangle(26, 28, 29, 0),
-	gsSPVertex(hm_comp_dl_Geometry_mesh_layer_Opaque_vtx_1 + 94, 6, 0),
-	gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
-	gsSP2Triangles(3, 4, 0, 0, 3, 5, 4, 0),
+	gsSP2Triangles(4, 5, 6, 0, 6, 7, 4, 0),
+	gsSP2Triangles(6, 8, 7, 0, 9, 10, 11, 0),
+	gsSP2Triangles(9, 11, 12, 0, 13, 14, 15, 0),
+	gsSP2Triangles(13, 16, 14, 0, 14, 16, 17, 0),
+	gsSP2Triangles(14, 17, 18, 0, 19, 20, 21, 0),
+	gsSP2Triangles(19, 21, 22, 0, 22, 23, 24, 0),
+	gsSP2Triangles(22, 24, 25, 0, 26, 27, 28, 0),
+	gsSP2Triangles(26, 28, 29, 0, 29, 30, 26, 0),
+	gsSP1Triangle(29, 31, 30, 0),
 	gsSPEndDisplayList(),
 };
 

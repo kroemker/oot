@@ -211,7 +211,7 @@ void EnGb_Init(Actor* thisx, PlayState* play) {
     focusOffset.z = 44.0f;
     Matrix_MultVec3f(&focusOffset, &this->dyna.actor.focus.pos);
     this->dyna.actor.focus.pos.y += 62.5f;
-    func_80A2F180(this);
+    //func_80A2F180(this);
     this->actionFunc = func_80A2F83C;
 }
 
@@ -268,6 +268,55 @@ void func_80A2F7C0(EnGb* this) {
     this->actionFunc = func_80A2FC70;
 }
 
+typedef enum {
+    GB_MESSAGE_HELLO = 0x71B9,
+    GB_MESSAGE_NO_DUDE,
+    GB_MESSAGE_DOOMED,
+    GB_MESSAGE_FAREWELL,
+} PoeManMessages;
+
+void EnGb_Talk(EnGb* this, PlayState* play) {
+    u16 message;
+    switch (this->dyna.actor.textId) {
+        case GB_MESSAGE_HELLO:
+        case GB_MESSAGE_NO_DUDE:
+            if ((Message_GetState(&play->msgCtx) == TEXT_STATE_CHOICE) && Message_ShouldAdvance(play)) {
+                switch (play->msgCtx.choiceIndex) {
+                    case 0:
+                        Message_ContinueTextbox(play, GB_MESSAGE_DOOMED);
+                        this->dyna.actor.textId = GB_MESSAGE_DOOMED;
+                        break;
+                    case 1:
+                        message = this->dyna.actor.textId == GB_MESSAGE_HELLO ? GB_MESSAGE_NO_DUDE : GB_MESSAGE_FAREWELL;
+                        Message_ContinueTextbox(play, message);
+                        this->dyna.actor.textId = message;
+                        break;
+                }
+            }
+            break;
+        case GB_MESSAGE_DOOMED:
+            if ((Message_GetState(&play->msgCtx) == TEXT_STATE_CLOSING)) {
+                Play_TriggerRespawn(play);
+                gSaveContext.respawnFlag = -2;
+                SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0);
+                Sfx_PlaySfxCentered2(NA_SE_OC_ABYSS);
+                play->transitionType = TRANS_TYPE_FADE_BLACK;
+            }
+            break;
+        case GB_MESSAGE_FAREWELL:
+            if ((Message_GetState(&play->msgCtx) == TEXT_STATE_CLOSING)) {
+                play->linkAgeOnLoad = LINK_AGE_CHILD;
+                play->nextEntranceIndex = ENTR_LINKS_HOUSE_0;
+                gSaveContext.save.cutsceneIndex = 0xFFF0;
+                play->transitionTrigger = TRANS_TRIGGER_START;
+                play->transitionType = TRANS_TYPE_FADE_WHITE;
+                Audio_SetCutsceneFlag(0);
+                gSaveContext.cutsceneTransitionControl = 1;
+            }
+            break;
+    }
+}
+
 void func_80A2F83C(EnGb* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
@@ -279,8 +328,11 @@ void func_80A2F83C(EnGb* this, PlayState* play) {
             return;
         }
     }
+
+    this->dyna.actor.textId = GB_MESSAGE_HELLO;
+
     if (Actor_TalkOfferAccepted(&this->dyna.actor, play)) {
-        switch (func_8002F368(play)) {
+        /*switch (func_8002F368(play)) {
             case EXCH_ITEM_NONE:
                 func_80A2F180(this);
                 this->actionFunc = func_80A2F94C;
@@ -293,11 +345,12 @@ void func_80A2F83C(EnGb* this, PlayState* play) {
                 player->actor.textId = 0x70F7;
                 this->actionFunc = func_80A2FA50;
                 break;
-        }
-        return;
+        }*/
+        this->actionFunc = EnGb_Talk;
     }
     if (this->dyna.actor.xzDistToPlayer < 100.0f) {
-        Actor_OfferTalkExchangeEquiCylinder(&this->dyna.actor, play, 100.0f, EXCH_ITEM_BOTTLE_POE);
+        //Actor_OfferTalkExchangeEquiCylinder(&this->dyna.actor, play, 100.0f, EXCH_ITEM_BOTTLE_POE);
+        Actor_OfferTalk(&this->dyna.actor, play, 100.0f);
     }
 }
 
@@ -402,8 +455,8 @@ void EnGb_Update(Actor* thisx, PlayState* play2) {
     this->frameTimer++;
     SkelAnime_Update(&this->skelAnime);
     this->actionFunc(this, play);
-    this->dyna.actor.textId = this->textId;
-    func_80A2F608(this);
+    //this->dyna.actor.textId = this->textId;
+    //func_80A2F608(this);
     CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
 
     for (i = 0; i < ARRAY_COUNT(this->bottlesColliders); i++) {

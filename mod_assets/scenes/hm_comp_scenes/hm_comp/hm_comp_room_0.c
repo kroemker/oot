@@ -33,25 +33,25 @@ ActorEntry hm_comp_room_0_header00_actorList[LENGTH_HM_COMP_ROOM_0_HEADER00_ACTO
     // Breakable Pot
     {
         /* Actor ID   */ ACTOR_OBJ_TSUBO,
-        /* Position   */ { -219, -53, 180 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0003
-    },
-
-    // Breakable Pot
-    {
-        /* Actor ID   */ ACTOR_OBJ_TSUBO,
         /* Position   */ { -177, -53, 219 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x000E
     },
 
+    // Heart Container
+    {
+        /* Actor ID   */ ACTOR_ITEM_B_HEART,
+        /* Position   */ { -687, 545, 1 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0000
+    },
+
     // Breakable Pot
     {
         /* Actor ID   */ ACTOR_OBJ_TSUBO,
-        /* Position   */ { -219, -53, 219 },
+        /* Position   */ { -219, -53, 180 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0012
+        /* Parameters */ 0x0003
     },
 
     // Breakable Pot
@@ -70,12 +70,12 @@ ActorEntry hm_comp_room_0_header00_actorList[LENGTH_HM_COMP_ROOM_0_HEADER00_ACTO
         /* Parameters */ 0x009
     },
 
-    // Heart Container
+    // Breakable Pot
     {
-        /* Actor ID   */ ACTOR_ITEM_B_HEART,
-        /* Position   */ { -687, 545, 1 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0000
+        /* Actor ID   */ ACTOR_OBJ_TSUBO,
+        /* Position   */ { -219, -53, 219 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0012
     },
 
     // Breakable Pot

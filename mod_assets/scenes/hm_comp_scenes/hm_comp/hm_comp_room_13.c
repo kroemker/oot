@@ -38,20 +38,20 @@ ActorEntry hm_comp_room_13_header00_actorList[LENGTH_HM_COMP_ROOM_13_HEADER00_AC
         /* Parameters */ 0x0005
     },
 
-    // Stalfos
-    {
-        /* Actor ID   */ ACTOR_EN_TEST,
-        /* Position   */ { -3181, 634, -4135 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0005
-    },
-
     // Treasure Chest
     {
         /* Actor ID   */ ACTOR_EN_BOX,
         /* Position   */ { -3181, 634, -4262 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(270.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x1B4A
+    },
+
+    // Stalfos
+    {
+        /* Actor ID   */ ACTOR_EN_TEST,
+        /* Position   */ { -3181, 634, -4135 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0005
     },
 };
 

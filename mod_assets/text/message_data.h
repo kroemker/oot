@@ -243,10 +243,9 @@ SHIFT("\x47")  COLOR(RED) "GAGNE!!" COLOR(DEFAULT)  EVENT
 )
 
 DEFINE_MESSAGE(0x0010, TEXTBOX_TYPE_BLUE, TEXTBOX_POS_BOTTOM,
-ITEM_ICON("\x25")  QUICKTEXT_ENABLE "You borrowed a " COLOR(RED) "Skull Mask" COLOR(DEFAULT) "." QUICKTEXT_DISABLE "\n"
-"Wear it with " COLOR(YELLOW) "[C]" COLOR(DEFAULT) " to show it off!\n"
-"You feel like a monster while you\n"
-"wear this mask !"
+UNSKIPPABLE "The path will open only for those\n"
+"who are courageous enough\n"
+"to ride into the darkness."
 ,
 ITEM_ICON("\x25")  QUICKTEXT_ENABLE "Die " COLOR(RED) "Schädel-Maske" COLOR(DEFAULT) "!" QUICKTEXT_DISABLE "\n"
 "Trage sie mit " COLOR(YELLOW) "[C]" COLOR(DEFAULT) ", um andere\n"
@@ -7780,38 +7779,25 @@ SHIFT("\x3C") "Jabu-Jabu! \n"
 SHIFT("\x25") "--Zora le XVIème, Roi" QUICKTEXT_DISABLE
 )
 
-DEFINE_MESSAGE(0x0310, TEXTBOX_TYPE_WOODEN, TEXTBOX_POS_VARIABLE,
-QUICKTEXT_ENABLE  SHIFT("\x23")  COLOR(PURPLE) "Forest Training Center\n"
-COLOR(DEFAULT)  SHIFT("\x15") "Don't recklessly cut signs--\n"
-SHIFT("\x28") "read them carefully!" QUICKTEXT_DISABLE
+DEFINE_MESSAGE(0x0310, TEXTBOX_TYPE_WOODEN, TEXTBOX_POS_BOTTOM,
+QUICKTEXT_ENABLE "The path will open only for those\n"
+"who are courageous enough\n"
+"to ride into the darkness."
 ,
-QUICKTEXT_ENABLE  SHIFT("\x24")  COLOR(PURPLE) "Kokiri Trainingslager" COLOR(RED) "\n"
-COLOR(DEFAULT)  SHIFT("\x14") "Zerstöre die Schilder nicht!\n"
-SHIFT("\x48") "Lies sie!" QUICKTEXT_DISABLE
+""
 ,
-QUICKTEXT_ENABLE  SHIFT("\x0F")  COLOR(PURPLE) "Aire d'Entraînement Sylvestre" COLOR(RED) "\n"
-COLOR(DEFAULT)  SHIFT("\x0F") "Prière de ne pas trancher les\n"
-SHIFT("\x0F") "pancartes comme un barbare..." QUICKTEXT_DISABLE
+""
 )
 
-DEFINE_MESSAGE(0x0311, TEXTBOX_TYPE_WOODEN, TEXTBOX_POS_VARIABLE,
-QUICKTEXT_ENABLE  SHIFT("\x12") "All those reckless enough to\n"
-SHIFT("\x0B") "venture into the desert--please\n"
-SHIFT("\x2F") "drop by our shop." QUICKTEXT_DISABLE
-BOX_BREAK
-QUICKTEXT_ENABLE  SHIFT("\x33")  COLOR(YELLOW) "Carpet Merchant" COLOR(DEFAULT)  QUICKTEXT_DISABLE
+DEFINE_MESSAGE(0x0311, TEXTBOX_TYPE_WOODEN, TEXTBOX_POS_BOTTOM,
+QUICKTEXT_ENABLE "A forest grows between water and light,\n"
+"fire is extinguished by water,\n"
+"shadow disappears through light,\n"
+"spirits exist next to light or shadow."
 ,
-QUICKTEXT_ENABLE  SHIFT("\x11") "Oh, Ihr rastlosen Abenteurer,\n"
-SHIFT("\x05") "die Ihr durch die Wüste wandert,\n"
-SHIFT("\x41") "besucht mich." QUICKTEXT_DISABLE
-BOX_BREAK
-QUICKTEXT_ENABLE  SHIFT("\x2F")  COLOR(YELLOW) "Fliegender Händler" COLOR(DEFAULT)  QUICKTEXT_DISABLE
+""
 ,
-QUICKTEXT_ENABLE  SHIFT("\x12") "A ceux assez fous pour se \n"
-SHIFT("\x1E") "risquer dans le désert: \n"
-SHIFT("\x25") "Passez donc me voir!" QUICKTEXT_DISABLE
-BOX_BREAK
-QUICKTEXT_ENABLE  SHIFT("\x2E")  COLOR(YELLOW) "Marchand de Tapis" COLOR(DEFAULT)  QUICKTEXT_DISABLE
+""
 )
 
 DEFINE_MESSAGE(0x0312, TEXTBOX_TYPE_WOODEN, TEXTBOX_POS_VARIABLE,
@@ -41108,6 +41094,55 @@ TWO_CHOICE  COLOR(ADJUSTABLE) "I found some helpful stuff\n"
 , ""
 )
 
+DEFINE_MESSAGE(0x71B9, TEXTBOX_TYPE_BLACK, TEXTBOX_POS_VARIABLE,
+UNSKIPPABLE "Hello there... heh heh heh\n"
+"Not many people manage to come\n"
+"here. You must be very clever."
+BOX_BREAK
+UNSKIPPABLE "Aaanyways since you are here,\n"
+"do you have any " COLOR(PURPLE) "souls" COLOR(DEFAULT) "\n"
+"for sale? If you do I will reward\n"
+"you greatly..."
+BOX_BREAK
+UNSKIPPABLE "Heh heh heh... so?\n"
+"\n"
+TWO_CHOICE  COLOR(ADJUSTABLE) "I have some\n"
+"Not really" COLOR(DEFAULT)
+, ""
+, ""
+)
+
+DEFINE_MESSAGE(0x71BA, TEXTBOX_TYPE_BLACK, TEXTBOX_POS_VARIABLE,
+UNSKIPPABLE "No dude, you gotta give me souls!\n"
+"\n"
+TWO_CHOICE  COLOR(ADJUSTABLE) "Okay, here you go\n"
+"It's none of your business" COLOR(DEFAULT)
+, ""
+, ""
+)
+
+DEFINE_MESSAGE(0x71BB, TEXTBOX_TYPE_BLACK, TEXTBOX_POS_VARIABLE,
+UNSKIPPABLE "Ohh great... heh heh heh!"
+BOX_BREAK_DELAYED("\x28")
+UNSKIPPABLE "Then it is settled!\n"
+"I have another one in my collection.\n"
+"And just like the others\n"
+"you will wander this place forever."
+BOX_BREAK
+"F " TEXT_SPEED("\x02") "O R E V E R ! ! !" TEXT_SPEED("\x00")
+, ""
+, ""
+)
+
+DEFINE_MESSAGE(0x71BC, TEXTBOX_TYPE_BLACK, TEXTBOX_POS_VARIABLE,
+UNSKIPPABLE "..."
+BOX_BREAK_DELAYED("\x28")
+UNSKIPPABLE "You passed the last test!\n"
+"You made it.\n"
+"Congrats!"
+, ""
+, ""
+)
 
 #ifdef DEFINE_MESSAGE_FFFC
 DEFINE_MESSAGE(0xFFFC, TEXTBOX_TYPE_BLACK, TEXTBOX_POS_VARIABLE,

@@ -28,6 +28,14 @@ s16 hm_comp_room_11_header00_objectList[LENGTH_HM_COMP_ROOM_11_HEADER00_OBJECTLI
 };
 
 ActorEntry hm_comp_room_11_header00_actorList[LENGTH_HM_COMP_ROOM_11_HEADER00_ACTORLIST] = {
+    // Treasure Chest
+    {
+        /* Actor ID   */ ACTOR_EN_BOX,
+        /* Position   */ { 3669, -58, 670 },
+        /* Rotation   */ { 0, 0, 19 },
+        /* Parameters */ 0xBB22
+    },
+
     // Dungeon Switches
     {
         /* Actor ID   */ ACTOR_OBJ_SWITCH,
@@ -36,12 +44,20 @@ ActorEntry hm_comp_room_11_header00_actorList[LENGTH_HM_COMP_ROOM_11_HEADER00_AC
         /* Parameters */ 0x9300
     },
 
-    // Treasure Chest
+    // Dungeon Switches
     {
-        /* Actor ID   */ ACTOR_EN_BOX,
-        /* Position   */ { 3669, -58, 670 },
-        /* Rotation   */ { 0, 0, 19 },
-        /* Parameters */ 0xBB22
+        /* Actor ID   */ ACTOR_OBJ_SWITCH,
+        /* Position   */ { 3317, -58, 750 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x9300
+    },
+
+    // Dungeon Switches
+    {
+        /* Actor ID   */ ACTOR_OBJ_SWITCH,
+        /* Position   */ { 3477, -58, 750 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x9300
     },
 
     // Dungeon Switches
@@ -72,22 +88,6 @@ ActorEntry hm_comp_room_11_header00_actorList[LENGTH_HM_COMP_ROOM_11_HEADER00_AC
     {
         /* Actor ID   */ ACTOR_OBJ_SWITCH,
         /* Position   */ { 3397, -58, 590 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x9300
-    },
-
-    // Dungeon Switches
-    {
-        /* Actor ID   */ ACTOR_OBJ_SWITCH,
-        /* Position   */ { 3317, -58, 750 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x9300
-    },
-
-    // Dungeon Switches
-    {
-        /* Actor ID   */ ACTOR_OBJ_SWITCH,
-        /* Position   */ { 3477, -58, 750 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x9300
     },

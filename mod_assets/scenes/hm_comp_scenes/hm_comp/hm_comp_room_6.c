@@ -35,97 +35,17 @@ ActorEntry hm_comp_room_6_header00_actorList[LENGTH_HM_COMP_ROOM_6_HEADER00_ACTO
     // Spinning Flame Thrower Statue
     {
         /* Actor ID   */ ACTOR_BG_HIDAN_RSEKIZOU,
-        /* Position   */ { -2082, -92, -136 },
+        /* Position   */ { -2413, -92, -403 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x0000
-    },
-
-    // Custom Actor
-    {
-        /* Actor ID   */ ACTOR_PLATFORMS,
-        /* Position   */ { -2185, 221, 178 },
-        /* Rotation   */ { 20, 0, 0 },
-        /* Parameters */ 0x6404
     },
 
     // Dungeon Switches
     {
         /* Actor ID   */ ACTOR_OBJ_SWITCH,
-        /* Position   */ { -1564, -38, -997 },
+        /* Position   */ { -1487, 518, -1152 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0300
-    },
-
-    // Small Wooden Crate
-    {
-        /* Actor ID   */ ACTOR_OBJ_KIBAKO,
-        /* Position   */ { -2782, -61, -1104 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0401
-    },
-
-    // Stationary Flame Thrower Statue
-    {
-        /* Actor ID   */ ACTOR_BG_HIDAN_SEKIZOU,
-        /* Position   */ { -2009, -99, 680 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(270.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0000
-    },
-
-    // Spinning Flame Thrower Statue
-    {
-        /* Actor ID   */ ACTOR_BG_HIDAN_RSEKIZOU,
-        /* Position   */ { -1723, -92, -403 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0000
-    },
-
-    // Custom Actor
-    {
-        /* Actor ID   */ ACTOR_PLATFORMS,
-        /* Position   */ { -1693, 221, 178 },
-        /* Rotation   */ { 20, 0, 0 },
-        /* Parameters */ 0x6404
-    },
-
-    // Small Wooden Crate
-    {
-        /* Actor ID   */ ACTOR_OBJ_KIBAKO,
-        /* Position   */ { -2782, -61, -1040 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0301
-    },
-
-    // Small Wooden Crate
-    {
-        /* Actor ID   */ ACTOR_OBJ_KIBAKO,
-        /* Position   */ { -2782, -61, -971 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0301
-    },
-
-    // Custom Actor
-    {
-        /* Actor ID   */ ACTOR_PLATFORMS,
-        /* Position   */ { -1577, 331, -525 },
-        /* Rotation   */ { 20, 0, 0 },
-        /* Parameters */ 0x6405
-    },
-
-    // Metal Gate
-    {
-        /* Actor ID   */ ACTOR_BG_MIZU_SHUTTER,
-        /* Position   */ { -1629, -38, -997 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(90.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0002
-    },
-
-    // Spinning Flame Thrower Statue
-    {
-        /* Actor ID   */ ACTOR_BG_HIDAN_RSEKIZOU,
-        /* Position   */ { -2413, -92, -403 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0000
+        /* Parameters */ 0x0582
     },
 
     // Custom Actor
@@ -139,15 +59,31 @@ ActorEntry hm_comp_room_6_header00_actorList[LENGTH_HM_COMP_ROOM_6_HEADER00_ACTO
     // Dungeon Switches
     {
         /* Actor ID   */ ACTOR_OBJ_SWITCH,
-        /* Position   */ { -2677, 221, 193 },
+        /* Position   */ { -1487, -85, 193 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0620
+        /* Parameters */ 0x0220
+    },
+
+    // Custom Actor
+    {
+        /* Actor ID   */ ACTOR_PLATFORMS,
+        /* Position   */ { -1693, 221, 178 },
+        /* Rotation   */ { 20, 0, 0 },
+        /* Parameters */ 0x6404
     },
 
     // Spinning Flame Thrower Statue
     {
         /* Actor ID   */ ACTOR_BG_HIDAN_RSEKIZOU,
         /* Position   */ { -2082, -92, -648 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0000
+    },
+
+    // Spinning Flame Thrower Statue
+    {
+        /* Actor ID   */ ACTOR_BG_HIDAN_RSEKIZOU,
+        /* Position   */ { -1723, -92, -403 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x0000
     },
@@ -160,12 +96,60 @@ ActorEntry hm_comp_room_6_header00_actorList[LENGTH_HM_COMP_ROOM_6_HEADER00_ACTO
         /* Parameters */ 0x1404
     },
 
-    // Metal Gate
+    // Small Wooden Crate
     {
-        /* Actor ID   */ ACTOR_BG_HIDAN_KOUSI,
-        /* Position   */ { -2244, -99, 367 },
+        /* Actor ID   */ ACTOR_OBJ_KIBAKO,
+        /* Position   */ { -2782, -61, -971 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x0301
+    },
+
+    // Spinning Flame Thrower Statue
+    {
+        /* Actor ID   */ ACTOR_BG_HIDAN_RSEKIZOU,
+        /* Position   */ { -2082, -92, -136 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0000
+    },
+
+    // Small Wooden Crate
+    {
+        /* Actor ID   */ ACTOR_OBJ_KIBAKO,
+        /* Position   */ { -2782, -61, -901 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0301
+    },
+
+    // Metal Gate
+    {
+        /* Actor ID   */ ACTOR_BG_MIZU_SHUTTER,
+        /* Position   */ { -1629, -38, -997 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(90.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0002
+    },
+
+    // Small Wooden Crate
+    {
+        /* Actor ID   */ ACTOR_OBJ_KIBAKO,
+        /* Position   */ { -2782, -61, -1040 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0301
+    },
+
+    // Custom Actor
+    {
+        /* Actor ID   */ ACTOR_PLATFORMS,
+        /* Position   */ { -1577, 331, -525 },
+        /* Rotation   */ { 20, 0, 0 },
+        /* Parameters */ 0x6405
+    },
+
+    // Dungeon Switches
+    {
+        /* Actor ID   */ ACTOR_OBJ_SWITCH,
+        /* Position   */ { -2677, 221, 193 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0620
     },
 
     // Stationary Flame Thrower Statue
@@ -176,20 +160,44 @@ ActorEntry hm_comp_room_6_header00_actorList[LENGTH_HM_COMP_ROOM_6_HEADER00_ACTO
         /* Parameters */ 0x0000
     },
 
-    // Dungeon Switches
-    {
-        /* Actor ID   */ ACTOR_OBJ_SWITCH,
-        /* Position   */ { -1487, -85, 193 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0220
-    },
-
     // Custom Actor
     {
         /* Actor ID   */ ACTOR_PLATFORMS,
         /* Position   */ { -2679, -131, -648 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x1800
+    },
+
+    // Small Wooden Crate
+    {
+        /* Actor ID   */ ACTOR_OBJ_KIBAKO,
+        /* Position   */ { -2782, -61, -1104 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0401
+    },
+
+    // Metal Gate
+    {
+        /* Actor ID   */ ACTOR_BG_HIDAN_KOUSI,
+        /* Position   */ { -2244, -99, 367 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0301
+    },
+
+    // Dungeon Switches
+    {
+        /* Actor ID   */ ACTOR_OBJ_SWITCH,
+        /* Position   */ { -1564, -38, -997 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0300
+    },
+
+    // Custom Actor
+    {
+        /* Actor ID   */ ACTOR_PLATFORMS,
+        /* Position   */ { -2185, 221, 178 },
+        /* Rotation   */ { 20, 0, 0 },
+        /* Parameters */ 0x6404
     },
 
     // Metal Gate
@@ -200,20 +208,12 @@ ActorEntry hm_comp_room_6_header00_actorList[LENGTH_HM_COMP_ROOM_6_HEADER00_ACTO
         /* Parameters */ 0x0301
     },
 
-    // Dungeon Switches
+    // Stationary Flame Thrower Statue
     {
-        /* Actor ID   */ ACTOR_OBJ_SWITCH,
-        /* Position   */ { -1487, 518, -1152 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0582
-    },
-
-    // Small Wooden Crate
-    {
-        /* Actor ID   */ ACTOR_OBJ_KIBAKO,
-        /* Position   */ { -2782, -61, -901 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0301
+        /* Actor ID   */ ACTOR_BG_HIDAN_SEKIZOU,
+        /* Position   */ { -2009, -99, 680 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(270.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0000
     },
 };
 

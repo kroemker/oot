@@ -24,10 +24,6 @@ void KaleidoSetup_Update(PlayState* play) {
                 pauseCtx->debugState = 3;
             }
         } else if (CHECK_BTN_ALL(input->press.button, BTN_START)) {
-            #ifndef DEVELOPMENT
-                return; // disable menu in release builds
-            #endif
-
             // The start button was pressed, pause
             gSaveContext.prevHudVisibilityMode = gSaveContext.hudVisibilityMode;
 

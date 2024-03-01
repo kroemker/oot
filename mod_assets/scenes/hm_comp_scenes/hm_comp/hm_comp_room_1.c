@@ -33,6 +33,22 @@ s16 hm_comp_room_1_header00_objectList[LENGTH_HM_COMP_ROOM_1_HEADER00_OBJECTLIST
 };
 
 ActorEntry hm_comp_room_1_header00_actorList[LENGTH_HM_COMP_ROOM_1_HEADER00_ACTORLIST] = {
+    // Breakable Pot
+    {
+        /* Actor ID   */ ACTOR_OBJ_TSUBO,
+        /* Position   */ { -479, 736, -622 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x1808
+    },
+
+    // Custom Actor
+    {
+        /* Actor ID   */ ACTOR_FLOOR_SPIKES,
+        /* Position   */ { -130, 736, -1729 },
+        /* Rotation   */ { 0, 0, 1 },
+        /* Parameters */ 0x1100
+    },
+
     // Custom Actor
     {
         /* Actor ID   */ ACTOR_EN_ZOL,
@@ -44,41 +60,33 @@ ActorEntry hm_comp_room_1_header00_actorList[LENGTH_HM_COMP_ROOM_1_HEADER00_ACTO
     // Breakable Pot
     {
         /* Actor ID   */ ACTOR_OBJ_TSUBO,
-        /* Position   */ { -536, 736, -622 },
+        /* Position   */ { 422, 736, -622 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x140F
-    },
-
-    // Custom Actor
-    {
-        /* Actor ID   */ ACTOR_PLATFORMS,
-        /* Position   */ { 295, -61, -1491 },
-        /* Rotation   */ { 16, 0, 0 },
-        /* Parameters */ 0x1000
+        /* Parameters */ 0x1E03
     },
 
     // Keese
     {
         /* Actor ID   */ ACTOR_EN_FIREFLY,
-        /* Position   */ { -171, 216, -1126 },
+        /* Position   */ { 335, 125, -1485 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x3000
     },
 
-    // Custom Actor
+    // Square Signpost
     {
-        /* Actor ID   */ ACTOR_EN_ZOL,
-        /* Position   */ { -432, 736, -1634 },
+        /* Actor ID   */ ACTOR_EN_KANBAN,
+        /* Position   */ { 335, -61, -847 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0101
+        /* Parameters */ 0x0001
     },
 
-    // Custom Actor
+    // Breakable Pot
     {
-        /* Actor ID   */ ACTOR_PLATFORMS,
-        /* Position   */ { 400, -61, -1164 },
-        /* Rotation   */ { 16, 0, 0 },
-        /* Parameters */ 0x1000
+        /* Actor ID   */ ACTOR_OBJ_TSUBO,
+        /* Position   */ { -421, 736, -622 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x1603
     },
 
     // Breakable Pot
@@ -99,32 +107,64 @@ ActorEntry hm_comp_room_1_header00_actorList[LENGTH_HM_COMP_ROOM_1_HEADER00_ACTO
 
     // Custom Actor
     {
+        /* Actor ID   */ ACTOR_PLATFORMS,
+        /* Position   */ { 295, -61, -1491 },
+        /* Rotation   */ { 16, 0, 0 },
+        /* Parameters */ 0x1000
+    },
+
+    // Custom Actor
+    {
+        /* Actor ID   */ ACTOR_PLATFORMS,
+        /* Position   */ { 400, -61, -1164 },
+        /* Rotation   */ { 16, 0, 0 },
+        /* Parameters */ 0x1000
+    },
+
+    // Custom Actor
+    {
         /* Actor ID   */ ACTOR_FLOOR_SPIKES,
-        /* Position   */ { 160, 736, -1564 },
+        /* Position   */ { 511, 736, -1159 },
         /* Rotation   */ { 0, 0, 1 },
         /* Parameters */ 0x1100
     },
 
-    // Square Signpost
+    // Custom Actor
     {
-        /* Actor ID   */ ACTOR_EN_KANBAN,
-        /* Position   */ { 335, -61, -847 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x0001
+        /* Actor ID   */ ACTOR_WALL_PULL_SWITCH,
+        /* Position   */ { -576, 19, -735 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(90.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x1000
     },
 
-    // Keese
+    // Breakable Pot
     {
-        /* Actor ID   */ ACTOR_EN_FIREFLY,
-        /* Position   */ { 335, 125, -1485 },
+        /* Actor ID   */ ACTOR_OBJ_TSUBO,
+        /* Position   */ { -536, 736, -622 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x3000
+        /* Parameters */ 0x140F
+    },
+
+    // Custom Actor
+    {
+        /* Actor ID   */ ACTOR_FLOOR_SPIKES,
+        /* Position   */ { 356, 736, -1159 },
+        /* Rotation   */ { 0, 0, 1 },
+        /* Parameters */ 0x1100
     },
 
     // Custom Actor
     {
         /* Actor ID   */ ACTOR_FLOOR_SPIKES,
         /* Position   */ { -130, 736, -1564 },
+        /* Rotation   */ { 0, 0, 1 },
+        /* Parameters */ 0x1100
+    },
+
+    // Custom Actor
+    {
+        /* Actor ID   */ ACTOR_FLOOR_SPIKES,
+        /* Position   */ { 160, 736, -1564 },
         /* Rotation   */ { 0, 0, 1 },
         /* Parameters */ 0x1100
     },
@@ -139,34 +179,10 @@ ActorEntry hm_comp_room_1_header00_actorList[LENGTH_HM_COMP_ROOM_1_HEADER00_ACTO
 
     // Custom Actor
     {
-        /* Actor ID   */ ACTOR_FLOOR_SPIKES,
-        /* Position   */ { 511, 736, -1159 },
-        /* Rotation   */ { 0, 0, 1 },
-        /* Parameters */ 0x1100
-    },
-
-    // Custom Actor
-    {
-        /* Actor ID   */ ACTOR_FLOOR_SPIKES,
-        /* Position   */ { 356, 736, -1159 },
-        /* Rotation   */ { 0, 0, 1 },
-        /* Parameters */ 0x1100
-    },
-
-    // Breakable Pot
-    {
-        /* Actor ID   */ ACTOR_OBJ_TSUBO,
-        /* Position   */ { -421, 736, -622 },
+        /* Actor ID   */ ACTOR_EN_ZOL,
+        /* Position   */ { -432, 736, -1634 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x1603
-    },
-
-    // Custom Actor
-    {
-        /* Actor ID   */ ACTOR_WALL_PULL_SWITCH,
-        /* Position   */ { -576, 19, -735 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(90.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x1000
+        /* Parameters */ 0x0101
     },
 
     // Custom Actor
@@ -177,12 +193,12 @@ ActorEntry hm_comp_room_1_header00_actorList[LENGTH_HM_COMP_ROOM_1_HEADER00_ACTO
         /* Parameters */ 0x1100
     },
 
-    // Breakable Pot
+    // Keese
     {
-        /* Actor ID   */ ACTOR_OBJ_TSUBO,
-        /* Position   */ { 422, 736, -622 },
+        /* Actor ID   */ ACTOR_EN_FIREFLY,
+        /* Position   */ { -171, 216, -1126 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x1E03
+        /* Parameters */ 0x3000
     },
 
     // Custom Actor
@@ -191,22 +207,6 @@ ActorEntry hm_comp_room_1_header00_actorList[LENGTH_HM_COMP_ROOM_1_HEADER00_ACTO
         /* Position   */ { 19, -61, -1587 },
         /* Rotation   */ { 16, 0, 0 },
         /* Parameters */ 0x1000
-    },
-
-    // Breakable Pot
-    {
-        /* Actor ID   */ ACTOR_OBJ_TSUBO,
-        /* Position   */ { -479, 736, -622 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x1808
-    },
-
-    // Custom Actor
-    {
-        /* Actor ID   */ ACTOR_FLOOR_SPIKES,
-        /* Position   */ { -130, 736, -1729 },
-        /* Rotation   */ { 0, 0, 1 },
-        /* Parameters */ 0x1100
     },
 };
 

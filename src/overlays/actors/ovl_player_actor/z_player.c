@@ -23,6 +23,8 @@
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 #include "assets/objects/object_link_child/object_link_child.h"
 
+s32 Player_SetupAction(PlayState* play, Player* this, PlayerActionFunc actionFunc, s32 flags);
+
 #ifdef DEVELOPMENT
 #define PLAYER_SETUPPERACTIONFUNC_DEBUG(this, func) suaf_debug(this, func, #func)
 #define PLAYER_SETUPACTIONFUNC_DEBUG(play, this, func, flags) saf_debug(play, this, func, flags, #func)
@@ -39,8 +41,8 @@ s32 saf_debug(PlayState* play, Player* this, PlayerActionFunc func, s32 flags, c
     return Player_SetupAction(play, this, func, flags);
 }
 #else
-#define PLAYER_SETUPPERACTIONFUNC_DEBUG(this, func) Player_SetUpperActionFunc(this, func);
-#define PLAYER_SETUPACTIONFUNC_DEBUG(play, this, func, flags) Player_SetupAction(play, this, func, flags);
+#define PLAYER_SETUPPERACTIONFUNC_DEBUG(this, func) Player_SetUpperActionFunc(this, func)
+#define PLAYER_SETUPACTIONFUNC_DEBUG(play, this, func, flags) Player_SetupAction(play, this, func, flags)
 #endif
 
 // Some player animations are played at this reduced speed, for reasons yet unclear.

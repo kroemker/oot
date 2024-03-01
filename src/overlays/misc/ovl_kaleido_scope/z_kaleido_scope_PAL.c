@@ -2477,6 +2477,9 @@ void KaleidoScope_UpdateOpening(PlayState* play) {
     pauseCtx->unk_1EA += 4 * ZREG(46);
 
     if (pauseCtx->unk_1EA == (64 * ZREG(47))) {
+        pauseCtx->pageIndex = PAUSE_ITEM;
+        pauseCtx->state = PAUSE_STATE_SAVE_PROMPT;
+        return;
         // Finished opening
 
         func_80084BF4(play, 1);
@@ -3587,7 +3590,7 @@ void KaleidoScope_Update(PlayState* play) {
                         osSyncPrintf(VT_RST);
                     } else {
                         play->state.running = false;
-                        SET_NEXT_GAMESTATE(&play->state, TitleSetup_Init, TitleSetupState);
+                        SET_NEXT_GAMESTATE(&play->state, FileSelect_Init, FileSelectState);
                     }
                 }
             }

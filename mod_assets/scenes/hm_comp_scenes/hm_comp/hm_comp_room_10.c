@@ -31,47 +31,15 @@ ActorEntry hm_comp_room_10_header00_actorList[LENGTH_HM_COMP_ROOM_10_HEADER00_AC
     // Brick Pillar (Spirit Temple)
     {
         /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
-        /* Position   */ { 2124, -228, 671 },
+        /* Position   */ { 2729, -58, 1097 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x9200
+        /* Parameters */ 0x8000
     },
 
     // Brick Pillar (Spirit Temple)
     {
         /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
-        /* Position   */ { 2052, -58, -59 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x9200
-    },
-
-    // Brick Pillar (Spirit Temple)
-    {
-        /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
-        /* Position   */ { 1856, -58, 1353 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x9200
-    },
-
-    // Brick Pillar (Spirit Temple)
-    {
-        /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
-        /* Position   */ { 2906, 22, 1286 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x9200
-    },
-
-    // Brick Pillar (Spirit Temple)
-    {
-        /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
-        /* Position   */ { 2610, -58, 551 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x9200
-    },
-
-    // Brick Pillar (Spirit Temple)
-    {
-        /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
-        /* Position   */ { 2963, -58, 215 },
+        /* Position   */ { 1856, -58, 724 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x9200
     },
@@ -87,9 +55,33 @@ ActorEntry hm_comp_room_10_header00_actorList[LENGTH_HM_COMP_ROOM_10_HEADER00_AC
     // Brick Pillar (Spirit Temple)
     {
         /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
-        /* Position   */ { 2729, -58, 1097 },
+        /* Position   */ { 1856, -58, 1353 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x8000
+        /* Parameters */ 0x9200
+    },
+
+    // Brick Pillar (Spirit Temple)
+    {
+        /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
+        /* Position   */ { 2963, -58, 215 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x9200
+    },
+
+    // Brick Pillar (Spirit Temple)
+    {
+        /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
+        /* Position   */ { 2610, -58, 551 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x9200
+    },
+
+    // Brick Pillar (Spirit Temple)
+    {
+        /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
+        /* Position   */ { 1852, -58, 136 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0xD200
     },
 
     // Brick Pillar (Spirit Temple)
@@ -103,7 +95,7 @@ ActorEntry hm_comp_room_10_header00_actorList[LENGTH_HM_COMP_ROOM_10_HEADER00_AC
     // Brick Pillar (Spirit Temple)
     {
         /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
-        /* Position   */ { 1856, -58, 724 },
+        /* Position   */ { 2052, -58, -59 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x9200
     },
@@ -111,9 +103,17 @@ ActorEntry hm_comp_room_10_header00_actorList[LENGTH_HM_COMP_ROOM_10_HEADER00_AC
     // Brick Pillar (Spirit Temple)
     {
         /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
-        /* Position   */ { 1852, -58, 136 },
+        /* Position   */ { 2906, 22, 1286 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0xD200
+        /* Parameters */ 0x9200
+    },
+
+    // Brick Pillar (Spirit Temple)
+    {
+        /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
+        /* Position   */ { 2124, -228, 671 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x9200
     },
 };
 

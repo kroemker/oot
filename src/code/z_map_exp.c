@@ -213,6 +213,8 @@ void Map_InitRoomData(PlayState* play, s16 room) {
                 switch (room) {
                     case 0:
                     case 1:
+                    case 10:
+                    case 11:
                         osSyncPrintf("Set Spirit Temple BGM: room=%d\n", room);
                         func_800F5ACC(NA_BGM_SPIRIT_TEMPLE);
                         break;
@@ -220,6 +222,8 @@ void Map_InitRoomData(PlayState* play, s16 room) {
                     case 3:
                     case 4:
                     case 6:
+                    case 12:
+                    case 13:
                         osSyncPrintf("Set Forest Temple BGM: room=%d\n", room);
                         func_800F5ACC(NA_BGM_FOREST_TEMPLE);
                         break;
@@ -228,7 +232,16 @@ void Map_InitRoomData(PlayState* play, s16 room) {
                         osSyncPrintf("Set Fire Temple BGM: room=%d\n", room);
                         func_800F5ACC(NA_BGM_FIRE_TEMPLE);
                         break;
-                    default:
+                    case 14:
+                    case 15:
+                        osSyncPrintf("Set Water Temple BGM: room=%d\n", room);
+                        func_800F5ACC(NA_BGM_WATER_TEMPLE);
+                        break;
+                    case 16:
+                        osSyncPrintf("Set Potion Shop BGM: room=%d\n", room);
+                        func_800F5ACC(NA_BGM_POTION_SHOP);
+                        break;
+                    case 7:
                         osSyncPrintf("Disabling BGM: room=%d\n", room);
                         Audio_StopBgmAndFanfare(20);
                         break;

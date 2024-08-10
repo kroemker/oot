@@ -10,13 +10,13 @@ SHELL = /bin/bash
 -include .make_options.mk
 
 # If COMPARE is 1, check the output md5sum after building
-COMPARE ?= 1
+COMPARE ?= 0
 # If NON_MATCHING is 1, define the NON_MATCHING C flag when building
-NON_MATCHING ?= 0
+NON_MATCHING ?= 1
 # If ORIG_COMPILER is 1, compile with QEMU_IRIX and the original compiler
 ORIG_COMPILER ?= 0
 # If COMPILER is "gcc", compile with GCC instead of IDO.
-COMPILER ?= ido
+COMPILER ?= gcc
 # Target game version. Currently the following versions are supported:
 #   gc-us          GameCube US
 #   gc-eu          GameCube Europe/PAL
@@ -35,7 +35,9 @@ MIPS_BINUTILS_PREFIX ?= mips-linux-gnu-
 # Emulator w/ flags
 N64_EMULATOR ?=
 # Set to override game region in the ROM header. Options: JP, US, EU
-# REGION ?= US
+REGION ?= US
+
+DEBUG ?= 1
 
 CFLAGS ?=
 CPPFLAGS ?=
@@ -46,22 +48,22 @@ ifeq ($(VERSION),gc-us)
   REGION ?= US
   PAL := 0
   MQ := 0
-  DEBUG := 0
+  DEBUG ?= 0
 else ifeq ($(VERSION),gc-eu)
   REGION ?= EU
   PAL := 1
   MQ := 0
-  DEBUG := 0
+  DEBUG ?= 0
 else ifeq ($(VERSION),gc-eu-mq)
   REGION ?= EU
   PAL := 1
   MQ := 1
-  DEBUG := 0
+  DEBUG ?= 0
 else ifeq ($(VERSION),gc-eu-mq-dbg)
   REGION ?= EU
   PAL := 1
   MQ := 1
-  DEBUG := 1
+  DEBUG ?= 1
 else
 $(error Unsupported version $(VERSION))
 endif
@@ -399,7 +401,7 @@ endif
 
 #### Main Targets ###
 
-all: rom compress
+all: rom compress copy
 
 rom: $(ROM)
 ifneq ($(COMPARE),0)
@@ -412,6 +414,9 @@ ifneq ($(COMPARE),0)
 	@md5sum $(ROMC)
 	@md5sum -c $(BASEROM_DIR)/checksum-compressed.md5
 endif
+
+copy:
+	cp $(ROM) /mnt/c/Users/leokr/Desktop/
 
 clean:
 	$(RM) -r $(BUILD_DIR)

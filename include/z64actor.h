@@ -308,6 +308,7 @@ typedef struct Actor {
 #if OOT_DEBUG
     /* 0x13C */ char dbgPad[0x10];
 #endif
+    f32 speedCap;
 } Actor; // size = 0x14C
 
 typedef enum {

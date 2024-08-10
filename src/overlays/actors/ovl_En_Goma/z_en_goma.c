@@ -54,7 +54,7 @@ ActorProfile En_Goma_Profile = {
     /**/ EnGoma_Draw,
 };
 
-static ColliderCylinderInit D_80A4B7A0 = {
+static ColliderCylinderInit sAttackCollider = {
     {
         COLTYPE_HIT3,
         AT_ON | AT_TYPE_ENEMY,
@@ -74,7 +74,7 @@ static ColliderCylinderInit D_80A4B7A0 = {
     { 15, 30, 10, { 0, 0, 0 } },
 };
 
-static ColliderCylinderInit D_80A4B7CC = {
+static ColliderCylinderInit sBodyCollider = {
     {
         COLTYPE_HIT3,
         AT_NONE,
@@ -163,9 +163,9 @@ void EnGoma_Init(Actor* thisx, PlayState* play) {
         this->eggSquishAngle = Rand_ZeroOne() * 1000.0f;
         this->actionTimer = 50;
         Collider_InitCylinder(play, &this->colCyl1);
-        Collider_SetCylinder(play, &this->colCyl1, &this->actor, &D_80A4B7A0);
+        Collider_SetCylinder(play, &this->colCyl1, &this->actor, &sAttackCollider);
         Collider_InitCylinder(play, &this->colCyl2);
-        Collider_SetCylinder(play, &this->colCyl2, &this->actor, &D_80A4B7CC);
+        Collider_SetCylinder(play, &this->colCyl2, &this->actor, &sBodyCollider);
     }
 }
 

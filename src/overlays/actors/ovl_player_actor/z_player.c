@@ -2379,6 +2379,118 @@ s32 Player_GetItemOnButton(PlayState* play, s32 index) {
     }
 }
 
+void func_8083A060(Player* this, PlayState* play);
+
+s32 Player_SetupAction(PlayState* play, Player* this, PlayerActionFunc actionFunc, s32 flags);
+
+void Player_Action_TransformEnd(Player* this, PlayState* play);
+void Player_Action_TransformBack(Player* this, PlayState* play);
+void Player_Action_Transformed(Player* this, PlayState* play);
+void Player_Action_Transform(Player* this, PlayState* play);
+
+void Player_SetupTransformBack(Player* this, PlayState* play) {
+    Player_PlaySfx(this, NA_SE_PL_MAGIC_WIND_WARP);
+    Player_SetupAction(play, this, Player_Action_TransformBack, 0);
+    this->stateFlags3 |= PLAYER_STATE3_TRANSFORMING;
+    this->stateFlags3 &= ~PLAYER_STATE3_TRANSFORMED;
+}
+
+s32 Player_CheckTransform(Player* this, PlayState* play) {
+    if (CHECK_BTN_ALL(sControlInput->press.button, BTN_CLEFT)) {
+        if ((this->transformActor != NULL && this->transformActor->id == ACTOR_TRANSFORM_BABY_GOHMA)) {
+            Player_SetupTransformBack(this, play);
+        }
+        else {
+            Player_PlaySfx(this, NA_SE_PL_MAGIC_WIND_WARP);
+            Player_PlaySfx(this, NA_SE_EN_GOMA_BJR_CRY);
+            Player_SetupAction(play, this, Player_Action_Transform, 0);
+            this->av1.actionVar1 = ACTOR_TRANSFORM_BABY_GOHMA;
+            this->stateFlags3 |= PLAYER_STATE3_TRANSFORMING;
+        }
+        return 1;
+    }
+    return 0;
+}
+
+#define TRANSFORM_SCREEN_FILL_SPEED 50
+
+void Player_DisableTransform(Player* this, PlayState* play) {
+    this->stateFlags2 &= ~(PLAYER_STATE2_29 | PLAYER_STATE2_15); // disable player draw + most updating
+    this->stateFlags3 &= ~(PLAYER_STATE3_TRANSFORMED);
+    play->interfaceCtx.unk_1FA = false; // disable B button text
+    if (this->transformActor != NULL) {
+        Actor_Kill(this->transformActor);
+    }
+    this->transformActor = NULL;
+    this->actor.shape.shadowDraw = ActorShadow_DrawFeet;
+}
+
+void Player_Action_TransformEnd(Player* this, PlayState* play) {
+    play->envCtx.screenFillColor[3] = play->envCtx.screenFillColor[3] > TRANSFORM_SCREEN_FILL_SPEED ? play->envCtx.screenFillColor[3] - TRANSFORM_SCREEN_FILL_SPEED : 0;
+    if (play->envCtx.screenFillColor[3] == 0) {
+        this->stateFlags3 &= ~PLAYER_STATE3_TRANSFORMING;
+        play->envCtx.fillScreen = false;
+        func_8083A060(this, play); //return to stand still
+    }
+}
+
+void Player_Action_TransformBack(Player* this, PlayState* play) {
+    this->actor.speed = this->speedXZ = 0.0f;
+    play->envCtx.fillScreen = true;
+    play->envCtx.screenFillColor[0] = 160;
+    play->envCtx.screenFillColor[1] = 160;
+    play->envCtx.screenFillColor[2] = 160;
+    play->envCtx.screenFillColor[3] = play->envCtx.screenFillColor[3] < 255 - TRANSFORM_SCREEN_FILL_SPEED ? play->envCtx.screenFillColor[3] + TRANSFORM_SCREEN_FILL_SPEED : 255;
+
+    if (play->envCtx.screenFillColor[3] == 255) {
+        Player_DisableTransform(this, play);
+        Player_SetupAction(play, this, Player_Action_TransformEnd, 0);
+    }
+}
+
+void Player_Action_Transformed(Player* this, PlayState* play) {
+    play->envCtx.screenFillColor[3] = play->envCtx.screenFillColor[3] > TRANSFORM_SCREEN_FILL_SPEED ? play->envCtx.screenFillColor[3] - TRANSFORM_SCREEN_FILL_SPEED : 0;
+    if (play->envCtx.screenFillColor[3] != 0) {
+        return;
+    }
+    play->envCtx.fillScreen = false;
+
+    if (this->transformActor == NULL || this->transformActor->update == NULL) {
+        Player_DisableTransform(this, play);
+        func_8083A060(this, play); //return to stand still
+    }
+    else if (Player_CheckTransform(this, play)) {
+        Actor_Kill(this->transformActor);
+    }
+}
+
+void Player_Action_Transform(Player* this, PlayState* play) {
+    this->actor.speed = this->speedXZ = 0.0f;
+    play->envCtx.fillScreen = true;
+    play->envCtx.screenFillColor[0] = 160;
+    play->envCtx.screenFillColor[1] = 160;
+    play->envCtx.screenFillColor[2] = 160;
+    play->envCtx.screenFillColor[3] = play->envCtx.screenFillColor[3] < 255 - TRANSFORM_SCREEN_FILL_SPEED ? play->envCtx.screenFillColor[3] + TRANSFORM_SCREEN_FILL_SPEED : 255;
+
+    if (play->envCtx.screenFillColor[3] == 255) {
+        this->transformActor = Actor_Spawn(&play->actorCtx, play, this->av1.actionVar1, this->actor.world.pos.x, this->actor.world.pos.y,
+                    this->actor.world.pos.z, this->actor.world.rot.x, this->actor.world.rot.y, this->actor.world.rot.z, 0);
+
+        if (this->transformActor != NULL) {
+            this->stateFlags2 |= PLAYER_STATE2_29 | PLAYER_STATE2_15;
+            this->stateFlags3 |= PLAYER_STATE3_TRANSFORMED;
+            this->stateFlags3 &= ~PLAYER_STATE3_TRANSFORMING;
+            this->actor.shape.shadowDraw = NULL;
+            Player_SetupAction(play, this, Player_Action_Transformed, 0);
+        }
+        else {
+            Sfx_PlaySfxCentered(NA_SE_SY_ERROR);
+            func_8083A060(this, play); //return to stand still
+        }
+    }
+}
+
+
 /**
  * Handles the high level item usage and changing process based on the B and C buttons.
  *
@@ -2404,6 +2516,10 @@ void Player_ProcessItemButtons(Player* this, PlayState* play) {
     }
 
     if (!(this->stateFlags1 & (PLAYER_STATE1_11 | PLAYER_STATE1_29)) && !func_8008F128(this)) {
+        if (Player_CheckTransform(this, play)) {
+            return;
+        }
+
         if (this->itemAction >= PLAYER_IA_FISHING_POLE) {
             if (!Player_ItemIsInUse(this, B_BTN_ITEM) && !Player_ItemIsInUse(this, C_BTN_ITEM(0)) &&
                 !Player_ItemIsInUse(this, C_BTN_ITEM(1)) && !Player_ItemIsInUse(this, C_BTN_ITEM(2))) {
@@ -10106,6 +10222,8 @@ void Player_Init(Actor* thisx, PlayState* play2) {
     this->itemAction = this->heldItemAction = -1;
     this->heldItemId = ITEM_NONE;
 
+    this->transformActor = NULL;
+
     Player_UseItem(play, this, ITEM_NONE);
     Player_SetEquipmentData(play, this);
     this->prevBoots = this->currentBoots;
@@ -10264,6 +10382,9 @@ static f32 D_80854784[] = { 120.0f, 240.0f, 360.0f };
  *     - Navi C-up icon for hints
  */
 void Player_UpdateInterface(PlayState* play, Player* this) {
+    if (this->stateFlags3 & (PLAYER_STATE3_TRANSFORMED | PLAYER_STATE3_TRANSFORMING)) {
+        return;
+    }
     if ((Message_GetState(&play->msgCtx) == TEXT_STATE_NONE) && (this->actor.category == ACTORCAT_PLAYER)) {
         Actor* heldActor = this->heldActor;
         Actor* interactRangeActor = this->interactRangeActor;
@@ -11106,6 +11227,22 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         gSaveContext.magicState = MAGIC_STATE_METER_FLASH_1;
         Player_SpawnMagicSpell(play, this, 1);
         this->stateFlags3 &= ~PLAYER_STATE3_RESTORE_NAYRUS_LOVE;
+    }
+
+    if (this->stateFlags3 & (PLAYER_STATE3_TRANSFORMED | PLAYER_STATE3_TRANSFORMING)) {
+        this->actionFunc(this, play);
+        
+        if (this->csAction != PLAYER_CSACTION_NONE) {
+            if ((this->csAction != PLAYER_CSACTION_7) ||
+                !(this->stateFlags1 & (PLAYER_STATE1_13 | PLAYER_STATE1_14 | PLAYER_STATE1_21 | PLAYER_STATE1_26))) {
+                this->unk_6AD = 3;
+            } else if (Player_Action_CsAction != this->actionFunc) {
+                func_80852944(play, this, NULL);
+            }
+        } else {
+            this->prevCsAction = PLAYER_CSACTION_NONE;
+        }
+        return;
     }
 
     if (this->stateFlags2 & PLAYER_STATE2_15) {

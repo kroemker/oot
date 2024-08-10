@@ -87,6 +87,8 @@ void Object_InitContext(PlayState* play, ObjectContext* objectCtx) {
 
     objectCtx->mainKeepSlot = Object_SpawnPersistent(objectCtx, OBJECT_GAMEPLAY_KEEP);
     gSegments[4] = VIRTUAL_TO_PHYSICAL(objectCtx->slots[objectCtx->mainKeepSlot].segment);
+
+    Object_SpawnPersistent(objectCtx, OBJECT_GOL);
 }
 
 void Object_UpdateEntries(ObjectContext* objectCtx) {

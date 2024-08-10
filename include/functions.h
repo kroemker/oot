@@ -487,6 +487,8 @@ void Flags_SetInfTable(s32 flag);
 u16 func_80037C30(PlayState* play, s16 arg1);
 s32 func_80037D98(PlayState* play, Actor* actor, s16 arg2, s32* arg3);
 s32 Actor_TrackPlayer(PlayState* play, Actor* actor, Vec3s* headRot, Vec3s* torsoRot, Vec3f focusPos);
+s32 Actor_GetMovementSpeedAndYaw(Actor* actor, f32* outSpeedTarget, s16* outYawTarget, u8 speedMode, u8 considerSlopes, PlayState* play);
+void Actor_HandleZTarget(Actor* actor, PlayState* play);
 void ActorOverlayTable_LogPrint(void);
 void ActorOverlayTable_Init(void);
 void ActorOverlayTable_Cleanup(void);

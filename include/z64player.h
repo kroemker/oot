@@ -722,6 +722,8 @@ typedef struct {
 #define PLAYER_STATE3_5 (1 << 5)
 #define PLAYER_STATE3_RESTORE_NAYRUS_LOVE (1 << 6) // Set by ocarina effects actors when destroyed to signal Nayru's Love may be restored (see `ACTOROVL_ALLOC_ABSOLUTE`)
 #define PLAYER_STATE3_7 (1 << 7)
+#define PLAYER_STATE3_TRANSFORMING (1 << 20)
+#define PLAYER_STATE3_TRANSFORMED (1 << 21)
 
 typedef void (*PlayerActionFunc)(struct Player*, struct PlayState*);
 typedef s32 (*UpperActionFunc)(struct Player*, struct PlayState*);
@@ -807,7 +809,7 @@ typedef struct Player {
     /* 0x0688 */ Actor* boomerangActor;
     /* 0x068C */ Actor* naviActor;
     /* 0x0690 */ s16 naviTextId;
-    /* 0x0692 */ u8 stateFlags3;
+    /* 0x0692 */ u32 stateFlags3;
     /* 0x0693 */ s8 exchangeItemId;
     /* 0x0694 */ Actor* talkActor; // Actor offering to talk, or currently talking to, depending on context
     /* 0x0698 */ f32 talkActorDistance; // xz distance away from `talkActor`
@@ -912,6 +914,7 @@ typedef struct Player {
     /* 0x0A86 */ s8 unk_A86;
     /* 0x0A87 */ u8 unk_A87;
     /* 0x0A88 */ Vec3f unk_A88; // previous body part 0 position
+    Actor* transformActor;
 } Player; // size = 0xA94
 
 #endif

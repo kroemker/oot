@@ -650,6 +650,13 @@ beginseg
 endseg
 
 beginseg
+    name "ovl_Transform_Baby_Gohma"
+    compress
+    include "$(BUILD_DIR)/src/overlays/actors/ovl_Transform_Baby_Gohma/z_transform_baby_gohma.o"
+    include "$(BUILD_DIR)/src/overlays/actors/ovl_Transform_Baby_Gohma/ovl_Transform_Baby_Gohma_reloc.o"
+endseg
+
+beginseg
     name "ovl_title"
     compress
     address 0x80800000

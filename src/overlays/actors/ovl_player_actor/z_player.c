@@ -2395,18 +2395,26 @@ void Player_SetupTransformBack(Player* this, PlayState* play) {
     this->stateFlags3 &= ~PLAYER_STATE3_TRANSFORMED;
 }
 
+void Player_InitiateTransformation(Player* this, PlayState* play, s16 transformActorType, u16 sfxId) {
+    if ((this->transformActor != NULL && this->transformActor->id == transformActorType)) {
+        Player_SetupTransformBack(this, play);
+    }
+    else {
+        Player_PlaySfx(this, NA_SE_PL_MAGIC_WIND_WARP);
+        Player_PlaySfx(this, sfxId);
+        Player_SetupAction(play, this, Player_Action_Transform, 0);
+        this->av1.actionVar1 = transformActorType;
+        this->stateFlags3 |= PLAYER_STATE3_TRANSFORMING;
+    }
+}
+
 s32 Player_CheckTransform(Player* this, PlayState* play) {
     if (CHECK_BTN_ALL(sControlInput->press.button, BTN_CLEFT)) {
-        if ((this->transformActor != NULL && this->transformActor->id == ACTOR_TRANSFORM_BABY_GOHMA)) {
-            Player_SetupTransformBack(this, play);
-        }
-        else {
-            Player_PlaySfx(this, NA_SE_PL_MAGIC_WIND_WARP);
-            Player_PlaySfx(this, NA_SE_EN_GOMA_BJR_CRY);
-            Player_SetupAction(play, this, Player_Action_Transform, 0);
-            this->av1.actionVar1 = ACTOR_TRANSFORM_BABY_GOHMA;
-            this->stateFlags3 |= PLAYER_STATE3_TRANSFORMING;
-        }
+        Player_InitiateTransformation(this, play, ACTOR_TRANSFORM_BABY_GOHMA, NA_SE_EN_GOMA_BJR_CRY);
+        return 1;
+    }
+    else if (CHECK_BTN_ALL(sControlInput->press.button, BTN_CRIGHT)) {
+        Player_InitiateTransformation(this, play, ACTOR_TRANSFORM_GOHMA, NA_SE_EN_GOMA_CRY1);
         return 1;
     }
     return 0;

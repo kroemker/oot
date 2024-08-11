@@ -258,7 +258,7 @@ void Play_Init(GameState* thisx) {
     SystemArena_Display();
 #endif
 
-    GameState_Realloc(&this->state, 0x1D4790);
+    GameState_Realloc(&this->state, 0x300000);
     KaleidoManager_Init(this);
     View_Init(&this->view, gfxCtx);
     Audio_SetExtraFilter(0);

@@ -69,6 +69,8 @@ void Object_InitContext(PlayState* play, ObjectContext* objectCtx) {
         spaceSize = 1000 * 1024;
     }
 
+    spaceSize = 2000 * 1024;
+
     objectCtx->numEntries = objectCtx->numPersistentEntries = 0;
     objectCtx->mainKeepSlot = objectCtx->subKeepSlot = 0;
 
@@ -89,6 +91,7 @@ void Object_InitContext(PlayState* play, ObjectContext* objectCtx) {
     gSegments[4] = VIRTUAL_TO_PHYSICAL(objectCtx->slots[objectCtx->mainKeepSlot].segment);
 
     Object_SpawnPersistent(objectCtx, OBJECT_GOL);
+    Object_SpawnPersistent(objectCtx, OBJECT_GOMA);
 }
 
 void Object_UpdateEntries(ObjectContext* objectCtx) {

@@ -27,6 +27,7 @@ typedef struct TransformBabyGohma {
     s32 framesAPressed;
     u8 eyeColorIndex;
     s32 idleTimer;
+    s32 invincibilityFrames;
 } TransformBabyGohma;
 
 #endif

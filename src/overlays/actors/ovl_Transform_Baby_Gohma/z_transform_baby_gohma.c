@@ -100,6 +100,7 @@ void TransformBabyGohma_SetupAction(TransformBabyGohma* this, PlayState* play, T
         Input* input = &play->state.input[0];
         f32 stickY = (((f32) -input->rel.stick_y) + 60.0f) / 120.0f;
         osSyncPrintf("stickY = %f\n", stickY);
+
         this->actor.speed = CLAMP(this->framesAPressed * 1.2f + 10.0f, 10.0f, 20.0f);
         this->actor.velocity.y = CLAMP(this->framesAPressed * 0.6f + 8.0f, 8.0f, 12.0f);
         this->framesAPressed = 0;
@@ -124,6 +125,23 @@ void TransformBabyGohma_CheckJump(TransformBabyGohma* this, PlayState* play) {
     }
 }
 
+void TransformBabyGohma_UpdateWaterMovement(TransformBabyGohma* this, PlayState* play) {
+    if (this->actor.bgCheckFlags & BGCHECKFLAG_WATER) {
+        this->actor.world.pos.y += this->actor.depthInWater;
+    }
+}
+
+void TransformBabyGohma_SpawnWaterRipple(TransformBabyGohma* this, PlayState* play, s8 leg) {
+    Vec3f pos;
+
+    if (this->actor.bgCheckFlags & BGCHECKFLAG_WATER) {
+        Math_Vec3f_Copy(&pos, &this->actor.world.pos);
+        pos.x += (leg * 2 - 1) * Math_SinS(this->actor.world.rot.y + 0x4000) * 17.0f;
+        pos.z += (leg * 2 - 1) * Math_CosS(this->actor.world.rot.y + 0x4000) * 17.0f;
+        EffectSsGRipple_Spawn(play, &pos, 100, 200, 0);
+    }
+}
+
 void TransformBabyGohma_Action_Idle(TransformBabyGohma* this, PlayState* play) {
     f32 speedTarget;
     s16 yawTarget;
@@ -141,6 +159,12 @@ void TransformBabyGohma_Action_Idle(TransformBabyGohma* this, PlayState* play) {
     if (DECR(this->idleTimer) == 0) {
         this->eyeColorIndex = this->eyeColorIndex % 2 + 1;
         this->idleTimer = 80;
+    }
+
+    
+    if (Animation_OnFrame(&this->skelAnime, 8.0f)) {
+        TransformBabyGohma_SpawnWaterRipple(this, play, 0);
+        TransformBabyGohma_SpawnWaterRipple(this, play, 1);
     }
 
     TransformBabyGohma_CheckJump(this, play);
@@ -165,9 +189,13 @@ void TransformBabyGohma_Action_Run(TransformBabyGohma* this, PlayState* play) {
 
     SkelAnime_Update(&this->skelAnime);
 
-    if (Animation_OnFrame(&this->skelAnime, 1.0f) || Animation_OnFrame(&this->skelAnime, 5.0f)) {
+    if (Animation_OnFrame(&this->skelAnime, 1.0f)) {
+        TransformBabyGohma_SpawnWaterRipple(this, play, 1);
+        Actor_PlaySfx(&this->actor, NA_SE_EN_GOMA_JR_WALK);
+    }
+    else if (Animation_OnFrame(&this->skelAnime, 5.0f)) {
+        TransformBabyGohma_SpawnWaterRipple(this, play, 0);
         Actor_PlaySfx(&this->actor, NA_SE_EN_GOMA_BJR_WALK);
-        //Actor_PlaySfx(&this->actor, NA_SE_EN_GOMA_JR_WALK);
     }
 }
 
@@ -194,7 +222,7 @@ void TransformBabyGohma_Action_Jump(TransformBabyGohma* this, PlayState* play) {
         this->actor.bgCheckFlags &= ~BGCHECKFLAG_WALL;
     }
 
-    if (this->actor.velocity.y <= 0.0f && (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND)) {
+    if (this->actor.velocity.y <= 0.0f && ((this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) || (this->actor.bgCheckFlags & BGCHECKFLAG_WATER))) {
         TransformBabyGohma_SetupAction(this, play, TransformBabyGohma_Action_Land);
         Actor_PlaySfx(&this->actor, NA_SE_EN_GOMA_BJR_LAND2);
         //Actor_PlaySfx(&this->actor, NA_SE_EN_GOMA_JR_LAND2);
@@ -271,8 +299,8 @@ void TransformBabyGohma_UpdateHit(TransformBabyGohma* this, PlayState* play) {
 void TransformBabyGohma_UpdateEyeEnvColor(TransformBabyGohma* this) {
     static f32 sTargetEyeEnvColors[][3] = {
         { 255.0f, 0.0f, 170.0f },
-        { 17.0f, 255.0f, 0.0f },
-        { 0.0f, 170.0f, 255.0f },
+        { 17.0f, 255.0f, 255.0f },
+        { 0.0f, 170.0f, 0.0f },
     };
 
     Math_ApproachF(&this->eyeEnvColor[0], sTargetEyeEnvColors[0][this->eyeColorIndex], 0.5f, 20.0f);
@@ -324,6 +352,11 @@ void TransformBabyGohma_Update(Actor* thisx, PlayState* play) {
     if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
         TransformBabyGohma_SetFloorRot(this);
     }
+    else {
+        this->slopePitch = 0;
+        this->slopeRoll = 0;
+    }
+    TransformBabyGohma_UpdateWaterMovement(this, play);
     Actor_SetFocus(&this->actor, 20.0f);
     TransformBabyGohma_UpdateEyeEnvColor(this);
 

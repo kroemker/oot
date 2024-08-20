@@ -578,8 +578,7 @@ void EnInsect_Dropped(EnInsect* this, PlayState* play) {
     } else {
         if (this->insectFlags & INSECT_FLAG_FOUND_SOIL) {
             PRINTF(VT_COL(YELLOW, BLACK));
-            // "warning: target Actor is NULL"
-            PRINTF("warning:目標 Actor が NULL (%s %d)\n", "../z_en_mushi.c", 1046);
+            PRINTF("warning: target Actor is NULL (%s %d)\n", "../z_en_mushi.c", 1046);
             PRINTF(VT_RST);
         }
         distanceSq = 40.0f;
@@ -706,8 +705,7 @@ void EnInsect_Dropped(EnInsect* this, PlayState* play) {
                (this->insectFlags & INSECT_FLAG_0) && this->lifeTimer <= 0 && this->actionTimer <= 0 &&
                this->actor.floorHeight < BGCHECK_Y_MIN + 10.0f) {
         PRINTF(VT_COL(YELLOW, BLACK));
-        // "BG missing? To do Actor_delete"
-        PRINTF("BG 抜け？ Actor_delete します(%s %d)\n", "../z_en_mushi.c", 1197);
+        PRINTF("BG missing? To do Actor_delete(%s %d)\n", "../z_en_mushi.c", 1197);
         PRINTF(VT_RST);
         Actor_Kill(&this->actor);
     }

@@ -320,8 +320,7 @@ void func_808B43D0(BgSpot15Rrbox* this, PlayState* play) {
     Actor_MoveXZGravity(actor);
 
     if (actor->world.pos.y <= BGCHECK_Y_MIN + 10.0f) {
-        // "Lon Lon wooden crate fell too much"
-        PRINTF("Warning : ロンロン木箱落ちすぎた(%s %d)(arg_data 0x%04x)\n", "../z_bg_spot15_rrbox.c", 599,
+        PRINTF("Warning : Lon Lon wooden crate fell too much(%s %d)(arg_data 0x%04x)\n", "../z_bg_spot15_rrbox.c", 599,
                actor->params);
 
         Actor_Kill(actor);

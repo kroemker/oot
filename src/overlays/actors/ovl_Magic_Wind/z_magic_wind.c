@@ -46,8 +46,7 @@ void MagicWind_Init(Actor* thisx, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if (!SkelCurve_Init(play, &this->skelCurve, &sSkel, &sAnim)) {
-        // "Magic_Wind_Actor_ct (): Construct failed"
-        PRINTF("Magic_Wind_Actor_ct():コンストラクト失敗\n");
+        PRINTF("Magic_Wind_Actor_ct():Magic_Wind_Actor_ct (): Construct failed\n");
     }
     this->actor.room = -1;
     switch (this->actor.params) {

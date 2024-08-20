@@ -32,8 +32,7 @@ OSMesg sSerialMsgBuf[1];
 #if OOT_DEBUG
 void Main_LogSystemHeap(void) {
     PRINTF(VT_FGCOL(GREEN));
-    // "System heap size% 08x (% dKB) Start address% 08x"
-    PRINTF("システムヒープサイズ %08x(%dKB) 開始アドレス %08x\n", gSystemHeapSize, gSystemHeapSize / 1024,
+    PRINTF("System heap size% 08x (% dKB) Start address% 08x %08x\n", gSystemHeapSize, gSystemHeapSize / 1024,
            _buffersSegmentEnd);
     PRINTF(VT_RST);
 }
@@ -46,7 +45,7 @@ void Main(void* arg) {
     uintptr_t systemHeapStart;
     uintptr_t fb;
 
-    PRINTF("mainproc 実行開始\n"); // "Start running"
+    PRINTF("mainproc Start running\n"); // "Start running"
     gScreenWidth = SCREEN_WIDTH;
     gScreenHeight = SCREEN_HEIGHT;
     gAppNmiBufferPtr = (PreNmiBuff*)osAppNMIBuffer;
@@ -56,8 +55,7 @@ void Main(void* arg) {
     systemHeapStart = (uintptr_t)_buffersSegmentEnd;
     fb = (uintptr_t)SysCfb_GetFbPtr(0);
     gSystemHeapSize = fb - systemHeapStart;
-    // "System heap initalization"
-    PRINTF("システムヒープ初期化 %08x-%08x %08x\n", systemHeapStart, fb, gSystemHeapSize);
+    PRINTF("System heap initalization %08x-%08x %08x\n", systemHeapStart, fb, gSystemHeapSize);
     SystemHeap_Init((void*)systemHeapStart, gSystemHeapSize); // initializes the system heap
 
 #if OOT_DEBUG
@@ -93,7 +91,7 @@ void Main(void* arg) {
     StackCheck_Init(&sIrqMgrStackInfo, sIrqMgrStack, STACK_TOP(sIrqMgrStack), 0, 0x100, "irqmgr");
     IrqMgr_Init(&gIrqMgr, STACK_TOP(sIrqMgrStack), THREAD_PRI_IRQMGR, 1);
 
-    PRINTF("タスクスケジューラの初期化\n"); // "Initialize the task scheduler"
+    PRINTF("Initialize the task scheduler\n"); // "Initialize the task scheduler"
     StackCheck_Init(&sSchedStackInfo, sSchedStack, STACK_TOP(sSchedStack), 0, 0x100, "sched");
     Sched_Init(&gScheduler, STACK_TOP(sSchedStack), THREAD_PRI_SCHED, gViConfigModeType, 1, &gIrqMgr);
 
@@ -120,13 +118,13 @@ void Main(void* arg) {
             break;
         }
         if (*msg == OS_SC_PRE_NMI_MSG) {
-            PRINTF("main.c: リセットされたみたいだよ\n"); // "Looks like it's been reset"
+            PRINTF("main.c: Looks like it's been reset\n"); // "Looks like it's been reset"
             PreNmiBuff_SetReset(gAppNmiBufferPtr);
         }
     }
 
-    PRINTF("mainproc 後始末\n"); // "Cleanup"
+    PRINTF("mainproc Cleanup\n"); // "Cleanup"
     osDestroyThread(&sGraphThread);
     RcpUtils_Reset();
-    PRINTF("mainproc 実行終了\n"); // "End of execution"
+    PRINTF("mainproc End of execution\n"); // "End of execution"
 }

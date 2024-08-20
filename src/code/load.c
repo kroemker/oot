@@ -8,16 +8,14 @@ size_t Overlay_Load(uintptr_t vromStart, uintptr_t vromEnd, void* vramStart, voi
     s32 size = vromEnd - vromStart;
 
     if (gOverlayLogSeverity >= 3) {
-        // "Start loading dynamic link function"
-        PRINTF("\nダイナミックリンクファンクションのロードを開始します\n");
+        PRINTF("\nStart loading dynamic link function\n");
     }
 
     size = vromEnd - vromStart;
     end = (uintptr_t)allocatedRamAddr + size;
 
     if (gOverlayLogSeverity >= 3) {
-        // "DMA transfer of TEXT, DATA, RODATA + rel (%08x-%08x)"
-        PRINTF("TEXT,DATA,RODATA+relをＤＭＡ転送します(%08x-%08x)\n", allocatedRamAddr, end);
+        PRINTF("TEXT,DATA,RODATA+relDMA transfer of TEXT, DATA, RODATA + rel (%08x-%08x)\n", allocatedRamAddr, end);
     }
 
     // DMA the overlay, wait until transfer completes
@@ -34,7 +32,7 @@ size_t Overlay_Load(uintptr_t vromStart, uintptr_t vromEnd, void* vramStart, voi
     }
 
     if (gOverlayLogSeverity >= 3) {
-        PRINTF("リロケーションします\n"); // "Relocate"
+        PRINTF("Relocate\n"); // "Relocate"
     }
 
     // Relocate pointers in overlay code and data
@@ -43,8 +41,7 @@ size_t Overlay_Load(uintptr_t vromStart, uintptr_t vromEnd, void* vramStart, voi
     // Clear bss if present, bss is located immediately following the relocations
     if (ovlRelocs->bssSize != 0) {
         if (gOverlayLogSeverity >= 3) {
-            // "Clear BSS area (% 08x-% 08x)"
-            PRINTF("BSS領域をクリアします(%08x-%08x)\n", end, end + ovlRelocs->bssSize);
+            PRINTF("BSSClear BSS area (% 08x-% 08x)(%08x-%08x)\n", end, end + ovlRelocs->bssSize);
         }
         bzero((void*)end, ovlRelocs->bssSize);
     }
@@ -52,8 +49,7 @@ size_t Overlay_Load(uintptr_t vromStart, uintptr_t vromEnd, void* vramStart, voi
     size = (uintptr_t)(ovlRelocs->relocations + ovlRelocs->nRelocations) - (uintptr_t)ovlRelocs;
 
     if (gOverlayLogSeverity >= 3) {
-        // "Clear REL area (%08x-%08x)"
-        PRINTF("REL領域をクリアします(%08x-%08x)\n", ovlRelocs, (uintptr_t)ovlRelocs + size);
+        PRINTF("RELClear REL area (%08x-%08x)\n", ovlRelocs, (uintptr_t)ovlRelocs + size);
     }
 
     // Clear relocations, this space remains allocated and goes unused
@@ -65,8 +61,7 @@ size_t Overlay_Load(uintptr_t vromStart, uintptr_t vromEnd, void* vramStart, voi
     osInvalICache(allocatedRamAddr, size);
 
     if (gOverlayLogSeverity >= 3) {
-        // "Finish loading dynamic link function"
-        PRINTF("ダイナミックリンクファンクションのロードを終了します\n\n");
+        PRINTF("Finish loading dynamic link function\n\n");
     }
 
     return size;

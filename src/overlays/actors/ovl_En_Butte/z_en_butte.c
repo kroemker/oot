@@ -169,8 +169,7 @@ void EnButte_Init(Actor* thisx, PlayState* play) {
     EnButte_SetupFlyAround(this);
     this->actor.shape.rot.x -= 0x2320;
     this->drawSkelAnime = true;
-    // "field keep butterfly"
-    PRINTF("(field keep 蝶)(%x)(arg_data 0x%04x)\n", this, this->actor.params);
+    PRINTF("(field keep butterfly)(%x)(arg_data 0x%04x)\n", this, this->actor.params);
 }
 
 void EnButte_Destroy(Actor* thisx, PlayState* play2) {

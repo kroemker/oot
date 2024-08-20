@@ -103,8 +103,7 @@ void EnSth_Init(Actor* thisx, PlayState* play) {
     if (this->actor.params == 0) {
         if (gSaveContext.save.info.inventory.gsTokens < 100) {
             Actor_Kill(&this->actor);
-            // "Gold Skulltula Shop I still can't be a human"
-            PRINTF("金スタル屋 まだ 人間に戻れない \n");
+            PRINTF("Gold Skulltula Shop I still can't be a human \n");
             return;
         }
     } else if (gSaveContext.save.info.inventory.gsTokens < (this->actor.params * 10)) {

@@ -1757,8 +1757,7 @@ void DemoGt_Init(Actor* thisx, PlayState* play) {
             func_80982054_Init24(this, play);
             break;
         default:
-            // "Demo_Gt_Actor_ct There is no such argument !"
-            PRINTF("Demo_Gt_Actor_ct そんな引数は無い!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+            PRINTF("Demo_Gt_Actor_ct There is no such argument !!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
             Actor_Kill(&this->dyna.actor);
     }
 }

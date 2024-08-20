@@ -135,7 +135,7 @@ void EnOwl_Init(Actor* thisx, PlayState* play) {
     PRINTF(VT_FGCOL(CYAN) " 会話フクロウ %4x no = %d, sv = %d\n" VT_RST, this->actor.params, owlType, switchFlag);
 
     if ((owlType != OWL_DEFAULT) && (switchFlag < 0x20) && Flags_GetSwitch(play, switchFlag)) {
-        PRINTF("savebitでフクロウ退避\n"); // "Save owl with savebit"
+        PRINTF("savebitSave owl with savebit\n"); // "Save owl with savebit"
         Actor_Kill(&this->actor);
         return;
     }
@@ -160,7 +160,7 @@ void EnOwl_Init(Actor* thisx, PlayState* play) {
         case OWL_KAKARIKO:
             if (GET_EVENTCHKINF(EVENTCHKINF_40)) {
                 // has zelda's letter
-                PRINTF("フクロウ退避\n"); // "Owl evacuation"
+                PRINTF("Owl evacuation\n"); // "Owl evacuation"
                 Actor_Kill(&this->actor);
                 return;
             }
@@ -170,7 +170,7 @@ void EnOwl_Init(Actor* thisx, PlayState* play) {
         case OWL_HYLIA_GERUDO:
             if (GET_EVENTCHKINF(EVENTCHKINF_43)) {
                 // has ocarina of time
-                PRINTF("フクロウ退避\n"); // "Owl evacuation"
+                PRINTF("Owl evacuation\n"); // "Owl evacuation"
                 Actor_Kill(&this->actor);
                 return;
             }
@@ -182,7 +182,7 @@ void EnOwl_Init(Actor* thisx, PlayState* play) {
         case OWL_ZORA_RIVER:
             if (GET_EVENTCHKINF(EVENTCHKINF_39) || !GET_EVENTCHKINF(EVENTCHKINF_40)) {
                 // opened zora's domain or has zelda's letter
-                PRINTF("フクロウ退避\n"); // "Owl evacuation"
+                PRINTF("Owl evacuation\n"); // "Owl evacuation"
                 Actor_Kill(&this->actor);
                 return;
             }
@@ -204,7 +204,7 @@ void EnOwl_Init(Actor* thisx, PlayState* play) {
             break;
         case OWL_LOST_WOODS_PRESARIA:
             if (!CHECK_QUEST_ITEM(QUEST_SONG_LULLABY)) {
-                PRINTF("フクロウ退避\n"); // "Owl evacuation"
+                PRINTF("Owl evacuation\n"); // "Owl evacuation"
                 Actor_Kill(&this->actor);
                 return;
             }
@@ -212,7 +212,7 @@ void EnOwl_Init(Actor* thisx, PlayState* play) {
             break;
         case OWL_LOST_WOODS_POSTSARIA:
             if (!CHECK_QUEST_ITEM(QUEST_SONG_SARIA)) {
-                PRINTF("フクロウ退避\n"); // "Owl evacuation"
+                PRINTF("Owl evacuation\n"); // "Owl evacuation"
                 Actor_Kill(&this->actor);
                 return;
             }
@@ -222,8 +222,7 @@ void EnOwl_Init(Actor* thisx, PlayState* play) {
             // Outside kokiri forest
             PRINTF(VT_FGCOL(CYAN));
             PRINTF("no = %d  \n", owlType);
-            // "Unfinished owl unfinished owl unfinished owl"
-            PRINTF("未完成のフクロウ未完成のフクロウ未完成のフクロウ\n");
+            PRINTF("Unfinished owl unfinished owl unfinished owl\n");
             PRINTF(VT_RST);
             this->actionFlags |= 2;
             this->unk_3EE = 0x20;
@@ -928,12 +927,12 @@ void func_80ACC00C(EnOwl* this, PlayState* play) {
         if (!Play_InCsMode(play)) {
             owlType = (this->actor.params & 0xFC0) >> 6;
             PRINTF(VT_FGCOL(CYAN));
-            PRINTF("%dのフクロウ\n", owlType); // "%d owl"
+            PRINTF("%d owl\n", owlType); // "%d owl"
             PRINTF(VT_RST);
             switch (owlType) {
                 case 7:
                     PRINTF(VT_FGCOL(CYAN));
-                    PRINTF("SPOT 06 の デモがはしった\n"); // "Demo of SPOT 06 has been completed"
+                    PRINTF("SPOT 06 Demo of SPOT 06 has been completed\n"); // "Demo of SPOT 06 has been completed"
                     PRINTF(VT_RST);
                     play->csCtx.script = SEGMENTED_TO_VIRTUAL(gLakeHyliaOwlCs);
                     this->actor.draw = NULL;
@@ -1084,8 +1083,7 @@ void EnOwl_Update(Actor* thisx, PlayState* play) {
     this->actionFlags &= ~8;
     this->actionFunc(this, play);
     if (this->actor.update == NULL) {
-        // "Owl disappears"
-        PRINTF("フクロウ消滅!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+        PRINTF("Owl disappears!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
         return;
     }
 

@@ -219,15 +219,13 @@ s32 DemoGj_FindGanon(DemoGj* this, PlayState* play) {
             if (actor->id == ACTOR_BOSS_GANON2) {
                 this->ganon = (BossGanon2*)actor;
 
-                // "Demo_Gj_Search_Boss_Ganon %d: Discover Ganon !!!!"
-                PRINTF("Demo_Gj_Search_Boss_Ganon %d:ガノン発見!!!!\n", this->dyna.actor.params);
+                PRINTF("Demo_Gj_Search_Boss_Ganon %d: Discover Ganon !!!!\n", this->dyna.actor.params);
                 return true;
             }
             actor = actor->next;
         }
 
-        // "Demo_Gj_Search_Boss_Ganon %d: I couldn't find Ganon"
-        PRINTF("Demo_Gj_Search_Boss_Ganon %d:ガノン発見出来ず\n", this->dyna.actor.params);
+        PRINTF("Demo_Gj_Search_Boss_Ganon %d: I couldn't find Ganon\n", this->dyna.actor.params);
         return false;
     }
     //! @bug: Missing return value when `this->ganon` is already set.

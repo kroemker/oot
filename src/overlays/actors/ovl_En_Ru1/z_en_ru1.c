@@ -2221,11 +2221,9 @@ void func_80AEFF94(EnRu1* this, PlayState* play) {
         this->roomNum1 = actorRoom;
         this->roomNum3 = actorRoom;
         this->roomNum2 = actorRoom;
-        // "Ruto switch set"
-        PRINTF("スイッチルトセット!!!!!!!!!!!!!!!!!!!!!!\n");
+        PRINTF("Ruto switch set!!!!!!!!!!!!!!!!!!!!!!\n");
     } else {
-        // "Ruto switch not set"
-        PRINTF("スイッチルトセットしない!!!!!!!!!!!!!!!!!!!!!!\n");
+        PRINTF("Ruto switch not set!!!!!!!!!!!!!!!!!!!!!!\n");
         Actor_Kill(&this->actor);
     }
 }
@@ -2288,8 +2286,7 @@ void EnRu1_Init(Actor* thisx, PlayState* play) {
 #endif
         default:
             Actor_Kill(&this->actor);
-            // "Relevant arge_data = %d unacceptable"
-            PRINTF("該当 arge_data = %d 無し\n", func_80AEADF0(this));
+            PRINTF("Relevant arge_data = %d unacceptable\n", func_80AEADF0(this));
             break;
     }
 }

@@ -179,13 +179,11 @@ void BgHidanHamstep_Init(Actor* thisx, PlayState* play) {
     this->dyna.actor.minVelocityY = -12.0f;
 
     if ((this->dyna.actor.params & 0xFF) == 0) {
-        // "Fire Temple Object [Hammer Step] appears"
-        PRINTF("◯◯◯炎の神殿オブジェクト【ハンマーステップ】出現\n");
+        PRINTF("◯◯◯Fire Temple Object [Hammer Step] appears\n");
         if (BgHidanHamstep_SpawnChildren(this, play) == 0) {
             step = this;
 
-            // "[Hammer Step] I can't create a step!"
-            PRINTF("【ハンマーステップ】 足場産れない！！\n");
+            PRINTF("[Hammer Step] I can't create a step!！！\n");
             PRINTF("%s %d\n", "../z_bg_hidan_hamstep.c", 425);
 
             while (step != NULL) {
@@ -349,8 +347,7 @@ void func_80888A58(BgHidanHamstep* this, PlayState* play) {
 
 #if OOT_DEBUG
     if (((this->dyna.actor.params & 0xFF) <= 0) || ((this->dyna.actor.params & 0xFF) >= 6)) {
-        // "[Hammer Step] arg_data strange (arg_data = %d)"
-        PRINTF("【ハンマーステップ】 arg_data おかしい (arg_data = %d)", this->dyna.actor.params);
+        PRINTF("[Hammer Step] arg_data strange (arg_data = %d)", this->dyna.actor.params);
         PRINTF("%s %d\n", "../z_bg_hidan_hamstep.c", 696);
     }
 #endif

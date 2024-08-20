@@ -619,14 +619,12 @@ void* __osRealloc(Arena* arena, void* ptr, u32 newSize) {
     } else {
         node = (ArenaNode*)((u32)ptr - sizeof(ArenaNode));
         if (newSize == node->size) {
-            // "Does nothing because the memory block size does not change"
-            osSyncPrintf("メモリブロックサイズが変わらないためなにもしません\n");
+            osSyncPrintf("Does nothing because the memory block size does not change\n");
         } else if (node->size < newSize) {
             next = NODE_GET_NEXT(node);
             sizeDiff = newSize - node->size;
             if ((u32)next == ((u32)node + node->size + sizeof(ArenaNode)) && next->isFree && next->size >= sizeDiff) {
-                // "Merge because there is a free block after the current memory block"
-                osSyncPrintf("現メモリブロックの後ろにフリーブロックがあるので結合します\n");
+                osSyncPrintf("Merge because there is a free block after the current memory block\n");
                 next->size -= sizeDiff;
                 overNext = NODE_GET_NEXT(next);
                 newNext = (ArenaNode*)((u32)next + sizeDiff);
@@ -637,8 +635,7 @@ void* __osRealloc(Arena* arena, void* ptr, u32 newSize) {
                 node->size = newSize;
                 __osMemmove(node->next, next, sizeof(ArenaNode));
             } else {
-                // "Allocate a new memory block and move the contents"
-                osSyncPrintf("新たにメモリブロックを確保して内容を移動します\n");
+                osSyncPrintf("Allocate a new memory block and move the contents\n");
                 newAlloc = __osMalloc_NoLock(arena, newSize);
                 if (newAlloc != NULL) {
                     bcopy(ptr, newAlloc, node->size);
@@ -651,8 +648,7 @@ void* __osRealloc(Arena* arena, void* ptr, u32 newSize) {
             if (next2 != NULL && next2->isFree) {
                 blockSize = ALIGN16(newSize) + sizeof(ArenaNode);
 
-                // "Increased free block behind current memory block"
-                osSyncPrintf("現メモリブロックの後ろのフリーブロックを大きくしました\n");
+                osSyncPrintf("Increased free block behind current memory block\n");
                 newNext2 = (ArenaNode*)((u32)node + blockSize);
                 localCopy = *next2;
                 *newNext2 = localCopy;
@@ -666,8 +662,7 @@ void* __osRealloc(Arena* arena, void* ptr, u32 newSize) {
             } else if (newSize + sizeof(ArenaNode) < node->size) {
                 blockSize = ALIGN16(newSize) + sizeof(ArenaNode);
 
-                // "Generated because there is no free block after the current memory block"
-                osSyncPrintf("現メモリブロックの後ろにフリーブロックがないので生成します\n");
+                osSyncPrintf("Generated because there is no free block after the current memory block\n");
                 newNext2 = (ArenaNode*)((u32)node + blockSize);
                 newNext2->next = NODE_GET_NEXT(node);
                 newNext2->prev = node;
@@ -681,8 +676,7 @@ void* __osRealloc(Arena* arena, void* ptr, u32 newSize) {
                     overNext2->prev = newNext2;
                 }
             } else {
-                // "There is no room to generate free blocks"
-                osSyncPrintf("フリーブロック生成するだけの空きがありません\n");
+                osSyncPrintf("There is no room to generate free blocks\n");
                 ptr = NULL;
             }
         }
@@ -735,7 +729,7 @@ void __osDisplayArena(Arena* arena) {
     ArenaNode* next;
 
     if (!__osMallocIsInitialized(arena)) {
-        osSyncPrintf("アリーナは初期化されていません\n"); // "Arena is not initialized"
+        osSyncPrintf("Arena is not initialized\n"); // "Arena is not initialized"
         return;
     }
 
@@ -745,9 +739,8 @@ void __osDisplayArena(Arena* arena) {
     freeSize = 0;
     allocatedSize = 0;
 
-    osSyncPrintf("アリーナの内容 (0x%08x)\n", arena); // "Arena contents (0x%08x)"
-    // "Memory node range status size [time s ms us ns: TID: src: line]"
-    osSyncPrintf("メモリブロック範囲 status サイズ  [時刻  s ms us ns: TID:src:行]\n");
+    osSyncPrintf("Arena contents (0x%08x)\n", arena); // "Arena contents (0x%08x)"
+    osSyncPrintf("Memory node range status size [time s ms us ns: TID: src: line]\n");
 
     iter = arena->head;
     while (iter != NULL) {
@@ -780,12 +773,9 @@ void __osDisplayArena(Arena* arena) {
         iter = next;
     }
 
-    // "Total reserved node size 0x%08x bytes"
-    osSyncPrintf("確保ブロックサイズの合計 0x%08x バイト\n", allocatedSize);
-    // "Total free node size 0x%08x bytes"
-    osSyncPrintf("空きブロックサイズの合計 0x%08x バイト\n", freeSize);
-    // "Maximum free node size 0x%08x bytes"
-    osSyncPrintf("最大空きブロックサイズ   0x%08x バイト\n", maxFree);
+    osSyncPrintf("Total reserved node size 0x%08x bytes\n", allocatedSize);
+    osSyncPrintf("Total free node size 0x%08x bytes\n", freeSize);
+    osSyncPrintf("Maximum free node size 0x%08x bytes\n", maxFree);
 
     ArenaImpl_Unlock(arena);
 }
@@ -846,8 +836,7 @@ u32 __osCheckArena(Arena* arena) {
     u32 error = 0;
 
     ArenaImpl_Lock(arena);
-    // "Checking the contents of the arena. . ． (%08x)"
-    osSyncPrintf("アリーナの内容をチェックしています．．． (%08x)\n", arena);
+    osSyncPrintf("Checking the contents of the arena. . ． (%08x)．．． (%08x)\n", arena);
     iter = arena->head;
     while (iter != NULL) {
         if (iter && iter->magic == NODE_MAGIC) {
@@ -863,7 +852,7 @@ u32 __osCheckArena(Arena* arena) {
         iter = NODE_GET_NEXT(iter);
     }
     if (error == 0) {
-        osSyncPrintf("アリーナはまだ、いけそうです\n"); // "The arena is still going well"
+        osSyncPrintf("The arena is still going well\n"); // "The arena is still going well"
     }
     ArenaImpl_Unlock(arena);
 

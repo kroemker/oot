@@ -83,7 +83,7 @@ void EnOkarinaEffect_ManageStorm(EnOkarinaEffect* this, PlayState* play) {
         }
         PRINTF("\nthis->timer=[%d]", this->timer);
         if (this->timer == 308) {
-            PRINTF("\n\n\n豆よ のびろ 指定\n\n\n"); // "Let's grow some beans"
+            PRINTF("\n\n\nLet's grow some beans\n\n\n"); // "Let's grow some beans"
             CutsceneFlags_Set(play, 5);
         }
     }

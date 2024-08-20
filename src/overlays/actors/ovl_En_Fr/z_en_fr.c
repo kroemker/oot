@@ -244,8 +244,7 @@ void EnFr_Init(Actor* thisx, PlayState* play) {
     } else {
         if ((this->actor.params >= 6) || (this->actor.params < 0)) {
             PRINTF(VT_COL(RED, WHITE));
-            // "The argument is wrong!!"
-            PRINTF("%s[%d] : 引数が間違っている！！(%d)\n", "../z_en_fr.c", 370, this->actor.params);
+            PRINTF("%s[%d] : The argument is wrong!!！！(%d)\n", "../z_en_fr.c", 370, this->actor.params);
             PRINTF(VT_RST);
             ASSERT(0, "0", "../z_en_fr.c", 372);
         }
@@ -254,8 +253,7 @@ void EnFr_Init(Actor* thisx, PlayState* play) {
         if (this->requiredObjectSlot < 0) {
             Actor_Kill(&this->actor);
             PRINTF(VT_COL(RED, WHITE));
-            // "There is no bank!!"
-            PRINTF("%s[%d] : バンクが無いよ！！\n", "../z_en_fr.c", 380);
+            PRINTF("%s[%d] : There is no bank!!！！\n", "../z_en_fr.c", 380);
             PRINTF(VT_RST);
             ASSERT(0, "0", "../z_en_fr.c", 382);
         }
@@ -979,8 +977,7 @@ void EnFr_Deactivate(EnFr* this, PlayState* play) {
 
         if (frog == NULL) {
             PRINTF(VT_COL(RED, WHITE));
-            // "There are no frogs!?"
-            PRINTF("%s[%d]カエルがいない！？\n", "../z_en_fr.c", 1604);
+            PRINTF("%s[%d]There are no frogs!?！？\n", "../z_en_fr.c", 1604);
             PRINTF(VT_RST);
             return;
         } else if (frog->isDeactivating != true) {
@@ -993,8 +990,7 @@ void EnFr_Deactivate(EnFr* this, PlayState* play) {
 
         if (frog == NULL) {
             PRINTF(VT_COL(RED, WHITE));
-            // "There are no frogs!?"
-            PRINTF("%s[%d]カエルがいない！？\n", "../z_en_fr.c", 1618);
+            PRINTF("%s[%d]There are no frogs!?！？\n", "../z_en_fr.c", 1618);
             PRINTF(VT_RST);
             return;
         }

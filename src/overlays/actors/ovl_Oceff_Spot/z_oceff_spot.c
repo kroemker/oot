@@ -86,15 +86,13 @@ void OceffSpot_End(OceffSpot* this, PlayState* play) {
                 play->msgCtx.ocarinaMode != OCARINA_MODE_08) {
                 gSaveContext.sunsSongState = SUNSSONG_START;
                 PRINTF(VT_FGCOL(YELLOW));
-                // "Sun's Song Flag"
-                PRINTF("z_oceff_spot  太陽の歌フラグ\n");
+                PRINTF("z_oceff_spot  Sun's Song Flag\n");
                 PRINTF(VT_RST);
             }
         } else {
             play->msgCtx.ocarinaMode = OCARINA_MODE_04;
             PRINTF(VT_FGCOL(YELLOW));
-            // "Ocarina End"
-            PRINTF("z_oceff_spot  オカリナ終了\n");
+            PRINTF("z_oceff_spot  Ocarina End\n");
             PRINTF(VT_RST);
         }
     }

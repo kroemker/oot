@@ -184,7 +184,7 @@ void Graph_TaskSet00(GraphicsContext* gfxCtx) {
         if (msg == (OSMesg)666) {
 #if OOT_DEBUG
             PRINTF(VT_FGCOL(RED));
-            PRINTF("RCPが帰ってきませんでした。"); // "RCP did not return."
+            PRINTF("RCP did not return."); // "RCP did not return."
             PRINTF(VT_RST);
 
             LogUtils_LogHexDump((void*)PHYS_TO_K1(SP_BASE_REG), 0x20);
@@ -447,7 +447,7 @@ void Graph_ThreadEntry(void* arg0) {
     GameStateOverlay* nextOvl = &gGameStateOverlayTable[GAMESTATE_SETUP];
     GameStateOverlay* ovl;
 
-    PRINTF("グラフィックスレッド実行開始\n"); // "Start graphic thread execution"
+    PRINTF("Start graphic thread execution\n"); // "Start graphic thread execution"
     Graph_Init(&gfxCtx);
 
     while (nextOvl != NULL) {
@@ -455,7 +455,7 @@ void Graph_ThreadEntry(void* arg0) {
         Overlay_LoadGameState(ovl);
 
         size = ovl->instanceSize;
-        PRINTF("クラスサイズ＝%dバイト\n", size); // "Class size = %d bytes"
+        PRINTF("Class size = %d bytes\n", size); // "Class size = %d bytes"
 
         gameState = SYSTEM_ARENA_MALLOC(size, "../graph.c", 1196);
 
@@ -463,7 +463,7 @@ void Graph_ThreadEntry(void* arg0) {
 #if OOT_DEBUG
             char faultMsg[0x50];
 
-            PRINTF("確保失敗\n"); // "Failure to secure"
+            PRINTF("Failure to secure\n"); // "Failure to secure"
 
             sprintf(faultMsg, "CLASS SIZE= %d bytes", size);
             Fault_AddHungupAndCrashImpl("GAME CLASS MALLOC FAILED", faultMsg);
@@ -484,7 +484,7 @@ void Graph_ThreadEntry(void* arg0) {
         Overlay_FreeGameState(ovl);
     }
     Graph_Destroy(&gfxCtx);
-    PRINTF("グラフィックスレッド実行終了\n"); // "End of graphic thread execution"
+    PRINTF("End of graphic thread execution\n"); // "End of graphic thread execution"
 }
 
 void* Graph_Alloc(GraphicsContext* gfxCtx, size_t size) {

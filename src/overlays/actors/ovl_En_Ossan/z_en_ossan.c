@@ -926,8 +926,7 @@ void EnOssan_State_StartConversation(EnOssan* this, PlayState* play, Player* pla
         }
 
         if (!EnOssan_TestEndInteraction(this, play, &play->state.input[0])) {
-            // "Shop around by moving the stick left and right"
-            PRINTF("「スティック左右で品物みてくれ！」\n");
+            PRINTF("Shop around by moving the stick left and right\n");
             EnOssan_StartShopping(play, this);
         }
     }
@@ -2116,8 +2115,7 @@ void EnOssan_InitActionFunc(EnOssan* this, PlayState* play) {
 
         if (this->shelves == NULL) {
             PRINTF(VT_COL(RED, WHITE));
-            // "Warning!! There are no shelves!!"
-            PRINTF("★★★ 警告！！ 棚がないよ！！ ★★★\n");
+            PRINTF("★★★ Warning!! There are no shelves!!！！ ★★★\n");
             PRINTF(VT_RST);
             return;
         }

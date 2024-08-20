@@ -189,8 +189,7 @@ void EffectSs_Spawn(PlayState* play, s32 type, s32 priority, void* initParams) {
     overlaySize = (uintptr_t)overlayEntry->vramEnd - (uintptr_t)overlayEntry->vramStart;
 
     if (overlayEntry->vramStart == NULL) {
-        // "Not an overlay"
-        PRINTF("EffectSoftSprite2_makeEffect():オーバーレイではありません。\n");
+        PRINTF("EffectSoftSprite2_makeEffect():Not an overlay\n");
         profile = overlayEntry->profile;
     } else {
         if (overlayEntry->loadedRamAddr == NULL) {
@@ -317,8 +316,7 @@ void EffectSs_DrawAll(PlayState* play) {
                        sEffectSsInfo.table[i].type, sEffectSsInfo.table[i].pos.x, sEffectSsInfo.table[i].pos.y,
                        sEffectSsInfo.table[i].pos.z);
                 PRINTF(VT_FGCOL(GREEN));
-                // "If you are using pos for something else, consult me."
-                PRINTF("もし、posを別のことに使っている場合相談に応じます。\n");
+                PRINTF("If you are using pos for something else, consult me.\n");
                 PRINTF(VT_RST);
 
                 EffectSs_Delete(&sEffectSsInfo.table[i]);

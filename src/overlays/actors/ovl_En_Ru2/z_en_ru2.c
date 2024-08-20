@@ -566,8 +566,7 @@ void func_80AF3564(EnRu2* this, PlayState* play) {
                     func_80AF34F0(this);
                     break;
                 default:
-                    // "There is no such action!"
-                    PRINTF("En_Ru2_inEnding_Check_DemoMode:そんな動作は無い!!!!!!!!\n");
+                    PRINTF("En_Ru2_inEnding_Check_DemoMode:There is no such action!!!!!!!!\n");
                     break;
             }
             this->cueId = nextCueId;

@@ -96,8 +96,7 @@ void ObjOshihiki_InitDynapoly(ObjOshihiki* this, PlayState* play, CollisionHeade
     if (this->dyna.bgId == BG_ACTOR_MAX) {
         s32 pad2;
 
-        // "Warning : move BG registration failure"
-        PRINTF("Warning : move BG 登録失敗(%s %d)(name %d)(arg_data 0x%04x)\n", "../z_obj_oshihiki.c", 280,
+        PRINTF("Warning : move BG registration failure(%s %d)(name %d)(arg_data 0x%04x)\n", "../z_obj_oshihiki.c", 280,
                this->dyna.actor.id, this->dyna.actor.params);
     }
 #endif
@@ -215,8 +214,7 @@ void ObjOshihiki_CheckType(ObjOshihiki* this, PlayState* play) {
             ObjOshihiki_InitDynapoly(this, play, &gPushBlockCol, 1);
             break;
         default:
-            // "Error : type cannot be determined"
-            PRINTF("Error : タイプが判別できない(%s %d)(arg_data 0x%04x)\n", "../z_obj_oshihiki.c", 444,
+            PRINTF("Error : type cannot be determined(%s %d)(arg_data 0x%04x)\n", "../z_obj_oshihiki.c", 444,
                    this->dyna.actor.params);
             break;
     }
@@ -259,8 +257,7 @@ void ObjOshihiki_SetColor(ObjOshihiki* this, PlayState* play2) {
     }
 
     if (i >= ARRAY_COUNT(sColors)) {
-        // "Error : scene_data_ID cannot be determined"
-        PRINTF("Error : scene_data_ID が判別できない。(%s %d)\n", "../z_obj_oshihiki.c", 579);
+        PRINTF("Error : scene_data_ID cannot be determined(%s %d)\n", "../z_obj_oshihiki.c", 579);
         color->r = color->g = color->b = 255;
     } else {
         src = &sColors[i][paramsColorIdx];
@@ -305,8 +302,7 @@ void ObjOshihiki_Init(Actor* thisx, PlayState* play2) {
     ObjOshihiki_SetColor(this, play);
     ObjOshihiki_ResetFloors(this);
     ObjOshihiki_SetupOnActor(this, play);
-    // "(dungeon keep push-pull block)"
-    PRINTF("(dungeon keep 押し引きブロック)(arg_data 0x%04x)\n", this->dyna.actor.params);
+    PRINTF("(dungeon keep push-pull block)(arg_data 0x%04x)\n", this->dyna.actor.params);
 }
 
 void ObjOshihiki_Destroy(Actor* thisx, PlayState* play) {
@@ -372,8 +368,7 @@ s32 ObjOshihiki_CheckFloor(ObjOshihiki* this, PlayState* play) {
 
 s32 ObjOshihiki_CheckGround(ObjOshihiki* this, PlayState* play) {
     if (this->dyna.actor.world.pos.y <= BGCHECK_Y_MIN + 10.0f) {
-        // "Warning : Push-pull block fell too much"
-        PRINTF("Warning : 押し引きブロック落ちすぎた(%s %d)(arg_data 0x%04x)\n", "../z_obj_oshihiki.c", 809,
+        PRINTF("Warning : Push-pull block fell too much(%s %d)(arg_data 0x%04x)\n", "../z_obj_oshihiki.c", 809,
                this->dyna.actor.params);
         Actor_Kill(&this->dyna.actor);
         return 0;

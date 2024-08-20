@@ -273,8 +273,7 @@ void EnDntJiji_GivePrize(EnDntJiji* this, PlayState* play) {
     SkelAnime_Update(&this->skelAnime);
     if ((Message_GetState(&play->msgCtx) == TEXT_STATE_DONE) && Message_ShouldAdvance(play)) {
         if ((this->getItemId == GI_DEKU_NUT_UPGRADE_30) || (this->getItemId == GI_DEKU_NUT_UPGRADE_40)) {
-            // "nut"
-            PRINTF("実 \n");
+            PRINTF("nut \n");
             PRINTF("実 \n");
             PRINTF("実 \n");
             PRINTF("実 \n");
@@ -284,8 +283,7 @@ void EnDntJiji_GivePrize(EnDntJiji* this, PlayState* play) {
             PRINTF("実 \n");
             SET_ITEMGETINF(ITEMGETINF_1F);
         } else {
-            // "stick"
-            PRINTF("棒 \n");
+            PRINTF("stick \n");
             PRINTF("棒 \n");
             PRINTF("棒 \n");
             PRINTF("棒 \n");

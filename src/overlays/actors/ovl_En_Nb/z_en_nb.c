@@ -121,11 +121,9 @@ void EnNb_UpdatePath(EnNb* this, PlayState* play) {
         this->finalPos.z = pointPos[1].z;
         this->pathYaw =
             RAD_TO_BINANG(Math_FAtan2F(this->finalPos.x - this->initialPos.x, this->finalPos.z - this->initialPos.z));
-        // "En_Nb_Get_path_info Rail Data Get! = %d!!!!!!!!!!!!!!"
-        PRINTF("En_Nb_Get_path_info レールデータをゲットだぜ = %d!!!!!!!!!!!!!!\n", path);
+        PRINTF("En_Nb_Get_path_info Rail Data Get! = %d!!!!!!!!!!!!!!\n", path);
     } else {
-        // "En_Nb_Get_path_info Rail Data Doesn't Exist!!!!!!!!!!!!!!!!!!!!"
-        PRINTF("En_Nb_Get_path_info レールデータが無い!!!!!!!!!!!!!!!!!!!!\n");
+        PRINTF("En_Nb_Get_path_info Rail Data Doesn't Exist!!!!!!!!!!!!!!!!!!!!\n");
     }
 }
 
@@ -676,8 +674,7 @@ void EnNb_CheckKidnapCsMode(EnNb* this, PlayState* play) {
                     Actor_Kill(&this->actor);
                     break;
                 default:
-                    // "Operation Doesn't Exist!!!!!!!!"
-                    PRINTF("En_Nb_Kidnap_Check_DemoMode:そんな動作は無い!!!!!!!!\n");
+                    PRINTF("En_Nb_Kidnap_Check_DemoMode:Operation Doesn't Exist!!!!!!!!\n");
                     break;
             }
             this->cueId = nextCueId;
@@ -895,8 +892,7 @@ void EnNb_CheckConfrontationCsMode(EnNb* this, PlayState* play) {
                     EnNb_SetupConfrontationDestroy(this);
                     break;
                 default:
-                    // "En_Nb_Confrontion_Check_DemoMode: Operation doesn't exist!!!!!!!!"
-                    PRINTF("En_Nb_Confrontion_Check_DemoMode:そんな動作は無い!!!!!!!!\n");
+                    PRINTF("En_Nb_Confrontion_Check_DemoMode: Operation doesn't exist!!!!!!!!\n");
                     break;
             }
             this->cueId = nextCueId;
@@ -1083,8 +1079,7 @@ void EnNb_CheckCreditsCsModeImpl(EnNb* this, PlayState* play) {
                     EnNb_SetupCreditsHeadTurn(this);
                     break;
                 default:
-                    // "En_Nb_inEnding_Check_DemoMode: Operation doesn't exist!!!!!!!!"
-                    PRINTF("En_Nb_inEnding_Check_DemoMode:そんな動作は無い!!!!!!!!\n");
+                    PRINTF("En_Nb_inEnding_Check_DemoMode: Operation doesn't exist!!!!!!!!\n");
                     break;
             }
             this->cueId = nextCueId;

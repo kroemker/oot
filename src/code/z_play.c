@@ -355,9 +355,9 @@ void Play_Init(GameState* thisx) {
     // The emulator constantly checks whether PC is 0x81000000, so this works even though it's not a valid address.
     if ((gEntranceTable[((void)0, gSaveContext.save.entranceIndex)].sceneId == SCENE_GERUDO_VALLEY) &&
         gSaveContext.sceneLayer == 6) {
-        PRINTF("エンディングはじまるよー\n"); // "The ending starts"
+        PRINTF("The ending starts\n"); // "The ending starts"
         ((void (*)(void))0x81000000)();
-        PRINTF("出戻り？\n"); // "Return?"
+        PRINTF("Return?？\n"); // "Return?"
     }
 
     Cutscene_HandleEntranceTriggers(this);
@@ -424,8 +424,7 @@ void Play_Init(GameState* thisx) {
     zAlloc = (uintptr_t)GAME_STATE_ALLOC(&this->state, zAllocSize, "../z_play.c", 2918);
     zAllocAligned = (zAlloc + 8) & ~0xF;
     ZeldaArena_Init((void*)zAllocAligned, zAllocSize - (zAllocAligned - zAlloc));
-    // "Zelda Heap"
-    PRINTF("ゼルダヒープ %08x-%08x\n", zAllocAligned, (u8*)zAllocAligned + zAllocSize - (s32)(zAllocAligned - zAlloc));
+    PRINTF("Zelda Heap %08x-%08x\n", zAllocAligned, (u8*)zAllocAligned + zAllocSize - (s32)(zAllocAligned - zAlloc));
 
 #if OOT_DEBUG
     Fault_AddClient(&D_801614B8, ZeldaArena_Display, NULL, NULL);
@@ -528,7 +527,7 @@ void Play_Update(PlayState* this) {
             switch (gTransitionTileState) {
                 case TRANS_TILE_PROCESS:
                     if (TransitionTile_Init(&gTransitionTile, 10, 7) == NULL) {
-                        PRINTF("fbdemo_init呼出し失敗！\n"); // "fbdemo_init call failed!"
+                        PRINTF("fbdemo_init call failed!！\n"); // "fbdemo_init call failed!"
                         gTransitionTileState = TRANS_TILE_OFF;
                     } else {
                         gTransitionTile.zBuffer = (u16*)gZBuffer;
@@ -561,11 +560,9 @@ void Play_Update(PlayState* this) {
                         // fade out bgm if "continue bgm" flag is not set
                         if (!(gEntranceTable[this->nextEntranceIndex + sceneLayer].field &
                               ENTRANCE_INFO_CONTINUE_BGM_FLAG)) {
-                            // "Sound initialized. 111"
-                            PRINTF("\n\n\nサウンドイニシャル来ました。111");
+                            PRINTF("\n\n\nSound initialized. 111");
                             if ((this->transitionType < TRANS_TYPE_MAX) && !Environment_IsForcedSequenceDisabled()) {
-                                // "Sound initialized. 222"
-                                PRINTF("\n\n\nサウンドイニシャル来ました。222");
+                                PRINTF("\n\n\nSound initialized. 222");
                                 func_800F6964(0x14);
                                 gSaveContext.seqId = (u8)NA_BGM_DISABLED;
                                 gSaveContext.natureAmbienceId = NATURE_ID_DISABLED;

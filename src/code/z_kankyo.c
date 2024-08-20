@@ -1220,11 +1220,9 @@ void Environment_Update(PlayState* play, EnvironmentContext* envCtx, LightContex
 
 #if OOT_DEBUG
             if (envCtx->lightSetting >= envCtx->numLightSettings) {
-                // "The color palette seems to be wrong!"
-                PRINTF("\n" VT_FGCOL(RED) "カラーパレットがおかしいようです！");
+                PRINTF("\n" VT_FGCOL(RED) "The color palette seems to be wrong!！");
 
-                // "Palette setting = [] Last palette number = []"
-                PRINTF("\n" VT_FGCOL(YELLOW) "設定パレット＝[%d] パレット数＝[%d]\n" VT_RST, envCtx->lightSetting,
+                PRINTF("\n" VT_FGCOL(YELLOW) "Palette setting = [] Last palette number = []＝[%d]\n" VT_RST, envCtx->lightSetting,
                        envCtx->numLightSettings);
             }
 #endif
@@ -2074,8 +2072,7 @@ void Environment_PlaySceneSequence(PlayState* play) {
             Audio_PlayNatureAmbienceSequence(play->sceneSequences.natureAmbienceId);
         }
     } else if (play->sceneSequences.natureAmbienceId == NATURE_ID_NONE) {
-        // "BGM Configuration"
-        PRINTF("\n\n\nBGM設定game_play->sound_info.BGM=[%d] old_bgm=[%d]\n\n", play->sceneSequences.seqId,
+        PRINTF("\n\n\nBGM Configurationgame_play->sound_info.BGM=[%d] old_bgm=[%d]\n\n", play->sceneSequences.seqId,
                ((void)0, gSaveContext.seqId));
         if (((void)0, gSaveContext.seqId) != play->sceneSequences.seqId) {
             Audio_PlaySceneSequence(play->sceneSequences.seqId);
@@ -2104,7 +2101,7 @@ void Environment_PlaySceneSequence(PlayState* play) {
     }
 
     PRINTF("\n-----------------\n", ((void)0, gSaveContext.forcedSeqId));
-    PRINTF("\n 強制ＢＧＭ=[%d]", ((void)0, gSaveContext.forcedSeqId)); // "Forced BGM"
+    PRINTF("\n Forced BGMＢＧＭ=[%d]", ((void)0, gSaveContext.forcedSeqId)); // "Forced BGM"
     PRINTF("\n     ＢＧＭ=[%d]", play->sceneSequences.seqId);
     PRINTF("\n     エンブ=[%d]", play->sceneSequences.natureAmbienceId);
     PRINTF("\n     status=[%d]", play->envCtx.timeSeqState);

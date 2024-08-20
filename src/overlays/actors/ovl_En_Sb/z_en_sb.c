@@ -266,8 +266,7 @@ void EnSb_TurnAround(EnSb* this, PlayState* play) {
         EnSb_SpawnBubbles(play, this);
         this->bouncesLeft = 3;
         EnSb_SetupLunge(this);
-        // "Attack!!"
-        PRINTF("アタァ〜ック！！\n");
+        PRINTF("Attack!!！！\n");
     }
 }
 

@@ -365,9 +365,9 @@ void Sram_OpenSave(SramContext* sramCtx) {
     u16 j;
     u8* ptr;
 
-    PRINTF("個人Ｆｉｌｅ作成\n"); // "Create personal file"
+    PRINTF("Create personal file\n"); // "Create personal file"
     i = gSramSlotOffsets[gSaveContext.fileNum];
-    PRINTF("ぽいんと＝%x(%d)\n", i, gSaveContext.fileNum); // "Point="
+    PRINTF("Point=＝%x(%d)\n", i, gSaveContext.fileNum); // "Point="
 
     MemCpy(&gSaveContext, sramCtx->readBuff + i, sizeof(Save));
 
@@ -605,8 +605,7 @@ void Sram_VerifyAndLoadAllSaves(FileSelectState* fileSelect, SramContext* sramCt
             newChecksum += *ptr++;
         }
 
-        // "SAVE checksum calculation"
-        PRINTF("\nＳＡＶＥチェックサム計算  j=%x  mmm=%x  ", newChecksum, oldChecksum);
+        PRINTF("\nＳＡＶＥSAVE checksum calculation  j=%x  mmm=%x  ", newChecksum, oldChecksum);
 
         if (newChecksum != oldChecksum) {
             // checksum didnt match, try backup save
@@ -622,8 +621,7 @@ void Sram_VerifyAndLoadAllSaves(FileSelectState* fileSelect, SramContext* sramCt
             for (i = newChecksum = j = 0; i < CHECKSUM_SIZE; i++, offset += 2) {
                 newChecksum += *ptr++;
             }
-            // "(B) SAVE checksum calculation"
-            PRINTF("\n（Ｂ）ＳＡＶＥチェックサム計算  j=%x  mmm=%x  ", newChecksum, oldChecksum);
+            PRINTF("\n（Ｂ）ＳＡＶＥ(B) SAVE checksum calculation  j=%x  mmm=%x  ", newChecksum, oldChecksum);
 
             if (newChecksum != oldChecksum) {
                 // backup save didnt work, make new save
@@ -690,7 +688,7 @@ void Sram_VerifyAndLoadAllSaves(FileSelectState* fileSelect, SramContext* sramCt
 
             PRINTF("ぽいんと＝%x(%d)  check_sum=%x(%x)\n", i, slotNum, gSaveContext.save.info.checksum, newChecksum);
         } else {
-            PRINTF("\nＳＡＶＥデータ ＯＫ！！！！\n"); // "SAVE data OK! ! ! !"
+            PRINTF("\nＳＡＶＥSAVE data OK! ! ! ! ＯＫ！！！！\n"); // "SAVE data OK! ! ! !"
         }
     }
 
@@ -799,7 +797,7 @@ void Sram_InitSave(FileSelectState* fileSelect, SramContext* sramCtx) {
     }
 
     gSaveContext.save.info.checksum = checksum;
-    PRINTF("\nチェックサム＝%x\n", gSaveContext.save.info.checksum); // "Checksum = %x"
+    PRINTF("\nChecksum = %x＝%x\n", gSaveContext.save.info.checksum); // "Checksum = %x"
 
     offset = gSramSlotOffsets[gSaveContext.fileNum];
     PRINTF("I=%x no=%d\n", offset, gSaveContext.fileNum);
@@ -811,7 +809,7 @@ void Sram_InitSave(FileSelectState* fileSelect, SramContext* sramCtx) {
 
     SsSram_ReadWrite(OS_K1_TO_PHYSICAL(0xA8000000), sramCtx->readBuff, SRAM_SIZE, OS_WRITE);
 
-    PRINTF("ＳＡＶＥ終了\n"); // "SAVE end"
+    PRINTF("ＳＡＶＥSAVE end\n"); // "SAVE end"
     PRINTF("z_common_data.file_no = %d\n", gSaveContext.fileNum);
     PRINTF("SAVECT=%x, NAME=%x, LIFE=%x, ITEM=%x,  SAVE_64DD=%x\n", DEATHS, NAME, HEALTH_CAP, QUEST, N64DD);
 
@@ -896,7 +894,7 @@ void Sram_CopySave(FileSelectState* fileSelect, SramContext* sramCtx) {
 
     PRINTF("f_64dd[%d]=%d\n", gSaveContext.fileNum, fileSelect->n64ddFlags[gSaveContext.fileNum]);
     PRINTF("heart_status[%d]=%d\n", gSaveContext.fileNum, fileSelect->defense[gSaveContext.fileNum]);
-    PRINTF("ＣＯＰＹ終了\n"); // "Copy end"
+    PRINTF("ＣＯＰＹCopy end\n"); // "Copy end"
 }
 
 /**
@@ -914,7 +912,7 @@ void Sram_InitSram(GameState* gameState, SramContext* sramCtx) {
 
     for (i = 0; i < ARRAY_COUNTU(sZeldaMagic) - 3; i++) {
         if (sZeldaMagic[i + SRAM_HEADER_MAGIC] != sramCtx->readBuff[i + SRAM_HEADER_MAGIC]) {
-            PRINTF("ＳＲＡＭ破壊！！！！！！\n"); // "SRAM destruction! ! ! ! ! !"
+            PRINTF("ＳＲＡＭSRAM destruction! ! ! ! ! !！！！！！！\n"); // "SRAM destruction! ! ! ! ! !"
 #if OOT_PAL
             gSaveContext.language = sramCtx->readBuff[SRAM_HEADER_LANGUAGE];
 #endif
@@ -947,12 +945,11 @@ void Sram_InitSram(GameState* gameState, SramContext* sramCtx) {
             sramCtx->readBuff[i] = i;
         }
         SsSram_ReadWrite(OS_K1_TO_PHYSICAL(0xA8000000), sramCtx->readBuff, SRAM_SIZE, OS_WRITE);
-        PRINTF("ＳＲＡＭ破壊！！！！！！\n"); // "SRAM destruction! ! ! ! ! !"
+        PRINTF("ＳＲＡＭSRAM destruction! ! ! ! ! !！！！！！！\n"); // "SRAM destruction! ! ! ! ! !"
     }
 #endif
 
-    // "GOOD! GOOD! Size = %d + %d = %d"
-    PRINTF("ＧＯＯＤ！ＧＯＯＤ！ サイズ＝%d + %d ＝ %d\n", sizeof(SaveInfo), 4, sizeof(SaveInfo) + 4);
+    PRINTF("ＧＯＯＤ！ＧＯＯＤ！ GOOD! GOOD! Size = %d + %d = %d＝%d + %d ＝ %d\n", sizeof(SaveInfo), 4, sizeof(SaveInfo) + 4);
     PRINTF(VT_FGCOL(BLUE));
     PRINTF("Na_SetSoundOutputMode = %d\n", gSaveContext.audioSetting);
     PRINTF("Na_SetSoundOutputMode = %d\n", gSaveContext.audioSetting);

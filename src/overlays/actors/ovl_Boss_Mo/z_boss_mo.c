@@ -1752,20 +1752,17 @@ void BossMo_CoreCollisionCheck(BossMo* this, PlayState* play) {
     }
     if (this->coreCollider.base.acFlags & AC_HIT) {
         ColliderElement* acHitElem = this->coreCollider.elem.acHitElem;
-        // "hit!!"
-        PRINTF("Core_Damage_check 当り！！\n");
+        PRINTF("Core_Damage_check hit!!！！\n");
         this->coreCollider.base.acFlags &= ~AC_HIT;
         if ((acHitElem->atDmgInfo.dmgFlags & DMG_MAGIC_FIRE) && (this->work[MO_TENT_ACTION_STATE] == MO_CORE_ATTACK)) {
             this->work[MO_TENT_ACTION_STATE] = MO_CORE_RETREAT;
         }
-        // "hit 2 !!"
-        PRINTF("Core_Damage_check 当り 2 ！！\n");
+        PRINTF("Core_Damage_check hit 2 !! 2 ！！\n");
         if ((this->work[MO_TENT_ACTION_STATE] != MO_CORE_UNDERWATER) && (this->work[MO_TENT_INVINC_TIMER] == 0)) {
             u8 damage = CollisionCheck_GetSwordDamage(acHitElem->atDmgInfo.dmgFlags);
 
             if ((damage != 0) && (this->work[MO_TENT_ACTION_STATE] < MO_CORE_ATTACK)) {
-                // "sword hit !!"
-                PRINTF("Core_Damage_check 剣 当り！！\n");
+                PRINTF("Core_Damage_check sword hit !!！！\n");
                 this->work[MO_TENT_ACTION_STATE] = MO_CORE_STUNNED;
                 this->timers[0] = 25;
 
@@ -1835,8 +1832,7 @@ void BossMo_CoreCollisionCheck(BossMo* this, PlayState* play) {
             }
         }
     }
-    // "end !!"
-    PRINTF("Core_Damage_check 終わり ！！\n");
+    PRINTF("Core_Damage_check end !! ！！\n");
     PRINTF(VT_RST);
 }
 

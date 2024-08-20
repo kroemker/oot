@@ -3,7 +3,7 @@
 
 void Overlay_LoadGameState(GameStateOverlay* overlayEntry) {
     if (overlayEntry->loadedRamAddr != NULL) {
-        PRINTF("既にリンクされています\n"); // "Already linked"
+        PRINTF("Already linked\n"); // "Already linked"
         return;
     }
 
@@ -14,7 +14,7 @@ void Overlay_LoadGameState(GameStateOverlay* overlayEntry) {
                                                               overlayEntry->vramStart, overlayEntry->vramEnd);
 
         if (overlayEntry->loadedRamAddr == NULL) {
-            PRINTF("ロードに失敗しました\n"); // "Loading failed"
+            PRINTF("Loading failed\n"); // "Loading failed"
             return;
         }
 

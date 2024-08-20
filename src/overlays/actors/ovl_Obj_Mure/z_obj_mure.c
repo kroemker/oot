@@ -71,8 +71,7 @@ s32 ObjMure_SetCullingImpl(Actor* thisx, PlayState* play) {
             result = true;
             break;
         default:
-            // "Error : Culling is not set.(%s %d)(arg_data 0x%04x)"
-            PRINTF("Error : カリングの設定がされていません。(%s %d)(arg_data 0x%04x)\n", "../z_obj_mure.c", 204,
+            PRINTF("Error : Culling is not set.(%s %d)(arg_data 0x%04x)\n", "../z_obj_mure.c", 204,
                    this->actor.params);
             return false;
     }
@@ -147,8 +146,7 @@ void ObjMure_SpawnActors0(ObjMure* this, PlayState* play) {
     for (i = 0; i < maxChildren; i++) {
 #if OOT_DEBUG
         if (this->children[i] != NULL) {
-            // "Error: I already have a child(%s %d)(arg_data 0x%04x)"
-            PRINTF("Error : 既に子供がいる(%s %d)(arg_data 0x%04x)\n", "../z_obj_mure.c", 333, actor->params);
+            PRINTF("Error : Error: I already have a child(%s %d)(arg_data 0x%04x)\n", "../z_obj_mure.c", 333, actor->params);
         }
 #endif
 

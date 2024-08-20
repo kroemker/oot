@@ -81,8 +81,7 @@ void AudioMgr_HandleRetrace(AudioMgr* audioMgr) {
  * @see Audio_PreNMI
  */
 void AudioMgr_HandlePreNMI(AudioMgr* audioMgr) {
-    // "Audio manager received OS_SC_PRE_NMI_MSG"
-    PRINTF("オーディオマネージャが OS_SC_PRE_NMI_MSG を受け取りました\n");
+    PRINTF("Audio manager received OS_SC_PRE_NMI_MSG\n");
     Audio_PreNMI();
 }
 
@@ -91,8 +90,7 @@ void AudioMgr_ThreadEntry(void* arg) {
     IrqMgrClient irqClient;
     s16* msg = NULL;
 
-    // "Start running audio manager thread"
-    PRINTF("オーディオマネージャスレッド実行開始\n");
+    PRINTF("Start running audio manager thread\n");
 
     // Initialize audio driver
     Audio_Init();

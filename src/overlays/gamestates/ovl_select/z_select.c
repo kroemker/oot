@@ -603,8 +603,8 @@ void MapSelect_Init(GameState* thisx) {
     this->state.main = MapSelect_Main;
     this->state.destroy = MapSelect_Destroy;
     this->scenes = sScenes;
-    this->topDisplayedScene = 4;
-    this->currentScene = 4;
+    this->topDisplayedScene = dREG(81) = 0;
+    this->currentScene = dREG(80) = 0;
     this->pageDownStops[0] = 0;  // Hyrule Field
     this->pageDownStops[1] = 19; // Temple Of Time
     this->pageDownStops[2] = 37; // Treasure Chest Game

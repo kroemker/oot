@@ -125,7 +125,19 @@ typedef struct TransformGohma {
     Vec3f leftHandBackLimbWorldPos;
     ColliderJntSph collider;
     ColliderJntSphElement colliderItems[13];
-    s32 invincibilityFrames;
+    s32 invincibilityFrames;    
+    Vec3f beamStartPos;
+    Vec3f beamEffectPos;
+    Vec3f beamHitPos;
+    Vec3f beamScale;
+    Vec3s beamRot;
+    Vec3s beamLimbRot;
+    s16 beamTexScroll;
+    ColliderQuad beamCollider;
+    s8 laserHit;
+    s16 beamDelayTimer;
+    s16 slopePitch;
+    s16 slopeRoll;
 } TransformGohma;
 
 #endif

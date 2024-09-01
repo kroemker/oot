@@ -211,6 +211,8 @@ char sCameraModeNames[][12] = {
     "STILL      ", // CAM_MODE_STILL
     "PUSHPULL   ", // CAM_MODE_PUSH_PULL
     "BOOKEEPON  ", // CAM_MODE_FOLLOW_BOOMERANG
+    "TRANSBG    ", // CAM_MODE_TRANSFORM_BABY_GOHMA
+    "TRANSGO    ", // CAM_MODE_TRANSFORM_GOHMA 
 };
 #endif
 
@@ -326,6 +328,18 @@ CameraModeValue sSetNormal0ModePushPullData[] = {
 CameraModeValue sSetNormal0ModeFollowBoomerangData[] = {
     CAM_FUNCDATA_KEEP1(-5, 120, 140, 5, 85, 10, 5, 25, 45, 50,
                        CAM_INTERFACE_FIELD(CAM_LETTERBOX_MEDIUM, CAM_HUD_VISIBILITY_ALL, KEEPON1_FLAG_0), -15, 30),
+};
+
+CameraModeValue sSetNormal0ModeTransformBabyGohmaData[] = {
+    CAM_FUNCDATA_NORM1(
+        -20, 200, 300, 10, 12, 10, 35, 60, 60,
+        CAM_INTERFACE_FIELD(CAM_LETTERBOX_NONE, CAM_HUD_VISIBILITY_ALL, NORMAL1_FLAG_1 | NORMAL1_FLAG_0)),
+};
+
+CameraModeValue sSetNormal0ModeTransformGohmaData[] = {
+    CAM_FUNCDATA_NORM1(
+        -10, 4000, 500, 10, 12, 10, 35, 60, 60,
+        CAM_INTERFACE_FIELD(CAM_LETTERBOX_NONE, CAM_HUD_VISIBILITY_ALL, NORMAL1_FLAG_1 | NORMAL1_FLAG_0)),
 };
 
 /**
@@ -1501,6 +1515,9 @@ CameraMode sCamSetNormal0Modes[] = {
     CAM_SETTING_MODE_ENTRY(CAM_FUNC_NORM1, sSetNormal0ModeStillData),             // CAM_MODE_STILL
     CAM_SETTING_MODE_ENTRY(CAM_FUNC_PARA1, sSetNormal0ModePushPullData),          // CAM_MODE_PUSH_PULL
     CAM_SETTING_MODE_ENTRY(CAM_FUNC_KEEP1, sSetNormal0ModeFollowBoomerangData),   // CAM_MODE_FOLLOW_BOOMERANG
+    
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_NORM1, sSetNormal0ModeTransformBabyGohmaData),// CAM_MODE_TRANSFORM_BABY_GOHMA
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_NORM1, sSetNormal0ModeTransformGohmaData),    // CAM_MODE_TRANSFORM_GOHMA
 };
 
 CameraMode sCamSetNormal1Modes[] = {
@@ -1525,6 +1542,9 @@ CameraMode sCamSetNormal1Modes[] = {
     CAM_SETTING_MODE_ENTRY(CAM_FUNC_NORM1, sSetNormal1ModeStillData),             // CAM_MODE_STILL
     CAM_SETTING_MODE_ENTRY(CAM_FUNC_PARA1, sSetNormal0ModePushPullData),          // CAM_MODE_PUSH_PULL
     CAM_SETTING_MODE_ENTRY(CAM_FUNC_KEEP1, sSetNormal0ModeFollowBoomerangData),   // CAM_MODE_FOLLOW_BOOMERANG
+    
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_NORM1, sSetNormal0ModeTransformBabyGohmaData),// CAM_MODE_TRANSFORM_BABY_GOHMA
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_NORM1, sSetNormal0ModeTransformGohmaData),    // CAM_MODE_TRANSFORM_GOHMA
 };
 
 CameraMode sCamSetDungeon0Modes[] = {
@@ -1549,6 +1569,9 @@ CameraMode sCamSetDungeon0Modes[] = {
     CAM_SETTING_MODE_ENTRY(CAM_FUNC_NORM1, sSetDungeon0ModeStillData),             // CAM_MODE_STILL
     CAM_SETTING_MODE_ENTRY(CAM_FUNC_PARA1, sSetNormal0ModePushPullData),           // CAM_MODE_PUSH_PULL
     CAM_SETTING_MODE_ENTRY(CAM_FUNC_KEEP1, sSetNormal0ModeFollowBoomerangData),    // CAM_MODE_FOLLOW_BOOMERANG
+    
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_NORM1, sSetNormal0ModeTransformBabyGohmaData),// CAM_MODE_TRANSFORM_BABY_GOHMA
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_NORM1, sSetNormal0ModeTransformGohmaData),    // CAM_MODE_TRANSFORM_GOHMA
 };
 
 CameraMode sCamSetDungeon1Modes[] = {
@@ -1573,6 +1596,9 @@ CameraMode sCamSetDungeon1Modes[] = {
     CAM_SETTING_MODE_ENTRY(CAM_FUNC_NORM1, sSetDungeon1ModeStillData),             // CAM_MODE_STILL
     CAM_SETTING_MODE_ENTRY(CAM_FUNC_PARA1, sSetDungeon1ModePushPullData),          // CAM_MODE_PUSH_PULL
     CAM_SETTING_MODE_ENTRY(CAM_FUNC_KEEP1, sSetNormal0ModeFollowBoomerangData),    // CAM_MODE_FOLLOW_BOOMERANG
+    
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_NORM1, sSetNormal0ModeTransformBabyGohmaData),// CAM_MODE_TRANSFORM_BABY_GOHMA
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_NORM1, sSetNormal0ModeTransformGohmaData),    // CAM_MODE_TRANSFORM_GOHMA
 };
 
 CameraMode sCamSetNormal3Modes[] = {
@@ -1632,6 +1658,9 @@ CameraMode sCamSetBossGohmaModes[] = {
     CAM_SETTING_MODE_ENTRY(CAM_FUNC_NORM1, sSetNormal0ModeStillData),               // CAM_MODE_STILL
     CAM_SETTING_MODE_ENTRY(CAM_FUNC_PARA1, sSetNormal0ModePushPullData),            // CAM_MODE_PUSH_PULL
     CAM_SETTING_MODE_ENTRY(CAM_FUNC_KEEP1, sSetNormal0ModeFollowBoomerangData),     // CAM_MODE_FOLLOW_BOOMERANG
+    
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_NORM1, sSetNormal0ModeNormalData),            // CAM_MODE_TRANSFORM_BABY_GOHMA
+    CAM_SETTING_MODE_ENTRY(CAM_FUNC_NORM1, sSetNormal0ModeNormalData),            // CAM_MODE_TRANSFORM_GOHMA
 };
 
 CameraMode sCamSetBossDodongoModes[] = {

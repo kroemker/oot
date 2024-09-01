@@ -18,6 +18,7 @@ void TransformBabyGohma_Action_Idle(TransformBabyGohma* this, PlayState* play);
 void TransformBabyGohma_Action_Run(TransformBabyGohma* this, PlayState* play);
 void TransformBabyGohma_Action_PrepareJump(TransformBabyGohma* this, PlayState* play);
 void TransformBabyGohma_Action_Jump(TransformBabyGohma* this, PlayState* play);
+void TransformBabyGohma_Action_HeadAttack(TransformBabyGohma* this, PlayState* play);
 void TransformBabyGohma_Action_Land(TransformBabyGohma* this, PlayState* play);
 void TransformBabyGohma_Action_GetHit(TransformBabyGohma* this, PlayState* play);
 
@@ -47,7 +48,7 @@ static ColliderCylinderInit sAttackCollider = {
     },
     {
         ELEMTYPE_UNK0,
-        { DMG_ARROW_NORMAL, 0x00, 0x08 },
+        { 0x20, 0x00, 0x08 },
         { 0xFFCFFFFF, 0x00, 0x00 },
         ATELEM_ON | ATELEM_SFX_NORMAL,
         ACELEM_NONE,
@@ -92,15 +93,10 @@ void TransformBabyGohma_SetupAction(TransformBabyGohma* this, PlayState* play, T
     }
     else if (this->actionFunc == TransformBabyGohma_Action_PrepareJump) {
         this->actor.speed = 0.0f;
-        Animation_Change(&this->skelAnime, &gObjectGolPrepareJumpAnim, 4.0f, 0.0f, Animation_GetLastFrame(&gObjectGolPrepareJumpAnim), ANIMMODE_ONCE, 0.0f);
-
         this->eyeColorIndex = 0;
+        Animation_Change(&this->skelAnime, &gObjectGolPrepareJumpAnim, 4.0f, 0.0f, Animation_GetLastFrame(&gObjectGolPrepareJumpAnim), ANIMMODE_ONCE, 0.0f);
     }
     else if (this->actionFunc == TransformBabyGohma_Action_Jump) {
-        Input* input = &play->state.input[0];
-        f32 stickY = (((f32) -input->rel.stick_y) + 60.0f) / 120.0f;
-        osSyncPrintf("stickY = %f\n", stickY);
-
         this->actor.speed = CLAMP(this->framesAPressed * 1.2f + 10.0f, 10.0f, 20.0f);
         this->actor.velocity.y = CLAMP(this->framesAPressed * 0.6f + 8.0f, 8.0f, 12.0f);
         this->framesAPressed = 0;
@@ -108,6 +104,11 @@ void TransformBabyGohma_SetupAction(TransformBabyGohma* this, PlayState* play, T
         
         Actor_PlaySfx(&this->actor, NA_SE_EN_GOMA_BJR_CRY);
         this->eyeColorIndex = 0;
+    }
+    else if (this->actionFunc == TransformBabyGohma_Action_HeadAttack) {
+        this->actor.speed = 0.0f;
+        this->eyeColorIndex = 0;
+        Animation_Change(&this->skelAnime, &gObjectGolPrepareJumpAnim, 3.0f, 0.0f, Animation_GetLastFrame(&gObjectGolPrepareJumpAnim), ANIMMODE_ONCE_INTERP, -2.0f);
     }
     else if (this->actionFunc == TransformBabyGohma_Action_Land) {
         this->actor.speed = 0.0f;
@@ -122,6 +123,12 @@ void TransformBabyGohma_SetupAction(TransformBabyGohma* this, PlayState* play, T
 void TransformBabyGohma_CheckJump(TransformBabyGohma* this, PlayState* play) {
     if (CHECK_BTN_ALL(play->state.input[0].press.button, BTN_A)) {
         TransformBabyGohma_SetupAction(this, play, TransformBabyGohma_Action_PrepareJump);
+    }
+}
+
+void TransformBabyGohma_CheckHeadAttack(TransformBabyGohma* this, PlayState* play) {
+    if (CHECK_BTN_ALL(play->state.input[0].press.button, BTN_B)) {
+        TransformBabyGohma_SetupAction(this, play, TransformBabyGohma_Action_HeadAttack);
     }
 }
 
@@ -168,6 +175,7 @@ void TransformBabyGohma_Action_Idle(TransformBabyGohma* this, PlayState* play) {
     }
 
     TransformBabyGohma_CheckJump(this, play);
+    TransformBabyGohma_CheckHeadAttack(this, play);
 
     SkelAnime_Update(&this->skelAnime);
 }
@@ -186,6 +194,7 @@ void TransformBabyGohma_Action_Run(TransformBabyGohma* this, PlayState* play) {
     }
 
     TransformBabyGohma_CheckJump(this, play);
+    TransformBabyGohma_CheckHeadAttack(this, play);
 
     SkelAnime_Update(&this->skelAnime);
 
@@ -226,6 +235,12 @@ void TransformBabyGohma_Action_Jump(TransformBabyGohma* this, PlayState* play) {
         TransformBabyGohma_SetupAction(this, play, TransformBabyGohma_Action_Land);
         Actor_PlaySfx(&this->actor, NA_SE_EN_GOMA_BJR_LAND2);
         //Actor_PlaySfx(&this->actor, NA_SE_EN_GOMA_JR_LAND2);
+    }
+}
+
+void TransformBabyGohma_Action_HeadAttack(TransformBabyGohma* this, PlayState* play) {
+    if (SkelAnime_Update(&this->skelAnime)) {
+        TransformBabyGohma_SetupAction(this, play, TransformBabyGohma_Action_Idle);
     }
 }
 
@@ -293,19 +308,23 @@ void TransformBabyGohma_UpdateHit(TransformBabyGohma* this, PlayState* play) {
 
         TransformBabyGohma_SetupAction(this, play, TransformBabyGohma_Action_GetHit);
         this->hurtTimer = 10;
+        this->invincibilityFrames = 20;
     }
 }
 
 void TransformBabyGohma_UpdateEyeEnvColor(TransformBabyGohma* this) {
+    f32 step;
     static f32 sTargetEyeEnvColors[][3] = {
         { 255.0f, 0.0f, 170.0f },
         { 17.0f, 255.0f, 255.0f },
         { 0.0f, 170.0f, 0.0f },
     };
 
-    Math_ApproachF(&this->eyeEnvColor[0], sTargetEyeEnvColors[0][this->eyeColorIndex], 0.5f, 20.0f);
-    Math_ApproachF(&this->eyeEnvColor[1], sTargetEyeEnvColors[1][this->eyeColorIndex], 0.5f, 20.0f);
-    Math_ApproachF(&this->eyeEnvColor[2], sTargetEyeEnvColors[2][this->eyeColorIndex], 0.5f, 20.0f);
+    step = this->actionFunc == TransformBabyGohma_Action_HeadAttack ? 60.0f : 20.0f;
+
+    Math_ApproachF(&this->eyeEnvColor[0], sTargetEyeEnvColors[0][this->eyeColorIndex], 0.5f, step);
+    Math_ApproachF(&this->eyeEnvColor[1], sTargetEyeEnvColors[1][this->eyeColorIndex], 0.5f, step);
+    Math_ApproachF(&this->eyeEnvColor[2], sTargetEyeEnvColors[2][this->eyeColorIndex], 0.5f, step);
 }
 
 void TransformBabyGohma_SetFloorRot(TransformBabyGohma* this) {
@@ -322,24 +341,19 @@ void TransformBabyGohma_SetFloorRot(TransformBabyGohma* this) {
     }
 }
 
+void TransformBabyGohma_UpdateConveyor(TransformBabyGohma* this, PlayState* play) {
+    f32 conveyorSpeed;
+    s16 conveyorYaw;
+    Actor_GetConveyorData(&this->actor, play &conveyorSpeed, &conveyorYaw);
+
+    this->actor.speed += conveyorSpeed;
+}
+
 void TransformBabyGohma_Update(Actor* thisx, PlayState* play) {
     TransformBabyGohma* this = (TransformBabyGohma*)thisx;
 
-    Player* player = GET_PLAYER(play);
-
-    player->actor.world.pos.x = this->actor.world.pos.x;
-    player->actor.world.pos.y = this->actor.world.pos.y;
-    player->actor.world.pos.z = this->actor.world.pos.z;
-
-    Math_Vec3f_Copy(&player->actor.world.pos, &this->actor.world.pos);
-    Math_Vec3f_Copy(&player->actor.home.pos, &this->actor.world.pos);
-    Math_Vec3f_Copy(&player->actor.prevPos, &this->actor.world.pos);
-    player->actor.world.rot.x = this->actor.world.rot.x;
-    player->actor.world.rot.y = this->actor.world.rot.y;
-    player->actor.world.rot.z = this->actor.world.rot.z;
-    player->actor.shape.rot.x = this->actor.shape.rot.x;
-    player->actor.shape.rot.y = this->actor.shape.rot.y;
-    player->actor.shape.rot.z = this->actor.shape.rot.z;
+    Actor_SetPlayerLocation(&this->actor, play, 20.0f);
+    Actor_SetFocus(&this->actor, 20.0f);
 
     Math_SmoothStepToF(&this->actor.scale.x, 0.01f, 0.5f, 0.00075f, 0.000001f);
     Math_SmoothStepToF(&this->actor.scale.y, 0.01f, 0.5f, 0.00075f, 0.000001f);
@@ -348,7 +362,7 @@ void TransformBabyGohma_Update(Actor* thisx, PlayState* play) {
     TransformBabyGohma_UpdateHit(this, play);
     Actor_HandleZTarget(&this->actor, play);
     Actor_MoveXZGravity(&this->actor);
-    Actor_UpdateBgCheckInfo(play, &this->actor, 40.0f, 30.0f, 100.0f, UPDBGCHECKINFO_FLAG_0 | UPDBGCHECKINFO_FLAG_2);
+    Actor_UpdateBgCheckInfo(play, &this->actor, 40.0f, 30.0f, 100.0f, UPDBGCHECKINFO_FLAG_0 | UPDBGCHECKINFO_FLAG_1 | UPDBGCHECKINFO_FLAG_2);
     if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
         TransformBabyGohma_SetFloorRot(this);
     }
@@ -357,17 +371,19 @@ void TransformBabyGohma_Update(Actor* thisx, PlayState* play) {
         this->slopeRoll = 0;
     }
     TransformBabyGohma_UpdateWaterMovement(this, play);
-    Actor_SetFocus(&this->actor, 20.0f);
     TransformBabyGohma_UpdateEyeEnvColor(this);
+    Actor_TriggerDynapolyIfPossible(&this->actor, play);
 
     this->actionFunc(this, play);
 
     Collider_UpdateCylinder(&this->actor, &this->attackCol);
     Collider_UpdateCylinder(&this->actor, &this->bodyCol);
     CollisionCheck_SetOC(play, &play->colChkCtx, &this->bodyCol.base);
-    CollisionCheck_SetAC(play, &play->colChkCtx, &this->bodyCol.base);
 
-    if (this->actionFunc == TransformBabyGohma_Action_Jump) {
+    if (DECR(this->invincibilityFrames) == 0) {
+        CollisionCheck_SetAC(play, &play->colChkCtx, &this->bodyCol.base);
+    }
+    if ((this->actionFunc == TransformBabyGohma_Action_Jump) || (this->actionFunc == TransformBabyGohma_Action_HeadAttack)) {
         CollisionCheck_SetAT(play, &play->colChkCtx, &this->attackCol.base);
     }
 }

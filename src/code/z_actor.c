@@ -6025,3 +6025,49 @@ void Actor_HandleZTarget(Actor* actor, PlayState* play) {
         Camera_RequestMode(mainCamera, CAM_MODE_Z_PARALLEL);
     }
 }
+
+void Actor_SetPlayerLocation(Actor* actor, PlayState* play, f32 yOffset) {
+    Player* player = GET_PLAYER(play);
+
+    Math_Vec3f_Copy(&player->actor.world.pos, &actor->world.pos);
+    Math_Vec3f_Copy(&player->actor.home.pos, &actor->world.pos);
+    Math_Vec3f_Copy(&player->actor.prevPos, &actor->world.pos);
+    player->actor.world.rot.x = actor->world.rot.x;
+    player->actor.world.rot.y = actor->world.rot.y;
+    player->actor.world.rot.z = actor->world.rot.z;
+    player->actor.shape.rot.x = actor->shape.rot.x;
+    player->actor.shape.rot.y = actor->shape.rot.y;
+    player->actor.shape.rot.z = actor->shape.rot.z;
+    Actor_SetFocus(&player->actor, yOffset);
+}
+
+void Actor_TriggerDynapolyIfPossible(Actor* actor, PlayState* play) {
+    CollisionPoly* floorPoly = actor->floorPoly;
+    if (floorPoly == NULL) {
+        return;
+    }
+
+    if (this->actor.floorBgId == BGCHECK_SCENE) {
+        Environment_ChangeLightSetting(play, SurfaceType_GetLightSetting(&play->colCtx, floorPoly, this->actor.floorBgId));
+    } else {
+        DynaPoly_SetPlayerAbove(&play->colCtx, this->actor.floorBgId);
+    }
+}
+
+void Actor_GetConveyorData(Actor* actor, PlayState* play, f32* outConveyorSpeed, s16* outConveyorYaw) {
+    CollisionPoly* floorPoly = actor->floorPoly;
+    if (floorPoly == NULL) {
+        return;
+    }
+
+    *outConveyorSpeed = SurfaceType_GetConveyorSpeed(&play->colCtx, floorPoly, this->actor.floorBgId);
+    if (*outConveyorSpeed != CONVEYOR_SPEED_DISABLED) {
+        s32 floorConveyor = SurfaceType_IsFloorConveyor(&play->colCtx, floorPoly, this->actor.floorBgId);
+
+        if ((!floorConveyor && (actor->depthInWater > 20.0f)) || (floorConveyor && (actor->bgCheckFlags & BGCHECKFLAG_GROUND))) {
+            *outConveyorYaw = CONVEYOR_DIRECTION_TO_BINANG(SurfaceType_GetConveyorDirection(&play->colCtx, floorPoly, this->actor.floorBgId));
+        } else {
+            *outConveyorSpeed = CONVEYOR_SPEED_DISABLED;
+        }
+    }
+}

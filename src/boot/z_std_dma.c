@@ -546,7 +546,7 @@ void DmaMgr_Init(void) {
                        (u32)(_dmadataSegmentRomEnd - _dmadataSegmentRomStart));
     PRINTF("dma_rom_ad[]\n");
 
-#if OOT_DEBUG
+#if 0
     name = sDmaMgrFileNames;
     iter = gDmaDataTable;
     idx = 0;

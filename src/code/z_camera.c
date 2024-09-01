@@ -8330,9 +8330,7 @@ s32 Camera_SetNewModeStateFlags(Camera* camera) {
 s32 Camera_RequestModeImpl(Camera* camera, s16 requestedMode, u8 forceModeChange) {
     static s32 sModeRequestFlags = 0;
 
-    if (QREG(89)) {
-        PRINTF("+=+(%d)+=+ recive request -> %s\n", camera->play->state.frames, sCameraModeNames[requestedMode]);
-    }
+    PRINTF("Camera +=+(%d)+=+ receive request -> %s\n", camera->play->state.frames, sCameraModeNames[requestedMode]);
 
     if ((camera->stateFlags & CAM_STATE_LOCK_MODE) && !forceModeChange) {
         camera->behaviorFlags |= CAM_BEHAVIOR_MODE_VALID;

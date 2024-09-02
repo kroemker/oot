@@ -650,6 +650,27 @@ beginseg
 endseg
 
 beginseg
+    name "ovl_Transform_Ik"
+    compress
+    include "$(BUILD_DIR)/src/overlays/actors/ovl_Transform_Ik/z_transform_ik.o"
+    include "$(BUILD_DIR)/src/overlays/actors/ovl_Transform_Ik/ovl_Transform_Ik_reloc.o"
+endseg
+
+beginseg
+    name "ovl_Transform_Octorok"
+    compress
+    include "$(BUILD_DIR)/src/overlays/actors/ovl_Transform_Octorok/z_transform_octorok.o"
+    include "$(BUILD_DIR)/src/overlays/actors/ovl_Transform_Octorok/ovl_Transform_Octorok_reloc.o"
+endseg
+
+beginseg
+    name "ovl_Transform_Keese"
+    compress
+    include "$(BUILD_DIR)/src/overlays/actors/ovl_Transform_Keese/z_transform_keese.o"
+    include "$(BUILD_DIR)/src/overlays/actors/ovl_Transform_Keese/ovl_Transform_Keese_reloc.o"
+endseg
+
+beginseg
     name "ovl_Transform_Baby_Gohma"
     compress
     include "$(BUILD_DIR)/src/overlays/actors/ovl_Transform_Baby_Gohma/z_transform_baby_gohma.o"

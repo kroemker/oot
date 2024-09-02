@@ -6047,27 +6047,9 @@ void Actor_TriggerDynapolyIfPossible(Actor* actor, PlayState* play) {
         return;
     }
 
-    if (this->actor.floorBgId == BGCHECK_SCENE) {
-        Environment_ChangeLightSetting(play, SurfaceType_GetLightSetting(&play->colCtx, floorPoly, this->actor.floorBgId));
+    if (actor->floorBgId == BGCHECK_SCENE) {
+        Environment_ChangeLightSetting(play, SurfaceType_GetLightSetting(&play->colCtx, floorPoly, actor->floorBgId));
     } else {
-        DynaPoly_SetPlayerAbove(&play->colCtx, this->actor.floorBgId);
-    }
-}
-
-void Actor_GetConveyorData(Actor* actor, PlayState* play, f32* outConveyorSpeed, s16* outConveyorYaw) {
-    CollisionPoly* floorPoly = actor->floorPoly;
-    if (floorPoly == NULL) {
-        return;
-    }
-
-    *outConveyorSpeed = SurfaceType_GetConveyorSpeed(&play->colCtx, floorPoly, this->actor.floorBgId);
-    if (*outConveyorSpeed != CONVEYOR_SPEED_DISABLED) {
-        s32 floorConveyor = SurfaceType_IsFloorConveyor(&play->colCtx, floorPoly, this->actor.floorBgId);
-
-        if ((!floorConveyor && (actor->depthInWater > 20.0f)) || (floorConveyor && (actor->bgCheckFlags & BGCHECKFLAG_GROUND))) {
-            *outConveyorYaw = CONVEYOR_DIRECTION_TO_BINANG(SurfaceType_GetConveyorDirection(&play->colCtx, floorPoly, this->actor.floorBgId));
-        } else {
-            *outConveyorSpeed = CONVEYOR_SPEED_DISABLED;
-        }
+        DynaPoly_SetPlayerAbove(&play->colCtx, actor->floorBgId);
     }
 }

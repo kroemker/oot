@@ -341,14 +341,6 @@ void TransformBabyGohma_SetFloorRot(TransformBabyGohma* this) {
     }
 }
 
-void TransformBabyGohma_UpdateConveyor(TransformBabyGohma* this, PlayState* play) {
-    f32 conveyorSpeed;
-    s16 conveyorYaw;
-    Actor_GetConveyorData(&this->actor, play &conveyorSpeed, &conveyorYaw);
-
-    this->actor.speed += conveyorSpeed;
-}
-
 void TransformBabyGohma_Update(Actor* thisx, PlayState* play) {
     TransformBabyGohma* this = (TransformBabyGohma*)thisx;
 

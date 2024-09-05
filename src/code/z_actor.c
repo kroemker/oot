@@ -2811,8 +2811,7 @@ void Actor_FreeOverlay(ActorOverlay* actorOverlay) {
             if (actorOverlay->allocType & ACTOROVL_ALLOC_PERSISTENT) {
                 PRINTF("Overlay will not be deallocated\n"); // "Overlay will not be deallocated"
             } else if (actorOverlay->allocType & ACTOROVL_ALLOC_ABSOLUTE) {
-                // "Absolute magic field reserved, so deallocation will not occur"
-                PRINTF("絶対魔法領域確保なので解放しません\n");
+                PRINTF("Absolute magic field reserved, so deallocation will not occur\n");
                 actorOverlay->loadedRamAddr = NULL;
             } else {
                 PRINTF("Overlay deallocated\n"); // "Overlay deallocated"
@@ -2821,8 +2820,7 @@ void Actor_FreeOverlay(ActorOverlay* actorOverlay) {
             }
         }
     } else {
-        // "%d of actor client remains"
-        PRINTF("アクタークライアントはあと %d 残っています\n", actorOverlay->numLoaded);
+        PRINTF("%d of actor client remains\n", actorOverlay->numLoaded);
     }
 
     PRINTF(VT_RST);
@@ -2848,12 +2846,10 @@ Actor* Actor_Spawn(ActorContext* actorCtx, PlayState* play, s16 actorId, f32 pos
 
     overlaySize = (uintptr_t)overlayEntry->vramEnd - (uintptr_t)overlayEntry->vramStart;
 
-    // "Actor class addition [%d:%s]"
-    PRINTF("アクタークラス追加 [%d:%s]\n", actorId, name);
+    PRINTF("Actor class addition [%d:%s]\n", actorId, name);
 
     if (actorCtx->total > ACTOR_NUMBER_MAX) {
-        // "Ａｃｔｏｒ set number exceeded"
-        PRINTF(VT_COL(YELLOW, BLACK) "Ａｃｔｏｒセット数オーバー\n" VT_RST);
+        PRINTF(VT_COL(YELLOW, BLACK) "Ａｃｔｏｒ set number exceeded\n" VT_RST);
         return NULL;
     }
 
@@ -2872,8 +2868,7 @@ Actor* Actor_Spawn(ActorContext* actorCtx, PlayState* play, s16 actorId, f32 pos
                 if (actorCtx->absoluteSpace == NULL) {
                     // "AMF: absolute magic field"
                     actorCtx->absoluteSpace = ZELDA_ARENA_MALLOC_R(ACTOROVL_ABSOLUTE_SPACE_SIZE, "AMF:絶対魔法領域", 0);
-                    // "Absolute magic field reservation - %d bytes reserved"
-                    PRINTF("絶対魔法領域確保 %d バイト確保\n", ACTOROVL_ABSOLUTE_SPACE_SIZE);
+                    PRINTF("Absolute magic field reservation - %d bytes reserved\n", ACTOROVL_ABSOLUTE_SPACE_SIZE);
                 }
 
                 overlayEntry->loadedRamAddr = actorCtx->absoluteSpace;
@@ -2884,8 +2879,7 @@ Actor* Actor_Spawn(ActorContext* actorCtx, PlayState* play, s16 actorId, f32 pos
             }
 
             if (overlayEntry->loadedRamAddr == NULL) {
-                // "Cannot reserve actor program memory"
-                PRINTF(VT_COL(RED, WHITE) "Ａｃｔｏｒプログラムメモリが確保できません\n" VT_RST);
+                PRINTF(VT_COL(RED, WHITE) "ＡｃｔｏｒCannot reserve actor program memory\n" VT_RST);
                 return NULL;
             }
 
@@ -2914,8 +2908,7 @@ Actor* Actor_Spawn(ActorContext* actorCtx, PlayState* play, s16 actorId, f32 pos
 
     if ((objectSlot < 0) ||
         ((profile->category == ACTORCAT_ENEMY) && Flags_GetClear(play, play->roomCtx.curRoom.num))) {
-        // "No data bank!! <data bank＝%d> (profilep->bank=%d)"
-        PRINTF(VT_COL(RED, WHITE) "データバンク無し！！<データバンク＝%d>(profilep->bank=%d)\n" VT_RST, objectSlot,
+        PRINTF(VT_COL(RED, WHITE) "No data bank!! <data bank＝%d> (profilep->bank=%d)＝%d>(profilep->bank=%d)\n" VT_RST, objectSlot,
                profile->objectId);
         Actor_FreeOverlay(overlayEntry);
         return NULL;
@@ -2924,8 +2917,7 @@ Actor* Actor_Spawn(ActorContext* actorCtx, PlayState* play, s16 actorId, f32 pos
     actor = ZELDA_ARENA_MALLOC(profile->instanceSize, name, 1);
 
     if (actor == NULL) {
-        // "Actor class cannot be reserved! %s <size＝%d bytes>"
-        PRINTF(VT_COL(RED, WHITE) "Ａｃｔｏｒクラス確保できません！ %s <サイズ＝%dバイト>\n", VT_RST, name,
+        PRINTF(VT_COL(RED, WHITE) "ＡｃｔｏｒActor class cannot be reserved! %s <size＝%d bytes>\n", VT_RST, name,
                profile->instanceSize);
         Actor_FreeOverlay(overlayEntry);
         return NULL;
@@ -2937,8 +2929,7 @@ Actor* Actor_Spawn(ActorContext* actorCtx, PlayState* play, s16 actorId, f32 pos
 
     if (1) {}
 
-    // "Actor client No. %d"
-    PRINTF("アクタークライアントは %d 個目です\n", overlayEntry->numLoaded);
+    PRINTF("Actor client No. %d\n", overlayEntry->numLoaded);
 
     Lib_MemSet((u8*)actor, profile->instanceSize, 0);
     actor->overlayEntry = overlayEntry;

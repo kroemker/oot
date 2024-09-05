@@ -58,10 +58,8 @@ void EnBomBowlMan_Init(Actor* thisx, PlayState* play2) {
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, 30.0f);
     SkelAnime_InitFlex(play, &this->skelAnime, &gChuGirlSkel, &gChuGirlNoddingOffAnim, this->jointTable,
                        this->morphTable, 11);
-    // "☆ Man, my shoulders hurt~ ☆"
-    PRINTF(VT_FGCOL(GREEN) "☆ もー 肩こっちゃうよねぇ〜 \t\t ☆ \n" VT_RST);
-    // "☆ Isn't there some sort of job that will pay better and be more relaxing? ☆ %d"
-    PRINTF(VT_FGCOL(GREEN) "☆ もっとラクしてもうかるバイトないかしら？ ☆ %d\n" VT_RST, play->bombchuBowlingStatus);
+    PRINTF(VT_FGCOL(GREEN) "☆ Man, my shoulders hurt~ ☆ \t\t ☆ \n" VT_RST);
+    PRINTF(VT_FGCOL(GREEN) "☆ Isn't there some sort of job that will pay better and be more relaxing? ☆ %d？ ☆ %d\n" VT_RST, play->bombchuBowlingStatus);
     this->posCopy = this->actor.world.pos;
     this->actor.shape.yOffset = -60.0f;
     Actor_SetScale(&this->actor, 0.013f);
@@ -218,12 +216,9 @@ void EnBomBowlMan_RunGame(EnBomBowlMan* this, PlayState* play) {
 
     if (BREG(3)) {
         PRINTF(VT_FGCOL(RED) "☆ game_play->bomchu_game_flag ☆ %d\n" VT_RST, play->bombchuBowlingStatus);
-        // "HOW'S THE FIRST WALL DOING?"
-        PRINTF(VT_FGCOL(RED) "☆ 壁１の状態どう？ ☆ %d\n" VT_RST, this->wallStatus[0]);
-        // "HOW'S THE SECOND WALL DOING?"
-        PRINTF(VT_FGCOL(RED) "☆ 壁２の状態どう？ ☆ %d\n" VT_RST, this->wallStatus[1]);
-        // "HOLE INFORMATION"
-        PRINTF(VT_FGCOL(RED) "☆ 穴情報\t     ☆ %d\n" VT_RST, this->bowlPit->status);
+        PRINTF(VT_FGCOL(RED) "☆ HOW'S THE FIRST WALL DOING?？ ☆ %d\n" VT_RST, this->wallStatus[0]);
+        PRINTF(VT_FGCOL(RED) "☆ HOW'S THE SECOND WALL DOING?？ ☆ %d\n" VT_RST, this->wallStatus[1]);
+        PRINTF(VT_FGCOL(RED) "☆ HOLE INFORMATION\t     ☆ %d\n" VT_RST, this->bowlPit->status);
         PRINTF("\n\n");
     }
 
@@ -233,15 +228,13 @@ void EnBomBowlMan_RunGame(EnBomBowlMan* this, PlayState* play) {
         if ((this->wallStatus[0] != 1) && (this->wallStatus[1] != 1) && (this->bowlPit->status == 2)) {
             this->gameResult = 1; // Won
             this->bowlPit->status = 0;
-            // "Center HIT!"
-            PRINTF(VT_FGCOL(MAGENTA) "☆☆☆☆☆ 中央ＨＩＴ！！！！ ☆☆☆☆☆ \n" VT_RST);
+            PRINTF(VT_FGCOL(MAGENTA) "☆☆☆☆☆ Center HIT!ＨＩＴ！！！！ ☆☆☆☆☆ \n" VT_RST);
         }
 
         if ((play->bombchuBowlingStatus == -1) && (play->actorCtx.actorLists[ACTORCAT_EXPLOSIVE].length == 0) &&
             (this->bowlPit->status == 0) && (this->wallStatus[0] != 1) && (this->wallStatus[1] != 1)) {
             this->gameResult = 2; // Lost
-            // "Bombchu lost"
-            PRINTF(VT_FGCOL(MAGENTA) "☆☆☆☆☆ ボムチュウ消化 ☆☆☆☆☆ \n" VT_RST);
+            PRINTF(VT_FGCOL(MAGENTA) "☆☆☆☆☆ Bombchu lost ☆☆☆☆☆ \n" VT_RST);
         }
     }
 
@@ -455,8 +448,7 @@ void EnBomBowlMan_BeginPlayGame(EnBomBowlMan* this, PlayState* play) {
             BREG(2) = 0;
         }
 
-        // "Wow"
-        PRINTF(VT_FGCOL(YELLOW) "☆ わー ☆ %d\n" VT_RST, play->bombchuBowlingStatus);
+        PRINTF(VT_FGCOL(YELLOW) "☆ Wow ☆ %d\n" VT_RST, play->bombchuBowlingStatus);
         Player_SetCsActionWithHaltedActors(play, NULL, PLAYER_CSACTION_7);
         this->actionFunc = EnBomBowlMan_SetupRunGame;
     }

@@ -381,8 +381,7 @@ void DemoGj_SetupRotation(DemoGj* this, PlayState* play) {
             break;
 
         default:
-            // "Demo_Gj_common_Reflect : This arg_data is not supported = %d"
-            PRINTF(VT_FGCOL(RED) "Demo_Gj_common_Reflect : そんなarg_dataには対応していない = %d\n" VT_RST,
+            PRINTF(VT_FGCOL(RED) "Demo_Gj_common_Reflect : This arg_data is not supported = %d\n" VT_RST,
                    this->dyna.actor.params);
             return;
     }
@@ -535,8 +534,7 @@ void DemoGj_SetupMovement(DemoGj* this, PlayState* play) {
                 break;
 
             default:
-                // "Demo_Gj_Setup_Move_common : This arg_data is not supported = %d"
-                PRINTF(VT_FGCOL(RED) "Demo_Gj_Setup_Move_common : そんなarg_dataには対応していない = %d\n" VT_RST,
+                PRINTF(VT_FGCOL(RED) "Demo_Gj_Setup_Move_common : This arg_data is not supported = %d\n" VT_RST,
                        actor->params);
                 break;
         }
@@ -1355,8 +1353,7 @@ void DemoGj_Update(Actor* thisx, PlayState* play) {
 
     if (this->updateMode < 0 || this->updateMode >= ARRAY_COUNT(sUpdateFuncs) ||
         sUpdateFuncs[this->updateMode] == NULL) {
-        // "The main mode is abnormal!!!!!!!!!!!!!!!!!!!!!!!!!"
-        PRINTF(VT_FGCOL(RED) "メインモードがおかしい!!!!!!!!!!!!!!!!!!!!!!!!!\n" VT_RST);
+        PRINTF(VT_FGCOL(RED) "The main mode is abnormal!!!!!!!!!!!!!!!!!!!!!!!!!\n" VT_RST);
         return;
     }
 
@@ -1412,8 +1409,7 @@ void DemoGj_Init(Actor* thisx, PlayState* play) {
             break;
 
         default:
-            // "Demo_Gj_Actor_ct There is no such argument!!!!!!!!!!!!!!!!!!!!!!"
-            PRINTF(VT_FGCOL(RED) "Demo_Gj_Actor_ct そんな引数は無い!!!!!!!!!!!!!!!!!!!!!!\n" VT_RST, play, this);
+            PRINTF(VT_FGCOL(RED) "Demo_Gj_Actor_ct There is no such argument!!!!!!!!!!!!!!!!!!!!!!\n" VT_RST, play, this);
             Actor_Kill(&this->dyna.actor);
     }
 }
@@ -1447,8 +1443,7 @@ void DemoGj_Draw(Actor* thisx, PlayState* play) {
     DemoGj* this = (DemoGj*)thisx;
 
     if (this->drawConfig < 0 || this->drawConfig >= ARRAY_COUNT(sDrawFuncs) || sDrawFuncs[this->drawConfig] == NULL) {
-        // "The drawing mode is abnormal!!!!!!!!!!!!!!!!!!!!!!!!!"
-        PRINTF(VT_FGCOL(RED) "描画モードがおかしい!!!!!!!!!!!!!!!!!!!!!!!!!\n" VT_RST);
+        PRINTF(VT_FGCOL(RED) "The drawing mode is abnormal!!!!!!!!!!!!!!!!!!!!!!!!!\n" VT_RST);
         return;
     }
 

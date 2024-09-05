@@ -155,8 +155,7 @@ void EnTa_Init(Actor* thisx, PlayState* play2) {
 
     switch (this->actor.params) {
         case ENTA_IN_KAKARIKO:
-            // "Exile Talon"
-            PRINTF(VT_FGCOL(CYAN) " 追放タロン \n" VT_RST);
+            PRINTF(VT_FGCOL(CYAN) " Exile Talon \n" VT_RST);
             if (GET_EVENTCHKINF(EVENTCHKINF_TALON_RETURNED_FROM_KAKARIKO)) {
                 Actor_Kill(&this->actor);
             } else if (!LINK_IS_ADULT) {
@@ -176,8 +175,7 @@ void EnTa_Init(Actor* thisx, PlayState* play2) {
             break;
 
         case ENTA_RETURNED_FROM_KAKARIKO:
-            // "Return Talon"
-            PRINTF(VT_FGCOL(CYAN) " 出戻りタロン \n" VT_RST);
+            PRINTF(VT_FGCOL(CYAN) " Return Talon \n" VT_RST);
             if (!GET_EVENTCHKINF(EVENTCHKINF_TALON_RETURNED_FROM_KAKARIKO)) {
                 Actor_Kill(&this->actor);
             } else if (!LINK_IS_ADULT) {
@@ -194,8 +192,7 @@ void EnTa_Init(Actor* thisx, PlayState* play2) {
             break;
 
         default: // Child era Talon
-            // "Other Talon"
-            PRINTF(VT_FGCOL(CYAN) " その他のタロン \n" VT_RST);
+            PRINTF(VT_FGCOL(CYAN) " Other Talon \n" VT_RST);
             if (play->sceneId == SCENE_HYRULE_CASTLE) {
                 if (GET_EVENTCHKINF(EVENTCHKINF_TALON_RETURNED_FROM_CASTLE)) {
                     Actor_Kill(&this->actor);

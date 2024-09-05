@@ -179,7 +179,7 @@ void Jpeg_ParseMarkers(u8* ptr, JpegContext* ctx) {
                     // Start of Frame, stores important metadata of the image.
                     // Only used for extracting the sampling factors (ctx->mode).
                     PRINTF("MARKER_SOF   %d "
-                           "精度%02x " // "accuracy"
+                           "accuracy%02x " // "accuracy"
                            "垂直%d "   // "vertical"
                            "水平%d "   // "horizontal"
                            "compo%02x "

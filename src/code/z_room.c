@@ -434,8 +434,7 @@ RoomShapeImageMultiBgEntry* Room_GetImageMultiBgEntry(RoomShapeImageMulti* roomS
         bgEntry++;
     }
 
-    // "z_room.c: Data consistent with camera id does not exist camid=%d"
-    PRINTF(VT_COL(RED, WHITE) "z_room.c:カメラＩＤに一致するデータが存在しません camid=%d\n" VT_RST, bgCamIndex);
+    PRINTF(VT_COL(RED, WHITE) "z_room.c: Data consistent with camera id does not exist camid=%d\n" VT_RST, bgCamIndex);
     LogUtils_HungupThread("../z_room.c", 726);
 
     return NULL;

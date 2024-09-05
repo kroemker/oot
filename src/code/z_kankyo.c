@@ -450,8 +450,7 @@ void Environment_Init(PlayState* play2, EnvironmentContext* envCtx, s32 unused) 
 
     if (Object_GetSlot(&play->objectCtx, OBJECT_GAMEPLAY_FIELD_KEEP) < 0 && !play->envCtx.sunMoonDisabled) {
         play->envCtx.sunMoonDisabled = true;
-        // "Sun setting other than field keep! So forced release!"
-        PRINTF(VT_COL(YELLOW, BLACK) "\n\nフィールド常駐以外、太陽設定！よって強制解除！\n" VT_RST);
+        PRINTF(VT_COL(YELLOW, BLACK) "\n\nSun setting other than field keep! So forced release!！\n" VT_RST);
     }
 
     gCustomLensFlareOn = false;
@@ -568,8 +567,7 @@ f32 Environment_LerpWeightAccelDecel(u16 endFrame, u16 startFrame, u16 curFrame,
     decelDurationF = (s32)decelDuration;
 
     if ((startFrameF >= endFrameF) || (accelDurationF + decelDurationF > totalFrames)) {
-        // "The frame relation between end_frame and start_frame is wrong!!!"
-        PRINTF(VT_COL(RED, WHITE) "\nend_frameとstart_frameのフレーム関係がおかしい!!!" VT_RST);
+        PRINTF(VT_COL(RED, WHITE) "\nend_frameThe frame relation between end_frame and start_frame is wrong!!!" VT_RST);
         PRINTF(VT_COL(RED, WHITE) "\nby get_parcent_forAccelBrake!!!!!!!!!" VT_RST);
 
         return 0.0f;
@@ -717,8 +715,7 @@ void Environment_UpdateSkybox(u8 skyboxId, EnvironmentContext* envCtx, SkyboxCon
 
 #if OOT_DEBUG
         if (newSkybox1Index == 0xFF) {
-            // "Environment VR data acquisition failed! Report to Sasaki!"
-            PRINTF(VT_COL(RED, WHITE) "\n環境ＶＲデータ取得失敗！ ささきまでご報告を！" VT_RST);
+            PRINTF(VT_COL(RED, WHITE) "\nEnvironment VR data acquisition failed! Report to Sasaki!！" VT_RST);
         }
 #endif
 
@@ -804,8 +801,7 @@ void Environment_UpdateSkybox(u8 skyboxId, EnvironmentContext* envCtx, SkyboxCon
 void Environment_EnableUnderwaterLights(PlayState* play, s32 waterLightsIndex) {
     if (waterLightsIndex == WATERBOX_LIGHT_INDEX_NONE) {
         waterLightsIndex = 0;
-        // "Underwater color is not set in the water poly data!"
-        PRINTF(VT_COL(YELLOW, BLACK) "\n水ポリゴンデータに水中カラーが設定されておりません!" VT_RST);
+        PRINTF(VT_COL(YELLOW, BLACK) "\nUnderwater color is not set in the water poly data!" VT_RST);
     }
 
     if (play->envCtx.lightMode == LIGHT_MODE_TIME) {
@@ -1141,11 +1137,9 @@ void Environment_Update(PlayState* play, EnvironmentContext* envCtx, LightContex
 #if OOT_DEBUG
                     if (sTimeBasedLightConfigs[envCtx->changeLightNextConfig][i].nextLightSetting >=
                         envCtx->numLightSettings) {
-                        // "The color palette setting seems to be wrong!"
-                        PRINTF(VT_COL(RED, WHITE) "\nカラーパレットの設定がおかしいようです！" VT_RST);
+                        PRINTF(VT_COL(RED, WHITE) "\nThe color palette setting seems to be wrong!！" VT_RST);
 
-                        // "Palette setting = [] Last palette number = []"
-                        PRINTF(VT_COL(RED, WHITE) "\n設定パレット＝[%d] 最後パレット番号＝[%d]\n" VT_RST,
+                        PRINTF(VT_COL(RED, WHITE) "\nPalette setting = [] Last palette number = []＝[%d]\n" VT_RST,
                                sTimeBasedLightConfigs[envCtx->changeLightNextConfig][i].nextLightSetting,
                                envCtx->numLightSettings - 1);
                     }

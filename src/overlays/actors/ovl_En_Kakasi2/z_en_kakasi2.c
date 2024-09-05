@@ -60,8 +60,7 @@ void EnKakasi2_Init(Actor* thisx, PlayState* play) {
     f32 spawnRangeXZ;
 
     PRINTF("\n\n");
-    // "Visit Umeda"
-    PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 梅田参号見参！ ☆☆☆☆☆ \n" VT_RST);
+    PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ Visit Umeda！ ☆☆☆☆☆ \n" VT_RST);
 
     this->switchFlag = this->actor.params & 0x3F;
     spawnRangeY = (this->actor.params >> 6) & 0xFF;
@@ -73,16 +72,11 @@ void EnKakasi2_Init(Actor* thisx, PlayState* play) {
     this->maxSpawnDistance.x = (spawnRangeY * 40.0f) + 40.0f;
     this->maxSpawnDistance.y = (spawnRangeXZ * 40.0f) + 40.0f;
 
-    // "Former? (Argument 0)"
-    PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ 元？(引数０) ☆☆☆☆ %f\n" VT_RST, spawnRangeY);
-    // "Former? (Z angle)"
-    PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ 元？(Ｚアングル) ☆☆ %f\n" VT_RST, spawnRangeXZ);
-    // "Correction coordinates X"
-    PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ 補正座標Ｘ ☆☆☆☆☆ %f\n" VT_RST, this->maxSpawnDistance.x);
-    // "Correction coordinates Y"
-    PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ 補正座標Ｙ ☆☆☆☆☆ %f\n" VT_RST, this->maxSpawnDistance.y);
-    // "Correction coordinates Z"
-    PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ 補正座標Ｚ ☆☆☆☆☆ %f\n" VT_RST, this->maxSpawnDistance.z);
+    PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ Former? (Argument 0)０) ☆☆☆☆ %f\n" VT_RST, spawnRangeY);
+    PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ Former? (Z angle) ☆☆ %f\n" VT_RST, spawnRangeXZ);
+    PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ Correction coordinates XＸ ☆☆☆☆☆ %f\n" VT_RST, this->maxSpawnDistance.x);
+    PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ Correction coordinates YＹ ☆☆☆☆☆ %f\n" VT_RST, this->maxSpawnDistance.y);
+    PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ Correction coordinates ZＺ ☆☆☆☆☆ %f\n" VT_RST, this->maxSpawnDistance.z);
     PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ SAVE       ☆☆☆☆☆ %d\n" VT_RST, this->switchFlag);
     PRINTF("\n\n");
 

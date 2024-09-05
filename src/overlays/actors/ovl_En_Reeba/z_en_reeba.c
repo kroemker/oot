@@ -129,8 +129,7 @@ void EnReeba_Init(Actor* thisx, PlayState* play) {
         this->scale *= 1.5f;
         this->collider.dim.radius = 35;
         this->collider.dim.height = 45;
-        // "Reeba Boss Appears %f"
-        PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ リーバぼす登場 ☆☆☆☆☆ %f\n" VT_RST, this->scale);
+        PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ Reeba Boss Appears %f ☆☆☆☆☆ %f\n" VT_RST, this->scale);
         this->actor.colChkInfo.health = 20;
         this->collider.elem.atDmgInfo.effect = 4;
         this->collider.elem.atDmgInfo.damage = 16;

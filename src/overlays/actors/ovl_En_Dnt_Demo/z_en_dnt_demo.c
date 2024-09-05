@@ -75,8 +75,7 @@ void EnDntDemo_Init(Actor* thisx, PlayState* play2) {
     s32 pad;
 
     PRINTF("\n\n");
-    // "Deku Scrub mask show start"
-    PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ デグナッツお面品評会開始 ☆☆☆☆☆ \n" VT_RST);
+    PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ Deku Scrub mask show start ☆☆☆☆☆ \n" VT_RST);
     for (i = 0; i < 9; i++) {
         this->scrubPos[i] = sScrubPos[i];
         this->scrubs[i] = (EnDntNomal*)Actor_SpawnAsChild(&play->actorCtx, &this->actor, play, ACTOR_EN_DNT_NOMAL,
@@ -191,12 +190,10 @@ void EnDntDemo_Judge(EnDntDemo* this, PlayState* play) {
                         ignore = true;
                         delay = 8;
                         reaction = DNT_SIGNAL_HIDE;
-                        // "Special!"
-                        PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 特別！ ☆☆☆☆☆ \n" VT_RST);
+                        PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ Special!！ ☆☆☆☆☆ \n" VT_RST);
                     } else {
                         if (maskIdx >= PLAYER_MASK_MAX - 1) {
-                            // "This is dangerous!"
-                            PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ ヤバいよこれ！ ☆☆☆☆☆ \n" VT_RST);
+                            PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ This is dangerous!！ ☆☆☆☆☆ \n" VT_RST);
                             PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ ヤバいよこれ！ ☆☆☆☆☆ \n" VT_RST);
                             PRINTF(VT_FGCOL(MAGENTA) "☆☆☆☆☆ ヤバいよこれ！ ☆☆☆☆☆ \n" VT_RST);
                             PRINTF(VT_FGCOL(CYAN) "☆☆☆☆☆ ヤバいよこれ！ ☆☆☆☆☆ \n" VT_RST);
@@ -222,17 +219,12 @@ void EnDntDemo_Judge(EnDntDemo* this, PlayState* play) {
                                 break;
                         }
                         PRINTF("\n\n");
-                        // "Each index 1"
-                        PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 各インデックス１ ☆☆☆☆☆ %d\n" VT_RST, rand9);
-                        // "Each index 2"
-                        PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 各インデックス２ ☆☆☆☆☆ %d\n" VT_RST, maskIdx);
-                        // "Each index 3"
-                        PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 各インデックス３ ☆☆☆☆☆ %d\n" VT_RST, resultIdx);
+                        PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ Each index 1１ ☆☆☆☆☆ %d\n" VT_RST, rand9);
+                        PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ Each index 2２ ☆☆☆☆☆ %d\n" VT_RST, maskIdx);
+                        PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ Each index 3３ ☆☆☆☆☆ %d\n" VT_RST, resultIdx);
                         PRINTF("\n");
-                        // "What kind of evaluation?"
-                        PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ どういう評価？  ☆☆☆☆☆☆ %d\n" VT_RST, reaction);
-                        // "What kind of action?"
-                        PRINTF(VT_FGCOL(MAGENTA) "☆☆☆☆☆ どういうアクション？  ☆☆☆ %d\n" VT_RST, this->action);
+                        PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ What kind of evaluation?？  ☆☆☆☆☆☆ %d\n" VT_RST, reaction);
+                        PRINTF(VT_FGCOL(MAGENTA) "☆☆☆☆☆ What kind of action?？  ☆☆☆ %d\n" VT_RST, this->action);
                         PRINTF("\n\n");
                         break;
                     }

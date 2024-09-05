@@ -131,8 +131,7 @@ void EnOwl_Init(Actor* thisx, PlayState* play) {
         owlType = OWL_OUTSIDE_KOKIRI;
         switchFlag = 0x20;
     }
-    // "conversation owl %4x no = %d, sv = %d"
-    PRINTF(VT_FGCOL(CYAN) " 会話フクロウ %4x no = %d, sv = %d\n" VT_RST, this->actor.params, owlType, switchFlag);
+    PRINTF(VT_FGCOL(CYAN) " conversation owl %4x no = %d, sv = %d\n" VT_RST, this->actor.params, owlType, switchFlag);
 
     if ((owlType != OWL_DEFAULT) && (switchFlag < 0x20) && Flags_GetSwitch(play, switchFlag)) {
         PRINTF("savebitSave owl with savebit\n"); // "Save owl with savebit"

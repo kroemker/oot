@@ -85,16 +85,14 @@ void EnFireRock_Init(Actor* thisx, PlayState* play) {
     switch (this->type) {
         case FIRE_ROCK_CEILING_SPOT_SPAWNER:
             this->actor.draw = NULL;
-            // "☆☆☆☆☆ ceiling waiting rock ☆☆☆☆☆"
-            PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ 天井待ち岩 ☆☆☆☆☆ \n" VT_RST);
+            PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ ceiling waiting rock ☆☆☆☆☆ \n" VT_RST);
             this->actionFunc = FireRock_WaitSpawnRocksFromCeiling;
             break;
         case FIRE_ROCK_ON_FLOOR:
             Actor_SetScale(&this->actor, 0.03f);
             Collider_InitCylinder(play, &this->collider);
             Collider_SetCylinder(play, &this->collider, &this->actor, &D_80A12CCC);
-            // "☆☆☆☆☆ floor rock ☆☆☆☆☆"
-            PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ 床岩 ☆☆☆☆☆ \n" VT_RST);
+            PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ floor rock ☆☆☆☆☆ \n" VT_RST);
             this->collider.dim.radius = 23;
             this->collider.dim.height = 37;
             this->collider.dim.yShift = -10;
@@ -139,8 +137,7 @@ void EnFireRock_Init(Actor* thisx, PlayState* play) {
             this->actionFunc = EnFireRock_Fall;
             break;
         default:
-            // "☆☆☆☆☆ No such rock! ERR !!!!!! ☆☆☆☆☆"
-            PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ そんな岩はねぇ！ERR!!!!!! ☆☆☆☆☆ \n" VT_RST);
+            PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ No such rock! ERR !!!!!! ☆☆☆☆☆！ERR!!!!!! ☆☆☆☆☆ \n" VT_RST);
             Actor_Kill(&this->actor);
             break;
     }
@@ -154,8 +151,7 @@ void EnFireRock_Destroy(Actor* thisx, PlayState* play) {
         if ((spawner->actor.update != NULL) && (spawner->numSpawnedRocks > 0)) {
             spawner->numSpawnedRocks--;
             PRINTF("\n\n");
-            // "☆☆☆☆☆ Number of spawned instances recovery ☆☆☆☆☆%d"
-            PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 発生数回復 ☆☆☆☆☆%d\n" VT_RST, spawner->numSpawnedRocks);
+            PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ Number of spawned instances recovery ☆☆☆☆☆%d\n" VT_RST, spawner->numSpawnedRocks);
             PRINTF("\n\n");
         }
     }
@@ -354,8 +350,7 @@ void EnFireRock_Update(Actor* thisx, PlayState* play) {
                     thisx->velocity.y = 0.0f;
                     thisx->speed = 0.0f;
                     this->actionFunc = EnFireRock_SpawnMoreBrokenPieces;
-                    // "☆☆☆☆☆ Shield Defense Lv1 ☆☆☆☆☆"
-                    PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ シールド防御 Lv１ ☆☆☆☆☆ \n" VT_RST);
+                    PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ Shield Defense Lv1 ☆☆☆☆☆ Lv１ ☆☆☆☆☆ \n" VT_RST);
                     return;
                 }
                 setCollision = true;

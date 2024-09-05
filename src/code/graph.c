@@ -366,15 +366,13 @@ void Graph_Update(GraphicsContext* gfxCtx, GameState* gameState) {
         if (pool->headMagic != GFXPOOL_HEAD_MAGIC) {
             //! @bug (?) : "problem = true;" may be missing
             PRINTF("%c", BEL);
-            // "Dynamic area head is destroyed"
-            PRINTF(VT_COL(RED, WHITE) "ダイナミック領域先頭が破壊されています\n" VT_RST);
+            PRINTF(VT_COL(RED, WHITE) "Dynamic area head is destroyed\n" VT_RST);
             Fault_AddHungupAndCrash("../graph.c", 1070);
         }
         if (pool->tailMagic != GFXPOOL_TAIL_MAGIC) {
             problem = true;
             PRINTF("%c", BEL);
-            // "Dynamic region tail is destroyed"
-            PRINTF(VT_COL(RED, WHITE) "ダイナミック領域末尾が破壊されています\n" VT_RST);
+            PRINTF(VT_COL(RED, WHITE) "Dynamic region tail is destroyed\n" VT_RST);
             Fault_AddHungupAndCrash("../graph.c", 1076);
         }
     }
@@ -382,20 +380,17 @@ void Graph_Update(GraphicsContext* gfxCtx, GameState* gameState) {
     if (THGA_IsCrash(&gfxCtx->polyOpa)) {
         problem = true;
         PRINTF("%c", BEL);
-        // "Zelda 0 is dead"
-        PRINTF(VT_COL(RED, WHITE) "ゼルダ0は死んでしまった(graph_alloc is empty)\n" VT_RST);
+        PRINTF(VT_COL(RED, WHITE) "Zelda 0 is dead(graph_alloc is empty)\n" VT_RST);
     }
     if (THGA_IsCrash(&gfxCtx->polyXlu)) {
         problem = true;
         PRINTF("%c", BEL);
-        // "Zelda 1 is dead"
-        PRINTF(VT_COL(RED, WHITE) "ゼルダ1は死んでしまった(graph_alloc is empty)\n" VT_RST);
+        PRINTF(VT_COL(RED, WHITE) "Zelda 1 is dead(graph_alloc is empty)\n" VT_RST);
     }
     if (THGA_IsCrash(&gfxCtx->overlay)) {
         problem = true;
         PRINTF("%c", BEL);
-        // "Zelda 4 is dead"
-        PRINTF(VT_COL(RED, WHITE) "ゼルダ4は死んでしまった(graph_alloc is empty)\n" VT_RST);
+        PRINTF(VT_COL(RED, WHITE) "Zelda 4 is dead(graph_alloc is empty)\n" VT_RST);
     }
 
     if (!problem) {
@@ -432,8 +427,7 @@ void Graph_Update(GraphicsContext* gfxCtx, GameState* gameState) {
     }
 
     if (gIsCtrlr2Valid && PreNmiBuff_IsResetting(gAppNmiBufferPtr) && !gameState->inPreNMIState) {
-        // "To reset mode"
-        PRINTF(VT_COL(YELLOW, BLACK) "PRE-NMIによりリセットモードに移行します\n" VT_RST);
+        PRINTF(VT_COL(YELLOW, BLACK) "PRE-NMITo reset mode\n" VT_RST);
         SET_NEXT_GAMESTATE(gameState, PreNMI_Init, PreNMIState);
         gameState->running = false;
     }

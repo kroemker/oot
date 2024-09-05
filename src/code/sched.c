@@ -173,8 +173,7 @@ void Sched_QueueTask(Scheduler* sc, OSScTask* task) {
            463);
 
     if (type == M_AUDTASK) {
-        // "You have entered an audio task"
-        SCHED_DEBUG_PRINTF("オーディオタスクをエントリしました\n");
+        SCHED_DEBUG_PRINTF("You have entered an audio task\n");
 
         // Add to audio queue
         if (sc->audioListTail != NULL) {
@@ -188,8 +187,7 @@ void Sched_QueueTask(Scheduler* sc, OSScTask* task) {
         sc->doAudio = true;
     } else {
 
-        // "Entered graph task"
-        SCHED_DEBUG_PRINTF("グラフタスクをエントリしました\n");
+        SCHED_DEBUG_PRINTF("Entered graph task\n");
 
         // Add to graphics queue
         if (sc->gfxListTail != NULL) {
@@ -603,8 +601,7 @@ void Sched_ThreadEntry(void* arg) {
     Scheduler* sc = (Scheduler*)arg;
 
     while (true) {
-        // "%08d: standby"
-        SCHED_DEBUG_PRINTF("%08d:待機中\n", (u32)OS_CYCLES_TO_USEC(osGetTime()));
+        SCHED_DEBUG_PRINTF("%08d: standby\n", (u32)OS_CYCLES_TO_USEC(osGetTime()));
 
         // Await interrupt messages, either from the OS, IrqMgr, or another thread
         osRecvMesg(&sc->interruptQueue, &msg, OS_MESG_BLOCK);

@@ -1248,8 +1248,7 @@ void DemoEc_InitNpc(DemoEc* this, PlayState* play) {
     s16 type = this->actor.params;
 
     if (sInitFuncs[type] == NULL) {
-        // "Demo_Ec_main_init: Initialization process is wrong arg_data"
-        PRINTF(VT_FGCOL(RED) " Demo_Ec_main_init:初期化処理がおかしいarg_data = %d!\n" VT_RST, type);
+        PRINTF(VT_FGCOL(RED) " Demo_Ec_main_init: Initialization process is wrong arg_data = %d!\n" VT_RST, type);
         Actor_Kill(&this->actor);
         return;
     }
@@ -1273,8 +1272,7 @@ void DemoEc_InitCommon(DemoEc* this, PlayState* play) {
     secondaryObjectSlot = Object_GetSlot(&play->objectCtx, sp28);
 
     if ((secondaryObjectSlot < 0) || (primaryObjectSlot < 0)) {
-        // "Demo_Ec_main_bank: Bank unreadable arg_data = %d!"
-        PRINTF(VT_FGCOL(RED) "Demo_Ec_main_bank:バンクを読めない arg_data = %d!\n" VT_RST, type);
+        PRINTF(VT_FGCOL(RED) "Demo_Ec_main_bank: Bank unreadable arg_data = %d!\n" VT_RST, type);
         Actor_Kill(&this->actor);
         return;
     }
@@ -1326,8 +1324,7 @@ void DemoEc_Update(Actor* thisx, PlayState* play) {
     s32 updateMode = this->updateMode;
 
     if ((updateMode < 0) || (updateMode >= ARRAY_COUNT(sUpdateFuncs)) || sUpdateFuncs[updateMode] == NULL) {
-        // "The main mode is strange !!!!!!!!!!!!!!!!!!!!!!!!!"
-        PRINTF(VT_FGCOL(RED) "メインモードがおかしい!!!!!!!!!!!!!!!!!!!!!!!!!\n" VT_RST);
+        PRINTF(VT_FGCOL(RED) "The main mode is strange !!!!!!!!!!!!!!!!!!!!!!!!!\n" VT_RST);
     } else {
         if (updateMode != EC_UPDATE_COMMON) {
             DemoEc_UseAnimationObject(this, play);
@@ -1359,8 +1356,7 @@ void DemoEc_Draw(Actor* thisx, PlayState* play) {
     s32 drawConfig = this->drawConfig;
 
     if ((drawConfig < 0) || (drawConfig >= ARRAY_COUNT(sDrawFuncs)) || sDrawFuncs[drawConfig] == NULL) {
-        // "The main mode is strange !!!!!!!!!!!!!!!!!!!!!!!!!"
-        PRINTF(VT_FGCOL(RED) "描画モードがおかしい!!!!!!!!!!!!!!!!!!!!!!!!!\n" VT_RST);
+        PRINTF(VT_FGCOL(RED) "The main mode is strange !!!!!!!!!!!!!!!!!!!!!!!!!\n" VT_RST);
     } else {
         if (drawConfig != EC_DRAW_COMMON) {
             DemoEc_UseDrawObject(this, play);

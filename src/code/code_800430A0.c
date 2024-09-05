@@ -42,9 +42,8 @@ void DynaPolyActor_UpdateCarriedActorPos(CollisionContext* colCtx, s32 bgId, Act
 
                 PRINTF(VT_FGCOL(RED));
                 //! @bug file and line are not passed to PRINTF
-                // "Position is not valid"
                 PRINTF(
-                    "BGCheckCollection_typicalActorPos():位置が妥当ではありません。\npos (%f,%f,%f) file:%s line:%d\n",
+                    "BGCheckCollection_typicalActorPos():Position is not valid\npos (%f,%f,%f) file:%s line:%d\n",
                     pos.x, pos.y, pos.z);
                 PRINTF(VT_RST);
             }

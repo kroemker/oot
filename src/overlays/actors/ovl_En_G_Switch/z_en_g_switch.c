@@ -85,20 +85,16 @@ void EnGSwitch_Init(Actor* thisx, PlayState* play) {
     this->type = (this->actor.params >> 0xC) & 0xF;
     this->switchFlag = this->actor.params & 0x3F;
     this->numEffects = EN_GSWITCH_EFFECT_COUNT;
-    // "index"
-    PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ インデックス ☆☆☆☆☆ %x\n" VT_RST, this->type);
-    // "save"
-    PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ セーブ\t     ☆☆☆☆☆ %x\n" VT_RST, this->switchFlag);
+    PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ index ☆☆☆☆☆ %x\n" VT_RST, this->type);
+    PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ save\t     ☆☆☆☆☆ %x\n" VT_RST, this->switchFlag);
     switch (this->type) {
         case ENGSWITCH_SILVER_TRACKER:
             PRINTF("\n\n");
-            // "parent switch spawn"
-            PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 親スイッチ発生 ☆☆☆☆☆ %x\n" VT_RST, this->actor.params);
+            PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ parent switch spawn ☆☆☆☆☆ %x\n" VT_RST, this->actor.params);
             sCollectedCount = 0;
             this->silverCount = this->actor.params >> 6;
             this->silverCount &= 0x3F;
-            // "maximum number of checks"
-            PRINTF(VT_FGCOL(MAGENTA) "☆☆☆☆☆ 最大チェック数 ☆☆☆☆☆ %d\n" VT_RST, this->silverCount);
+            PRINTF(VT_FGCOL(MAGENTA) "☆☆☆☆☆ maximum number of checks ☆☆☆☆☆ %d\n" VT_RST, this->silverCount);
             PRINTF("\n\n");
             if (Flags_GetSwitch(play, this->switchFlag)) {
                 // This is a reference to Hokuto no Ken
@@ -110,8 +106,7 @@ void EnGSwitch_Init(Actor* thisx, PlayState* play) {
             break;
         case ENGSWITCH_SILVER_RUPEE:
             PRINTF("\n\n");
-            // "child switch spawn"
-            PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 子スイッチ発生 ☆☆☆☆☆ %x\n" VT_RST, this->actor.params);
+            PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ child switch spawn ☆☆☆☆☆ %x\n" VT_RST, this->actor.params);
             this->colorIdx = 5;
             this->numEffects = 20;
             Collider_InitCylinder(play, &this->collider);
@@ -128,8 +123,7 @@ void EnGSwitch_Init(Actor* thisx, PlayState* play) {
             break;
         case ENGSWITCH_ARCHERY_POT:
             PRINTF("\n\n");
-            // "Horseback archery destructible pot"
-            PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ やぶさめぶち抜き壷 ☆☆☆☆☆ \n" VT_RST);
+            PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ Horseback archery destructible pot ☆☆☆☆☆ \n" VT_RST);
             this->actor.gravity = -3.0f;
             this->colorIdx = Rand_ZeroFloat(2.99f);
             Collider_InitCylinder(play, &this->collider);
@@ -212,8 +206,7 @@ void EnGSwitch_SilverRupeeTracker(EnGSwitch* this, PlayState* play) {
 
     if (this->noteIndex < sCollectedCount) {
         if (sCollectedCount < 5) {
-            // "sound?"
-            PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 音？ ☆☆☆☆☆ %d\n" VT_RST, this->noteIndex);
+            PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ sound?？ ☆☆☆☆☆ %d\n" VT_RST, this->noteIndex);
             Audio_PlaySfxTransposed(&gSfxDefaultPos, NA_SE_EV_FIVE_COUNT_LUPY, majorScale[this->noteIndex]);
             this->noteIndex = sCollectedCount;
         }
@@ -222,8 +215,7 @@ void EnGSwitch_SilverRupeeTracker(EnGSwitch* this, PlayState* play) {
         // "It is now the end of the century."
         // This another reference to Hokuto no Ken.
         PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 時はまさに世紀末〜  ☆☆☆☆☆ %d\n" VT_RST, this->switchFlag);
-        // "Last!"
-        PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ らすとぉ！          ☆☆☆☆☆ \n" VT_RST);
+        PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ Last!！          ☆☆☆☆☆ \n" VT_RST);
         if ((play->sceneId == SCENE_GERUDO_TRAINING_GROUND) && (this->actor.room == 2)) {
             Flags_SetTempClear(play, this->actor.room);
         } else {
@@ -346,8 +338,7 @@ void EnGSwitch_GalleryRupee(EnGSwitch* this, PlayState* play) {
                 gallery->targetState[this->index] = ENSYATEKIHIT_HIT;
                 Sfx_PlaySfxCentered(NA_SE_EV_HIT_SOUND);
                 Sfx_PlaySfxCentered(NA_SE_SY_GET_RUPY);
-                // "Yeah !"
-                PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ いぇぇーす！ＨＩＴ！！ ☆☆☆☆☆ %d\n" VT_RST, gallery->hitCount);
+                PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ Yeah !！ＨＩＴ！！ ☆☆☆☆☆ %d\n" VT_RST, gallery->hitCount);
                 EnGSwitch_Break(this, play);
                 this->killTimer = 50;
                 this->broken = true;

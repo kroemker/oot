@@ -80,8 +80,7 @@ void EnDntJiji_Init(Actor* thisx, PlayState* play) {
     Collider_SetCylinder(play, &this->collider, &this->actor, &sCylinderInit);
     this->stage = (EnDntDemo*)this->actor.parent;
     PRINTF("\n\n");
-    // "Deku Scrub mask show elder"
-    PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ デグナッツお面品評会長老 ☆☆☆☆☆ %x\n" VT_RST, this->stage);
+    PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ Deku Scrub mask show elder ☆☆☆☆☆ %x\n" VT_RST, this->stage);
     this->actor.flags &= ~ACTOR_FLAG_0;
     this->actor.colChkInfo.mass = 0xFF;
     this->actor.targetMode = 6;
@@ -372,8 +371,7 @@ void EnDntJiji_Update(Actor* thisx, PlayState* play) {
     Actor_SetScale(&this->actor, 0.015f);
     this->unkTimer++;
     if (BREG(0)) {
-        // "time"
-        PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ 時間 ☆☆☆☆☆ %d\n" VT_RST, this->timer);
+        PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ time ☆☆☆☆☆ %d\n" VT_RST, this->timer);
     }
     if ((this->timer > 1) && (this->timer != 0)) {
         this->timer--;

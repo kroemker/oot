@@ -33,8 +33,7 @@ void EnEncount1_Init(Actor* thisx, PlayState* play) {
 
     if (this->actor.params <= 0) {
         PRINTF("\n\n");
-        // "Input error death!"
-        PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 入力エラーデッス！ ☆☆☆☆☆ \n" VT_RST);
+        PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ Input error death!！ ☆☆☆☆☆ \n" VT_RST);
         PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 入力エラーデッス！ ☆☆☆☆☆ \n" VT_RST);
         PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 入力エラーデッス！ ☆☆☆☆☆ \n" VT_RST);
         PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 入力エラーデッス！ ☆☆☆☆☆ \n" VT_RST);
@@ -54,16 +53,11 @@ void EnEncount1_Init(Actor* thisx, PlayState* play) {
     if (1) {}
 
     PRINTF("\n\n");
-    // "It's an enemy spawner!"
-    PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 敵発生ゾーンでた！ ☆☆☆☆☆ %x\n" VT_RST, this->actor.params);
-    // "Type"
-    PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ 種類\t\t   ☆☆☆☆☆ %d\n" VT_RST, this->spawnType);
-    // "Maximum number of simultaneous spawns"
-    PRINTF(VT_FGCOL(MAGENTA) "☆☆☆☆☆ 最大同時発生数     ☆☆☆☆☆ %d\n" VT_RST, this->maxCurSpawns);
-    // "Maximum number of spawns"
-    PRINTF(VT_FGCOL(CYAN) "☆☆☆☆☆ 最大発生数  \t   ☆☆☆☆☆ %d\n" VT_RST, this->maxTotalSpawns);
-    // "Spawn check range"
-    PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 発生チェック範囲   ☆☆☆☆☆ %f\n" VT_RST, this->spawnRange);
+    PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ It's an enemy spawner!！ ☆☆☆☆☆ %x\n" VT_RST, this->actor.params);
+    PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ Type\t\t   ☆☆☆☆☆ %d\n" VT_RST, this->spawnType);
+    PRINTF(VT_FGCOL(MAGENTA) "☆☆☆☆☆ Maximum number of simultaneous spawns     ☆☆☆☆☆ %d\n" VT_RST, this->maxCurSpawns);
+    PRINTF(VT_FGCOL(CYAN) "☆☆☆☆☆ Maximum number of spawns  \t   ☆☆☆☆☆ %d\n" VT_RST, this->maxTotalSpawns);
+    PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ Spawn check range   ☆☆☆☆☆ %f\n" VT_RST, this->spawnRange);
     PRINTF("\n\n");
 
     this->actor.flags &= ~ACTOR_FLAG_0;
@@ -165,8 +159,7 @@ void EnEncount1_SpawnLeevers(EnEncount1* this, PlayState* play) {
                         this->maxCurSpawns = (s16)Rand_ZeroFloat(2.99f) + 1;
                     }
                 } else {
-                    // "Cannot spawn!"
-                    PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 発生できません！ ☆☆☆☆☆\n" VT_RST);
+                    PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ Cannot spawn!！ ☆☆☆☆☆\n" VT_RST);
                     PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 発生できません！ ☆☆☆☆☆\n" VT_RST);
                     PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 発生できません！ ☆☆☆☆☆\n" VT_RST);
                     break;
@@ -204,8 +197,7 @@ void EnEncount1_SpawnTektites(EnEncount1* this, PlayState* play) {
                     this->curNumSpawn++;
                     this->totalNumSpawn++;
                 } else {
-                    // "Cannot spawn!"
-                    PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 発生できません！ ☆☆☆☆☆\n" VT_RST);
+                    PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ Cannot spawn!！ ☆☆☆☆☆\n" VT_RST);
                     PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 発生できません！ ☆☆☆☆☆\n" VT_RST);
                     PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 発生できません！ ☆☆☆☆☆\n" VT_RST);
                 }
@@ -304,8 +296,7 @@ void EnEncount1_SpawnStalchildOrWolfos(EnEncount1* this, PlayState* play) {
                     this->totalNumSpawn++;
                 }
             } else {
-                // "Cannot spawn!"
-                PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 発生できません！ ☆☆☆☆☆\n" VT_RST);
+                PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ Cannot spawn!！ ☆☆☆☆☆\n" VT_RST);
                 PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 発生できません！ ☆☆☆☆☆\n" VT_RST);
                 PRINTF(VT_FGCOL(GREEN) "☆☆☆☆☆ 発生できません！ ☆☆☆☆☆\n" VT_RST);
                 break;

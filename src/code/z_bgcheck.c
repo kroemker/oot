@@ -2801,9 +2801,8 @@ void DynaPoly_DeleteBgActor(PlayState* play, DynaCollisionContext* dyna, s32 bgI
             PRINTF(VT_RST);
         } else {
             PRINTF(VT_FGCOL(RED));
-            // "Unable to deallocate index / index unallocated, processing aborted."
             PRINTF("DynaPolyInfo_delReserve():"
-                   "確保していない／出来なかったインデックスの解放のため、処理を中止します。index == %d\n",
+                   "Unable to deallocate index / index unallocated, processing aborted.index == %d\n",
                    bgId);
             PRINTF(VT_RST);
         }

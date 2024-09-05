@@ -2576,8 +2576,7 @@ void Message_StartOcarinaImpl(PlayState* play, u16 ocarinaActionId) {
     Message_ResetOcarinaNoteState();
     sLastPlayedSong = msgCtx->unk_E3F2 = msgCtx->lastOcarinaButtonIndex = 0xFF;
 
-    // "Ocarina Number"
-    PRINTF(VT_FGCOL(RED) "☆☆☆☆☆ オカリナ番号＝%d(%d) ☆☆☆☆☆\n" VT_RST, ocarinaActionId, 2);
+    PRINTF(VT_FGCOL(RED) "☆☆☆☆☆ Ocarina Number＝%d(%d) ☆☆☆☆☆\n" VT_RST, ocarinaActionId, 2);
     noStopDoAction = false;
     if (ocarinaActionId >= 0x893) {
         Message_OpenText(play, ocarinaActionId); // You played the [song name]

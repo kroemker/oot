@@ -236,8 +236,7 @@ void func_80A8F8D0(EnKakasi* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
     if (play->msgCtx.ocarinaMode == OCARINA_MODE_04 && play->msgCtx.msgMode == MSGMODE_NONE) {
-        // "end?"
-        PRINTF(VT_FGCOL(BLUE) "☆☆☆☆☆ 終り？ ☆☆☆☆☆ \n" VT_RST);
+        PRINTF(VT_FGCOL(BLUE) "☆☆☆☆☆ end?？ ☆☆☆☆☆ \n" VT_RST);
 
         if (this->unk_19A != 0) {
             Message_CloseTextbox(play);
@@ -340,8 +339,7 @@ void EnKakasi_Draw(Actor* thisx, PlayState* play) {
 
     if (BREG(3) != 0) {
         PRINTF("\n\n");
-        // "flag!"
-        PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ フラグ！ ☆☆☆☆☆ %d\n" VT_RST, gSaveContext.save.info.scarecrowLongSongSet);
+        PRINTF(VT_FGCOL(YELLOW) "☆☆☆☆☆ flag!！ ☆☆☆☆☆ %d\n" VT_RST, gSaveContext.save.info.scarecrowLongSongSet);
     }
     Gfx_SetupDL_25Opa(play->state.gfxCtx);
     SkelAnime_DrawFlexOpa(play, this->skelanime.skeleton, this->skelanime.jointTable, this->skelanime.dListCount, NULL,

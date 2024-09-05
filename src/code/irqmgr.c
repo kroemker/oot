@@ -117,9 +117,8 @@ void IrqMgr_SendMesgToClients(IrqMgr* irqMgr, OSMesg msg) {
 
     for (client = irqMgr->clients; client != NULL; client = client->prev) {
         if (MQ_IS_FULL(client->queue)) {
-            // "irqmgr_SendMesgForClient: Message queue is overflowing mq=%08x cnt=%d"
             PRINTF(
-                VT_COL(RED, WHITE) "irqmgr_SendMesgForClient:メッセージキューがあふれています mq=%08x cnt=%d\n" VT_RST,
+                VT_COL(RED, WHITE) "irqmgr_SendMesgForClient: Message queue is overflowing mq=%08x cnt=%d\n" VT_RST,
                 client->queue, MQ_GET_COUNT(client->queue));
         } else {
             osSendMesg(client->queue, msg, OS_MESG_NOBLOCK);
@@ -140,9 +139,8 @@ void IrqMgr_JamMesgToClients(IrqMgr* irqMgr, OSMesg msg) {
 
     for (client = irqMgr->clients; client != NULL; client = client->prev) {
         if (MQ_IS_FULL(client->queue)) {
-            // "irqmgr_JamMesgForClient: Message queue is overflowing mq=%08x cnt=%d"
             PRINTF(
-                VT_COL(RED, WHITE) "irqmgr_JamMesgForClient:メッセージキューがあふれています mq=%08x cnt=%d\n" VT_RST,
+                VT_COL(RED, WHITE) "irqmgr_JamMesgForClient: Message queue is overflowing mq=%08x cnt=%d\n" VT_RST,
                 client->queue, MQ_GET_COUNT(client->queue));
         } else {
             //! @bug The function's name suggests this would use osJamMesg rather than osSendMesg, using the

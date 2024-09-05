@@ -1,6 +1,8 @@
 #include "global.h"
 #include "terminal.h"
 
+#define TRANSFORM_OBJECT_SPACE (500 * 1024)
+
 RomFile sNaviQuestHintFiles[];
 
 /**
@@ -69,8 +71,6 @@ void Object_InitContext(PlayState* play, ObjectContext* objectCtx) {
         spaceSize = 1000 * 1024;
     }
 
-    spaceSize = 2000 * 1024;
-
     objectCtx->numEntries = objectCtx->numPersistentEntries = 0;
     objectCtx->mainKeepSlot = objectCtx->subKeepSlot = 0;
 
@@ -85,12 +85,26 @@ void Object_InitContext(PlayState* play, ObjectContext* objectCtx) {
     objectCtx->spaceStart = objectCtx->slots[0].segment =
         GAME_STATE_ALLOC(&play->state, spaceSize, "../z_scene.c", 219);
     objectCtx->spaceEnd = (void*)((uintptr_t)objectCtx->spaceStart + spaceSize);
+    objectCtx->transformSpaceStart = GAME_STATE_ALLOC(&play->state, TRANSFORM_OBJECT_SPACE, __FILE__, __LINE__);
 
     objectCtx->mainKeepSlot = Object_SpawnPersistent(objectCtx, OBJECT_GAMEPLAY_KEEP);
     gSegments[4] = VIRTUAL_TO_PHYSICAL(objectCtx->slots[objectCtx->mainKeepSlot].segment);
+}
 
-    Object_SpawnPersistent(objectCtx, OBJECT_GOL);
-    Object_SpawnPersistent(objectCtx, OBJECT_GOMA);
+void Object_LoadTransform(ObjectContext* objectCtx, s16 objectId) {
+    u32 size;
+
+    if (objectCtx->loadedTransformObjectId == objectId) {
+        return;
+    }
+
+    size = gObjectTable[objectId].vromEnd - gObjectTable[objectId].vromStart;
+
+    PRINTF("LOAD TRANSFORM OBJECT[%d] SIZE=%fK MAX_SIZE=%f\n", objectId, size / 1024.0f, TRANSFORM_OBJECT_SPACE / 1024.0f);
+
+    DMA_REQUEST_SYNC(objectCtx->transformSpaceStart, gObjectTable[objectId].vromStart, size, __FILE__, __LINE__);
+
+    objectCtx->loadedTransformObjectId = objectId;
 }
 
 void Object_UpdateEntries(ObjectContext* objectCtx) {

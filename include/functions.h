@@ -1055,6 +1055,7 @@ u8 Inventory_DeleteEquipment(PlayState* play, s16 equipment);
 void Inventory_ChangeUpgrade(s16 upgrade, s16 value);
 void Object_InitContext(PlayState* play, ObjectContext* objectCtx);
 void Object_UpdateEntries(ObjectContext* objectCtx);
+void Object_LoadTransform(ObjectContext* objectCtx, s16 objectId);
 s32 Object_GetSlot(ObjectContext* objectCtx, s16 objectId);
 s32 Object_IsLoaded(ObjectContext* objectCtx, s32 slot);
 void func_800981B8(ObjectContext* objectCtx);

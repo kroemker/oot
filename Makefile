@@ -401,7 +401,10 @@ endif
 
 #### Main Targets ###
 
-all: rom compress copy
+all: install_mod_assets rom compress copy
+
+install_mod_assets:
+	$(PYTHON) install_mod_assets.py
 
 rom: $(ROM)
 ifneq ($(COMPARE),0)

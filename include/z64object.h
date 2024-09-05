@@ -20,6 +20,8 @@ typedef struct {
     /* 0x000A */ u8 mainKeepSlot; // "gameplay_keep" slot
     /* 0x000B */ u8 subKeepSlot; // "gameplay_field_keep" or "gameplay_dangeon_keep" slot
     /* 0x000C */ ObjectEntry slots[19];
+    void* transformSpaceStart;
+    s16 loadedTransformObjectId;
 } ObjectContext; // size = 0x518
 
 #define DEFINE_OBJECT(_0, enum) enum,

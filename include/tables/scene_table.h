@@ -121,3 +121,5 @@
 /* 0x6C */ DEFINE_SCENE(sasatest_scene, none, SCENE_SASATEST, SDC_DEFAULT, 0, 0)
 /* 0x6D */ DEFINE_SCENE(testroom_scene, none, SCENE_TESTROOM, SDC_DEFAULT, 0, 0)
 #endif
+// Added scenes
+/* 0x6E */ DEFINE_SCENE(hm_comp_scene, g_pn_57, SCENE_HM_COMP, SDC_DEFAULT, 0, 0)

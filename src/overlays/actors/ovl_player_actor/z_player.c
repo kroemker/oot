@@ -2395,7 +2395,7 @@ void Player_SetupTransformBack(Player* this, PlayState* play) {
     this->stateFlags3 &= ~PLAYER_STATE3_TRANSFORMED;
 }
 
-void Player_InitiateTransformation(Player* this, PlayState* play, s16 transformActorType, u16 sfxId) {
+void Player_InitiateTransformation(Player* this, PlayState* play, s16 transformActorType, s16 objectId, u16 sfxId) {
     if ((this->transformActor != NULL && this->transformActor->id == transformActorType)) {
         Player_SetupTransformBack(this, play);
     }
@@ -2404,17 +2404,26 @@ void Player_InitiateTransformation(Player* this, PlayState* play, s16 transformA
         Player_PlaySfx(this, sfxId);
         Player_SetupAction(play, this, Player_Action_Transform, 0);
         this->av1.actionVar1 = transformActorType;
+        this->av2.actionVar2 = objectId;
         this->stateFlags3 |= PLAYER_STATE3_TRANSFORMING;
     }
 }
 
 s32 Player_CheckTransform(Player* this, PlayState* play) {
     if (CHECK_BTN_ALL(sControlInput->press.button, BTN_CLEFT)) {
-        Player_InitiateTransformation(this, play, ACTOR_TRANSFORM_BABY_GOHMA, NA_SE_EN_GOMA_BJR_CRY);
+        Player_InitiateTransformation(this, play, ACTOR_TRANSFORM_BABY_GOHMA, OBJECT_GOL, NA_SE_EN_GOMA_BJR_CRY);
         return 1;
     }
+    else if (CHECK_BTN_ALL(sControlInput->press.button, BTN_CDOWN)) {
+        if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
+            Sfx_PlaySfxCentered(NA_SE_SY_ERROR);
+        } else {
+            Player_InitiateTransformation(this, play, ACTOR_TRANSFORM_OCTOROK, OBJECT_OKUTA, NA_SE_EN_OCTAROCK_LAND);
+            return 1;
+        }
+    }
     else if (CHECK_BTN_ALL(sControlInput->press.button, BTN_CRIGHT)) {
-        Player_InitiateTransformation(this, play, ACTOR_TRANSFORM_GOHMA, NA_SE_EN_GOMA_CRY1);
+        Player_InitiateTransformation(this, play, ACTOR_TRANSFORM_IK, OBJECT_IK, NA_SE_EN_IRONNACK_WAKEUP);
         return 1;
     }
     return 0;
@@ -2481,6 +2490,7 @@ void Player_Action_Transform(Player* this, PlayState* play) {
     play->envCtx.screenFillColor[3] = play->envCtx.screenFillColor[3] < 255 - TRANSFORM_SCREEN_FILL_SPEED ? play->envCtx.screenFillColor[3] + TRANSFORM_SCREEN_FILL_SPEED : 255;
 
     if (play->envCtx.screenFillColor[3] == 255) {
+        Object_LoadTransform(&play->objectCtx, this->av2.actionVar2);
         this->transformActor = Actor_Spawn(&play->actorCtx, play, this->av1.actionVar1, this->actor.world.pos.x, this->actor.world.pos.y,
                     this->actor.world.pos.z, this->actor.world.rot.x, this->actor.world.rot.y, this->actor.world.rot.z, 0);
 

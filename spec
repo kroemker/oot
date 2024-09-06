@@ -685,6 +685,13 @@ beginseg
 endseg
 
 beginseg
+    name "ovl_Popcorn"
+    compress
+    include "$(BUILD_DIR)/src/overlays/actors/ovl_Popcorn/z_popcorn.o"
+    include "$(BUILD_DIR)/src/overlays/actors/ovl_Popcorn/ovl_Popcorn_reloc.o"
+endseg
+
+beginseg
     name "ovl_title"
     compress
     address 0x80800000

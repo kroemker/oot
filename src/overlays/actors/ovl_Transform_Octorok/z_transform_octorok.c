@@ -237,7 +237,7 @@ void TransformOctorok_SpawnProjectile(TransformOctorok* this, PlayState* play) {
     pos.x = this->actor.world.pos.x + (25.0f * sinY);
     pos.y = this->actor.world.pos.y - 6.0f;
     pos.z = this->actor.world.pos.z + (25.0f * cosY);
-    if ((spawnedActor = Actor_Spawn(&play->actorCtx, play, ACTOR_EN_BOM, pos.x, pos.y, pos.z, this->actor.shape.rot.x,
+    if ((spawnedActor = Actor_Spawn(&play->actorCtx, play, ACTOR_POPCORN, pos.x, pos.y, pos.z, this->actor.shape.rot.x,
                     this->actor.shape.rot.y, this->actor.shape.rot.z, 0)) != NULL) {
         pos.x = this->actor.world.pos.x + (40.0f * sinY);
         pos.z = this->actor.world.pos.z + (40.0f * cosY);
@@ -246,7 +246,7 @@ void TransformOctorok_SpawnProjectile(TransformOctorok* this, PlayState* play) {
         velocity.y = 0.0f;
         velocity.z = 1.5f * cosY;
         TransformOctorok_SpawnDust(&pos, &velocity, 20, play);
-        spawnedActor->speed = CLAMP(3.0f * this->framesBPressed, 10.0f, 40.0f);
+        //spawnedActor->speed = CLAMP(3.0f * this->framesBPressed, 10.0f, 40.0f);
     }
     Actor_PlaySfx(&this->actor, NA_SE_EN_NUTS_THROW);
     this->framesBPressed = 0;

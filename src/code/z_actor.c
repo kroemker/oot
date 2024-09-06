@@ -816,8 +816,14 @@ void Actor_SetScale(Actor* actor, f32 scale) {
     actor->scale.x = scale;
 }
 
+void* Actor_GetObjectSegment(PlayState* play, Actor* actor) {
+    return actor->objectSlot == TRANSFORM_OBJECT_SLOT 
+        ? play->objectCtx.transformSpaceStart
+        : play->objectCtx.slots[actor->objectSlot].segment;
+}
+
 void Actor_SetObjectDependency(PlayState* play, Actor* actor) {
-    gSegments[6] = VIRTUAL_TO_PHYSICAL(play->objectCtx.slots[actor->objectSlot].segment);
+    gSegments[6] = VIRTUAL_TO_PHYSICAL(Actor_GetObjectSegment(play, actor));
 }
 
 void Actor_Init(Actor* actor, PlayState* play) {
@@ -2341,6 +2347,7 @@ void Actor_FaultPrint(Actor* actor, char* command) {
 void Actor_Draw(PlayState* play, Actor* actor) {
     FaultClient faultClient;
     Lights* lights;
+    void* objectSegment;
 
     Fault_AddClient(&faultClient, Actor_FaultPrint, actor, "Actor_draw");
 
@@ -2365,8 +2372,9 @@ void Actor_Draw(PlayState* play, Actor* actor) {
     Matrix_Scale(actor->scale.x, actor->scale.y, actor->scale.z, MTXMODE_APPLY);
     Actor_SetObjectDependency(play, actor);
 
-    gSPSegment(POLY_OPA_DISP++, 0x06, play->objectCtx.slots[actor->objectSlot].segment);
-    gSPSegment(POLY_XLU_DISP++, 0x06, play->objectCtx.slots[actor->objectSlot].segment);
+    objectSegment = Actor_GetObjectSegment(play, actor);
+    gSPSegment(POLY_OPA_DISP++, 0x06, objectSegment);
+    gSPSegment(POLY_XLU_DISP++, 0x06, objectSegment);
 
     if (actor->colorFilterTimer != 0) {
         Color_RGBA8 color = { 0, 0, 0, 255 };
@@ -2826,6 +2834,26 @@ void Actor_FreeOverlay(ActorOverlay* actorOverlay) {
     PRINTF(VT_RST);
 }
 
+s16 sTransformActors[] = {
+    ACTOR_TRANSFORM_BABY_GOHMA,
+    ACTOR_TRANSFORM_GOHMA,
+    ACTOR_TRANSFORM_IK,
+    ACTOR_TRANSFORM_KEESE,
+    ACTOR_TRANSFORM_OCTOROK
+};
+
+s32 Actor_IsTransformActor(s16 actorId) {
+    s32 i;
+
+    for (i = 0; i < ARRAY_COUNT(sTransformActors); i++) {
+        if (actorId == sTransformActors[i]) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 Actor* Actor_Spawn(ActorContext* actorCtx, PlayState* play, s16 actorId, f32 posX, f32 posY, f32 posZ, s16 rotX,
                    s16 rotY, s16 rotZ, s16 params) {
     s32 pad;
@@ -2904,7 +2932,13 @@ Actor* Actor_Spawn(ActorContext* actorCtx, PlayState* play, s16 actorId, f32 pos
                                          : NULL);
     }
 
-    objectSlot = Object_GetSlot(&play->objectCtx, profile->objectId);
+    if (Actor_IsTransformActor(actorId)) {
+        objectSlot = TRANSFORM_OBJECT_SLOT;
+    }
+    else {
+        objectSlot = Object_GetSlot(&play->objectCtx, profile->objectId);
+    }
+    PRINTF("Object slot=%d\n", objectSlot);
 
     if ((objectSlot < 0) ||
         ((profile->category == ACTORCAT_ENEMY) && Flags_GetClear(play, play->roomCtx.curRoom.num))) {

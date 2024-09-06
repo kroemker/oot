@@ -14,6 +14,9 @@
 #define MASS_IMMOVABLE 0xFF // Cannot be pushed by OC colliders
 #define MASS_HEAVY 0xFE // Can only be pushed by OC colliders from actors with IMMOVABLE or HEAVY mass.
 
+#define TRANSFORM_OBJECT_SPACE (500 * 1024)
+#define TRANSFORM_OBJECT_SLOT 64
+
 struct Actor;
 struct CollisionPoly;
 struct Lights;

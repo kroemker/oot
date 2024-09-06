@@ -3308,7 +3308,7 @@ void Interface_Draw(PlayState* play) {
                               16, svar3, 206, 8, 16, 1 << 10, 1 << 10);
         }
         
-        if (player->transformActor->id == ACTOR_TRANSFORM_KEESE) {
+        if ((player->transformActor != NULL) && (player->transformActor->id == ACTOR_TRANSFORM_KEESE)) {
             Interface_DrawStaminaBar(play);
         }
         Minimap_Draw(play);

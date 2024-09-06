@@ -1,8 +1,6 @@
 #include "global.h"
 #include "terminal.h"
 
-#define TRANSFORM_OBJECT_SPACE (500 * 1024)
-
 RomFile sNaviQuestHintFiles[];
 
 /**
@@ -145,6 +143,10 @@ s32 Object_GetSlot(ObjectContext* objectCtx, s16 objectId) {
 }
 
 s32 Object_IsLoaded(ObjectContext* objectCtx, s32 slot) {
+    if (slot == TRANSFORM_OBJECT_SLOT) {
+        return objectCtx->loadedTransformObjectId >= 0;
+    }
+
     if (objectCtx->slots[slot].id > 0) {
         return true;
     } else {

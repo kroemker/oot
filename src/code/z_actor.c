@@ -6068,14 +6068,14 @@ void Actor_SetPlayerLocation(Actor* actor, PlayState* play, f32 yOffset) {
 
 void Actor_TriggerDynapolyIfPossible(Actor* actor, PlayState* play) {
     CollisionPoly* floorPoly = actor->floorPoly;
-    if (floorPoly == NULL) {
+    if (!(actor->bgCheckFlags & BGCHECKFLAG_GROUND) || (floorPoly == NULL)) {
         return;
     }
 
     if (actor->floorBgId == BGCHECK_SCENE) {
         Environment_ChangeLightSetting(play, SurfaceType_GetLightSetting(&play->colCtx, floorPoly, actor->floorBgId));
     } else {
-        DynaPoly_SetPlayerAbove(&play->colCtx, actor->floorBgId);
+        DynaPoly_SetPlayerOnTop(&play->colCtx, actor->floorBgId);
     }
 }
 

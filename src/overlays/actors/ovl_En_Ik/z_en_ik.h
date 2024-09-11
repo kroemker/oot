@@ -9,8 +9,19 @@ struct EnIk;
 typedef void (*EnIkActionFunc)(struct EnIk*, PlayState*);
 
 #define IK_GET_UPPER_PARAMS(thisx) ((thisx)->params & 0xFF00)
-#define IK_GET_ARMOR_TYPE(thisx) ((thisx)->params & 0xFF)
-#define IK_GET_SWITCH_FLAG(thisx) (((thisx)->params >> 8) & 0xFF)
+#define IK_GET_ARMOR_TYPE(thisx) ((thisx)->params & 0xF)
+#define IK_GET_PUZZLE_ELEMENT(thisx) (((thisx)->params >> 4) & 0xF)
+#define IK_GET_SWITCH_FLAG(thisx) (((thisx)->params >> 8) & 0x1F)
+#define IK_IS_PUZZLE_KNUCKLE(thisx) (((thisx)->params >> 0xF) & 1)
+
+typedef enum {
+    IK_ELEMENT_LIGHT,
+    IK_ELEMENT_FOREST,
+    IK_ELEMENT_FIRE,
+    IK_ELEMENT_WATER,
+    IK_ELEMENT_SHADOW,
+    IK_ELEMENT_SPIRIT,
+} IronKnucklePuzzleElement;
 
 typedef enum {
     /* 0 */ IK_TYPE_NABOORU,
@@ -116,6 +127,13 @@ typedef struct EnIk {
     /* 0x04D0 */ u32 cueId;
     /* 0x04D4 */ s32 isAxeSummoned;
     /* 0x04D8 */ char unk_4D8[0x04];
+    s32 dieTimer;
+    u8 puzzleKnuckle;
+    u8 element;
+    Vec3f targetLocation;
+    u8 enableMoving;
+    u16 puzzleIndex;
+    u8 burn;
 } EnIk; // size = 0x04DC
 
 #endif

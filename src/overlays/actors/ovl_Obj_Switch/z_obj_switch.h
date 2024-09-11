@@ -13,7 +13,8 @@ typedef enum {
     /* 1 */ OBJSWITCH_TYPE_FLOOR_RUSTY,
     /* 2 */ OBJSWITCH_TYPE_EYE,
     /* 3 */ OBJSWITCH_TYPE_CRYSTAL,
-    /* 4 */ OBJSWITCH_TYPE_CRYSTAL_TARGETABLE
+    /* 4 */ OBJSWITCH_TYPE_CRYSTAL_TARGETABLE,
+    OBJSWITCH_TYPE_CRYSTAL_IK_PUZZLE
 } ObjSwitchType;
 
 typedef enum {
@@ -53,6 +54,7 @@ typedef struct ObjSwitch {
         /* 0x0180 */ ObjSwitchJntSph jntSph;
         /* 0x0180 */ ObjSwitchTris tris;
     };
+    u8 ikPuzzleIndex;
 } ObjSwitch; // size = 0x0258
 
 #endif

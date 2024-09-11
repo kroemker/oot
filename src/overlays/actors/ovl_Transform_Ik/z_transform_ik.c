@@ -52,7 +52,7 @@ static ColliderCylinderInit sBodyCollider = {
         COLSHAPE_CYLINDER,
     },
     {
-        ELEMTYPE_UNK1,
+        ELEMTYPE_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0xFFCFFFFF, 0x00, 0x00 },
         ATELEM_NONE,
@@ -445,7 +445,7 @@ void TransformIk_Init(Actor* thisx, PlayState* play) {
     thisx->colChkInfo.health = 30;
     thisx->gravity = -1.0f;
     thisx->speedCap = 10.0f;
-    Actor_SetScale(thisx, 0.01f);
+    Actor_SetScale(thisx, 0.011f);
 
     blureInit.p1StartColor[0] = blureInit.p1StartColor[1] = blureInit.p2StartColor[0] = blureInit.p2StartColor[1] =
         blureInit.p2StartColor[2] = blureInit.p1EndColor[0] = blureInit.p1EndColor[1] = blureInit.p2EndColor[0] =
@@ -466,6 +466,7 @@ void TransformIk_Init(Actor* thisx, PlayState* play) {
 
     this->actor.speed = GET_PLAYER(play)->actor.speed;
     this->actor.room = -1;
+    this->invincibilityTimer = 0;
 }
 
 void TransformIk_Destroy(Actor* thisx, PlayState* play) {
@@ -493,7 +494,8 @@ void TransformIk_Update(Actor* thisx, PlayState* play) {
         this->bodyCollider.base.acFlags &= ~AC_HIT;
     } else if (this->axeCollider.base.atFlags & AT_HIT) {
         this->axeCollider.base.atFlags &= ~AT_HIT;
-    } else if (this->bodyCollider.base.acFlags & AC_HIT && !(this->bodyCollider.base.ac != NULL && this->bodyCollider.base.ac->id == ACTOR_BG_JYA_HAHENIRON)) {
+    } else if (this->bodyCollider.base.acFlags & AC_HIT &&
+        !(this->bodyCollider.base.ac != NULL && this->bodyCollider.base.ac->id == ACTOR_BG_JYA_HAHENIRON)) {
         this->bodyCollider.base.acFlags &= ~AC_HIT;
 
         Actor_SetColorFilter(&this->actor, COLORFILTER_COLORFLAG_RED, 255, COLORFILTER_BUFFLAG_OPA, 12);
@@ -538,7 +540,11 @@ void TransformIk_Update(Actor* thisx, PlayState* play) {
     Collider_UpdateCylinder(&this->actor, &this->bodyCollider);
     CollisionCheck_SetOC(play, &play->colChkCtx, &this->bodyCollider.base);
 
-    if ((gSaveContext.save.info.playerData.health > 0) && (this->actor.colorFilterTimer == 0) && (DECR(this->invincibilityTimer) == 0)) {
+    if (this->invincibilityTimer != 0) {
+        this->invincibilityTimer--;
+    }
+
+    if ((gSaveContext.save.info.playerData.health > 0) && (this->actor.colorFilterTimer == 0) && (this->invincibilityTimer == 0)) {
         CollisionCheck_SetAC(play, &play->colChkCtx, &this->bodyCollider.base);
     }
 

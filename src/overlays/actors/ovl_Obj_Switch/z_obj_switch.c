@@ -5,6 +5,7 @@
  */
 
 #include "z_obj_switch.h"
+#include "../ovl_En_Ik/z_en_ik.h"
 #include "assets/objects/gameplay_dangeon_keep/gameplay_dangeon_keep.h"
 #include "terminal.h"
 
@@ -50,6 +51,8 @@ void ObjSwitch_CrystalOn(ObjSwitch* this, PlayState* play);
 void ObjSwitch_CrystalTurnOffInit(ObjSwitch* this);
 void ObjSwitch_CrystalTurnOff(ObjSwitch* this, PlayState* play);
 
+void ObjSwitch_CrystalIkPuzzle(ObjSwitch* this, PlayState* play);
+
 ActorProfile Obj_Switch_Profile = {
     /**/ ACTOR_OBJ_SWITCH,
     /**/ ACTORCAT_SWITCH,
@@ -68,6 +71,7 @@ static f32 sFocusHeights[] = {
     0,  // OBJSWITCH_TYPE_EYE
     30, // OBJSWITCH_TYPE_CRYSTAL
     30, // OBJSWITCH_TYPE_CRYSTAL_TARGETABLE
+    30,
 };
 
 static ColliderTrisElementInit sRustyFloorTrisElementsInit[2] = {
@@ -311,7 +315,7 @@ void ObjSwitch_Init(Actor* thisx, PlayState* play) {
         ObjSwitch_InitTrisCollider(this, play, &sRustyFloorTrisInit);
     } else if (type == OBJSWITCH_TYPE_EYE) {
         ObjSwitch_InitTrisCollider(this, play, &sEyeTrisInit);
-    } else if (type == OBJSWITCH_TYPE_CRYSTAL || type == OBJSWITCH_TYPE_CRYSTAL_TARGETABLE) {
+    } else if (type == OBJSWITCH_TYPE_CRYSTAL || type == OBJSWITCH_TYPE_CRYSTAL_TARGETABLE || type == OBJSWITCH_TYPE_CRYSTAL_IK_PUZZLE) {
         ObjSwitch_InitJntSphCollider(this, play, &sCrystalJntSphInit);
     }
 
@@ -351,6 +355,18 @@ void ObjSwitch_Init(Actor* thisx, PlayState* play) {
         } else {
             ObjSwitch_CrystalOffInit(this);
         }
+    } else if (type == OBJSWITCH_TYPE_CRYSTAL_IK_PUZZLE) {
+        if (isSwitchFlagSet) {
+            Actor_Kill(&this->dyna.actor);
+        } else {
+            this->ikPuzzleIndex = this->dyna.actor.home.rot.x;
+            this->dyna.actor.world.rot.x = 0;
+            this->crystalColor.r = 0;
+            this->crystalColor.g = 0;
+            this->crystalColor.b = 0;
+            this->crystalSubtype1texture = gCrstalSwitchBlueTex;
+            this->actionFunc = ObjSwitch_CrystalIkPuzzle;
+        }
     }
 
     PRINTF("(Dungeon switch)(arg_data 0x%04x)\n", this->dyna.actor.params);
@@ -374,6 +390,7 @@ void ObjSwitch_Destroy(Actor* thisx, PlayState* play) {
 
         case OBJSWITCH_TYPE_CRYSTAL:
         case OBJSWITCH_TYPE_CRYSTAL_TARGETABLE:
+        case OBJSWITCH_TYPE_CRYSTAL_IK_PUZZLE:
             Collider_DestroyJntSph(play, &this->jntSph.col);
             break;
     }
@@ -382,6 +399,43 @@ void ObjSwitch_Destroy(Actor* thisx, PlayState* play) {
 void ObjSwitch_FloorUpInit(ObjSwitch* this) {
     this->dyna.actor.scale.y = 33.0f / 200.0f;
     this->actionFunc = ObjSwitch_FloorUp;
+}
+
+s32 ObjSwitch_IsSwapper(ObjSwitch* this) {
+    return (this->dyna.actor.params >> 15) & 1;
+}
+
+s32 ObjSwitch_AreAllSwappersDown(ObjSwitch* this, PlayState* play) {
+    s32 i;
+    Actor* actor = play->actorCtx.actorLists[ACTORCAT_SWITCH].head;
+    while (actor != NULL) {
+        if (actor->id == ACTOR_OBJ_SWITCH) {
+            ObjSwitch* switchActor = (ObjSwitch*)actor;
+            if (ObjSwitch_IsSwapper(switchActor) && switchActor->actionFunc != ObjSwitch_FloorDown) {
+                return false;
+            }
+        }
+        actor = actor->next;
+    }
+    return true;
+}
+
+void ObjSwitch_FlipNearbySwappers(ObjSwitch* this, PlayState* play) {
+    s32 i;
+    Actor* actor = play->actorCtx.actorLists[ACTORCAT_SWITCH].head;
+    while (actor != NULL) {
+        if (actor->id == ACTOR_OBJ_SWITCH) {
+            ObjSwitch* switchActor = (ObjSwitch*)actor;
+            if (this != switchActor && ObjSwitch_IsSwapper(switchActor) && Math_Vec3f_DistXZ(&this->dyna.actor.world.pos, &switchActor->dyna.actor.world.pos) < 100.0f) {
+                if (switchActor->actionFunc == ObjSwitch_FloorDown) {
+                    ObjSwitch_FloorUpInit(switchActor);
+                } else {
+                    ObjSwitch_FloorDownInit(switchActor);
+                }
+            }
+        }
+        actor = actor->next;
+    }
 }
 
 void ObjSwitch_FloorUp(ObjSwitch* this, PlayState* play) {
@@ -394,6 +448,14 @@ void ObjSwitch_FloorUp(ObjSwitch* this, PlayState* play) {
             CollisionCheck_SetAC(play, &play->colChkCtx, &this->tris.col.base);
         }
     } else {
+        if (ObjSwitch_IsSwapper(this)) {
+            if (DynaPolyActor_IsPlayerOnTop(&this->dyna)) {
+                ObjSwitch_FloorPressInit(this);
+                ObjSwitch_FlipNearbySwappers(this, play);
+            }
+            return;
+        }
+
         switch (OBJSWITCH_SUBTYPE(&this->dyna.actor)) {
             case OBJSWITCH_SUBTYPE_ONCE:
                 if (DynaPolyActor_IsPlayerOnTop(&this->dyna)) {
@@ -451,6 +513,13 @@ void ObjSwitch_FloorDownInit(ObjSwitch* this) {
 }
 
 void ObjSwitch_FloorDown(ObjSwitch* this, PlayState* play) {
+    if (ObjSwitch_IsSwapper(this)) {
+        if (ObjSwitch_AreAllSwappersDown(this, play) && !Flags_GetSwitch(play, OBJSWITCH_SWITCH_FLAG(&this->dyna.actor))) {
+            ObjSwitch_SetOn(this, play);
+        }
+        return;
+    }
+
     switch (OBJSWITCH_SUBTYPE(&this->dyna.actor)) {
         case OBJSWITCH_SUBTYPE_ONCE:
             if (!Flags_GetSwitch(play, OBJSWITCH_SWITCH_FLAG(&this->dyna.actor))) {
@@ -603,6 +672,220 @@ void ObjSwitch_EyeOpening(ObjSwitch* this, PlayState* play) {
     }
 }
 
+static Color_RGBA8 sDustPrimColor = { 36, 23, 3, 255 };
+static Color_RGBA8 sDustEnvColor = { 66, 44, 11, 170 };
+
+void ObjSwitch_SpawnDust(ObjSwitch* this, PlayState* play) {
+    Vec3f dustVel;
+    Vec3f dustAccel;
+    s32 i;
+
+    for (i = 0; i < 12; i++) {
+        dustVel.x = (Rand_ZeroOne() * 3.0f) - 1.5f;
+        dustVel.y = (Rand_ZeroOne() * 5.0f) - 2.5f;
+        dustVel.z = (Rand_ZeroOne() * 3.0f) - 1.5f;
+
+        dustAccel.x = (Rand_ZeroOne() * 0.14f) - 0.07f;
+        dustAccel.y = (Rand_ZeroOne() * 1.1f);
+        dustAccel.z = (Rand_ZeroOne() * 0.14f) - 0.07f;
+
+        func_8002829C(play, &this->dyna.actor.home.pos, &dustVel, &dustAccel, &sDustPrimColor, &sDustEnvColor, 225,
+                      (Rand_ZeroOne() * 20.0f) + 20.0f);
+    }
+}
+
+void ObjSwitch_Sink(ObjSwitch* this, PlayState* play) {
+    f32 yTarget = this->dyna.actor.home.pos.y - 200.0f;
+    if (Math_StepToF(&this->dyna.actor.world.pos.y, yTarget, 5.0f)) {
+        Actor_Kill(&this->dyna.actor);
+        return;
+    }
+    ObjSwitch_SpawnDust(this, play);
+}
+
+static s16 hitCrystalsIndexes[2] = {-1, -1};
+
+EnIk* ObjSwitch_FindIkWithPuzzleIndex(ObjSwitch* this, PlayState* play, u8 puzzleIndex) {
+    Actor* actor = play->actorCtx.actorLists[ACTORCAT_PROP].head;
+
+    while (actor != NULL) {
+        if (actor->id != ACTOR_EN_IK) {
+            actor = actor->next;
+            continue;
+        }
+        EnIk* ik = (EnIk*)(actor);
+        if (ik->puzzleKnuckle && ik->puzzleIndex == puzzleIndex) {
+            return ik;
+        }
+        actor = actor->next;
+    }
+    return NULL;
+}
+
+s32 ObjSwitch_AllIksFinishedMoving(ObjSwitch* this, PlayState* play) {
+    Actor* actor = play->actorCtx.actorLists[ACTORCAT_PROP].head;
+
+    while (actor != NULL) {
+        if (actor->id != ACTOR_EN_IK) {
+            actor = actor->next;
+            continue;
+        }
+        EnIk* ik = (EnIk*)(actor);
+        if (ik->puzzleKnuckle && ik->enableMoving) {
+            return false;
+        }
+        actor = actor->next;
+    }
+    return true;
+}
+
+s32 ObjSwitch_ExistsNearbyIkWithElement(ObjSwitch* this, PlayState* play, Actor* baseActor, u8 element) {
+    Actor* actor = play->actorCtx.actorLists[ACTORCAT_PROP].head;
+
+    while (actor != NULL) {
+        if (actor->id != ACTOR_EN_IK) {
+            actor = actor->next;
+            continue;
+        }
+        EnIk* ik = (EnIk*)(actor);
+        if (ik->puzzleKnuckle && ik->element == element && Actor_WorldDistXZToActor(baseActor, actor) < 121.0f) {
+            return true;
+        }
+        actor = actor->next;
+    }
+    return false;
+}
+
+s32 ObjSwitch_AllIkRulesFulfilled(ObjSwitch* this, PlayState* play) {
+    Actor* actor = play->actorCtx.actorLists[ACTORCAT_PROP].head;
+    s8 checkedIks = 0;
+
+    while (actor != NULL) {
+        if (actor->id != ACTOR_EN_IK) {
+            actor = actor->next;
+            continue;
+        }
+        EnIk* ik = (EnIk*)(actor);
+        if (!ik->puzzleKnuckle) {
+            actor = actor->next;
+            continue;
+        }
+
+        u8 nearby1, nearby2;
+        switch (ik->element) {
+            case IK_ELEMENT_LIGHT:
+                // PRINTF("Ik element: Light\n");
+                break;
+            case IK_ELEMENT_FOREST:
+                nearby1 = ObjSwitch_ExistsNearbyIkWithElement(this, play, actor, IK_ELEMENT_WATER);
+                nearby2 = ObjSwitch_ExistsNearbyIkWithElement(this, play, actor, IK_ELEMENT_LIGHT);
+                // PRINTF("Ik element: Forest, water nearby1: %d, light nearby2: %d\n", nearby1, nearby2);
+                if (!nearby1 || !nearby2) {
+                    return false;
+                }
+                break;
+            case IK_ELEMENT_FIRE:
+                nearby1 = ObjSwitch_ExistsNearbyIkWithElement(this, play, actor, IK_ELEMENT_WATER);
+                // PRINTF("Ik element: Fire, water nearby1: %d\n", nearby1);
+                if (nearby1) {
+                    return false;
+                }
+                break;
+            case IK_ELEMENT_WATER:
+                // PRINTF("Ik element: Water\n");
+                break;
+            case IK_ELEMENT_SHADOW:
+                nearby1 = ObjSwitch_ExistsNearbyIkWithElement(this, play, actor, IK_ELEMENT_LIGHT);
+                // PRINTF("Ik element: Shadow, light nearby1: %d\n", nearby1);
+                if (nearby1) {
+                    return false;
+                }
+                break;
+            case IK_ELEMENT_SPIRIT:
+                nearby1 = ObjSwitch_ExistsNearbyIkWithElement(this, play, actor, IK_ELEMENT_LIGHT);
+                nearby2 = ObjSwitch_ExistsNearbyIkWithElement(this, play, actor, IK_ELEMENT_SHADOW);
+                // PRINTF("Ik element: Spirit, light nearby1: %d, shadow nearby2: %d\n", nearby1, nearby2);
+                if (!nearby1 && !nearby2) {
+                    return false;
+                }
+                break;
+        }
+        actor = actor->next;
+        checkedIks++;
+    }
+    return checkedIks == 4; // only assume the puzzle is solved if exactly 4 iks were checked, since it might happen that the check runs before any iks can set their puzzle index
+}
+
+void ObjSwitch_BurnAllIk(ObjSwitch* this, PlayState* play) {
+    Actor* actor = play->actorCtx.actorLists[ACTORCAT_PROP].head;
+
+    while (actor != NULL) {
+        if (actor->id != ACTOR_EN_IK) {
+            actor = actor->next;
+            continue;
+        }
+        EnIk* ik = (EnIk*)(actor);
+        if (ik->puzzleKnuckle) {
+            ik->burn = true;
+        }
+        actor = actor->next;
+    }
+}
+
+void ObjSwitch_SwapIkPositions(ObjSwitch* this, PlayState* play) {
+    EnIk* left = ObjSwitch_FindIkWithPuzzleIndex(this, play, hitCrystalsIndexes[0]);
+    EnIk* right = ObjSwitch_FindIkWithPuzzleIndex(this, play, hitCrystalsIndexes[1]);
+
+    left->targetLocation = right->actor.world.pos;
+    right->targetLocation = left->actor.world.pos;
+
+    left->enableMoving = true;
+    right->enableMoving = true;
+
+    u8 puzzleIndex = left->puzzleIndex;
+    left->puzzleIndex = right->puzzleIndex;
+    right->puzzleIndex = puzzleIndex;
+
+    hitCrystalsIndexes[0] = -1;
+    hitCrystalsIndexes[1] = -1;
+}
+
+void ObjSwitch_CrystalIkPuzzle(ObjSwitch* this, PlayState* play) {
+    if ((this->jntSph.col.base.acFlags & AC_HIT) && this->disableAcTimer <= 0 && ObjSwitch_AllIksFinishedMoving(this, play)) {
+        s32 hitIndex = hitCrystalsIndexes[0] == -1 ? 0 : 1;
+        if (hitCrystalsIndexes[(hitIndex + 1) % 2] != this->ikPuzzleIndex) {
+            hitCrystalsIndexes[hitIndex] = this->ikPuzzleIndex;
+            if (hitIndex == 1) {
+                ObjSwitch_SwapIkPositions(this, play);
+            }
+            Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_DIAMOND_SWITCH);
+            this->crystalColor.r = 255;
+            this->crystalColor.g = 255;
+            this->crystalColor.b = 255;
+        }
+        this->disableAcTimer = 10;
+    }
+    
+    if (ObjSwitch_AllIksFinishedMoving(this, play)) {
+        if (hitCrystalsIndexes[0] == -1 && hitCrystalsIndexes[1] == -1) {
+            this->crystalColor.r = 0;
+            this->crystalColor.g = 0;
+            this->crystalColor.b = 0;
+        }
+        if (Flags_GetSwitch(play, OBJSWITCH_SWITCH_FLAG(&this->dyna.actor))) {
+            this->actionFunc = ObjSwitch_Sink;
+        }
+        else if (ObjSwitch_AllIkRulesFulfilled(this, play)) {
+            PRINTF("Ik puzzle switch: Puzzle solved!\n");
+            Flags_SetSwitch(play, OBJSWITCH_SWITCH_FLAG(&this->dyna.actor));
+            OnePointCutscene_AttentionSetSfx(play, &this->dyna.actor, NA_SE_SY_CORRECT_CHIME);
+            ObjSwitch_BurnAllIk(this,play);
+            this->actionFunc = ObjSwitch_Sink;
+        }
+    }
+}
+
+
 void ObjSwitch_CrystalOffInit(ObjSwitch* this) {
     this->crystalColor.r = 0;
     this->crystalColor.g = 0;
@@ -727,7 +1010,8 @@ void ObjSwitch_Update(Actor* thisx, PlayState* play) {
 
         case OBJSWITCH_TYPE_CRYSTAL:
         case OBJSWITCH_TYPE_CRYSTAL_TARGETABLE:
-            if (!Player_InCsMode(play) && this->disableAcTimer > 0) {
+        case OBJSWITCH_TYPE_CRYSTAL_IK_PUZZLE:
+            if ((!Player_InCsMode(play) || (OBJSWITCH_TYPE(&this->dyna.actor) == OBJSWITCH_TYPE_CRYSTAL_IK_PUZZLE)) && this->disableAcTimer > 0) {
                 this->disableAcTimer--;
             }
             this->prevColFlags = this->jntSph.col.base.acFlags;
@@ -747,8 +1031,13 @@ void ObjSwitch_DrawFloor(ObjSwitch* this, PlayState* play) {
         gFloorSwitch2DL, // OBJSWITCH_SUBTYPE_HOLD
         gFloorSwitch2DL, // OBJSWITCH_SUBTYPE_HOLD_INVERTED
     };
-
-    Gfx_DrawDListOpa(play, floorSwitchDLists[OBJSWITCH_SUBTYPE(&this->dyna.actor)]);
+    
+    if (ObjSwitch_IsSwapper(this)) {
+        Gfx_DrawDListOpa(play, gBetaFloorSwitchDL);
+    }
+    else {
+        Gfx_DrawDListOpa(play, floorSwitchDLists[OBJSWITCH_SUBTYPE(&this->dyna.actor)]);
+    }
 }
 
 void ObjSwitch_DrawFloorRusty(ObjSwitch* this, PlayState* play) {
@@ -838,6 +1127,7 @@ static ObjSwitchActionFunc sDrawFuncs[] = {
     ObjSwitch_DrawEye,        // OBJSWITCH_TYPE_EYE
     ObjSwitch_DrawCrystal,    // OBJSWITCH_TYPE_CRYSTAL
     ObjSwitch_DrawCrystal,    // OBJSWITCH_TYPE_CRYSTAL_TARGETABLE
+    ObjSwitch_DrawCrystal,    // OBJSWITCH_TYPE_IK_PUZZLE
 };
 
 void ObjSwitch_Draw(Actor* thisx, PlayState* play) {

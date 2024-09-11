@@ -445,6 +445,7 @@ void TransformIk_Init(Actor* thisx, PlayState* play) {
     thisx->colChkInfo.health = 30;
     thisx->gravity = -1.0f;
     thisx->speedCap = 10.0f;
+    Actor_SetScale(thisx, 0.01f);
 
     blureInit.p1StartColor[0] = blureInit.p1StartColor[1] = blureInit.p2StartColor[0] = blureInit.p2StartColor[1] =
         blureInit.p2StartColor[2] = blureInit.p1EndColor[0] = blureInit.p1EndColor[1] = blureInit.p2EndColor[0] =
@@ -479,19 +480,7 @@ void TransformIk_Update(Actor* thisx, PlayState* play) {
     TransformIk* this = THIS;
     Player* player = GET_PLAYER(play);
 
-    player->actor.world.pos.x = this->actor.world.pos.x;
-    player->actor.world.pos.y = this->actor.world.pos.y;
-    player->actor.world.pos.z = this->actor.world.pos.z;
-
-    Math_Vec3f_Copy(&player->actor.world.pos, &this->actor.world.pos);
-    Math_Vec3f_Copy(&player->actor.home.pos, &this->actor.world.pos);
-    Math_Vec3f_Copy(&player->actor.prevPos, &this->actor.world.pos);
-    player->actor.world.rot.x = this->actor.world.rot.x;
-    player->actor.world.rot.y = this->actor.world.rot.y;
-    player->actor.world.rot.z = this->actor.world.rot.z;
-    player->actor.shape.rot.x = this->actor.shape.rot.x;
-    player->actor.shape.rot.y = this->actor.shape.rot.y;
-    player->actor.shape.rot.z = this->actor.shape.rot.z;
+    Actor_SetPlayerLocation(&this->actor, play, 45.0f);
 
     if (this->shieldCollider.base.acFlags & AC_BOUNCED) {
         s16 frames = Animation_GetLastFrame(&gIronKnuckleBlockAnim) - 2.0f;
@@ -510,6 +499,7 @@ void TransformIk_Update(Actor* thisx, PlayState* play) {
         Actor_SetColorFilter(&this->actor, COLORFILTER_COLORFLAG_RED, 255, COLORFILTER_BUFFLAG_OPA, 12);
 
         play->damagePlayer(play, -this->actor.colChkInfo.damage);
+        this->invincibilityTimer = 30;
 
         if (gSaveContext.save.info.playerData.health == 0) {
             Actor_PlaySfx(&this->actor, NA_SE_EN_IRONNACK_DEAD);
@@ -530,17 +520,9 @@ void TransformIk_Update(Actor* thisx, PlayState* play) {
                             UPDBGCHECKINFO_FLAG_0 | UPDBGCHECKINFO_FLAG_2 | UPDBGCHECKINFO_FLAG_3 |
                                 UPDBGCHECKINFO_FLAG_4);
 
-    if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
-        s32 floorType = SurfaceType_GetFloorType(&play->colCtx, this->actor.floorPoly, this->actor.floorBgId);
-        if (floorType == FLOOR_TYPE_9) {
-            player->actor.freezeTimer = this->actor.freezeTimer = 50;
-            Play_TriggerVoidOut(play);
-            SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0);
-            play->transitionType = TRANS_TYPE_FADE_BLACK;
-            Sfx_PlaySfxCentered2(NA_SE_OC_ABYSS);
-        }
-    }
-    else if (this->actionFunc != TransformIk_Action_Fall) {
+    Actor_TriggerDynapolyIfPossible(&this->actor, play);
+    Actor_CheckVoidOut(&this->actor, play);
+    if (!(this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && (this->actionFunc != TransformIk_Action_Fall)) {
         TransformIk_SetupAction(this, play, TransformIk_Action_Fall);
     }
 
@@ -551,15 +533,12 @@ void TransformIk_Update(Actor* thisx, PlayState* play) {
         thisx->gravity = -1.0f;
     }
 
-    this->actor.focus.pos = this->actor.world.pos;
-    this->actor.focus.pos.y += 45.0f;
-
     this->actionFunc(this, play);
 
     Collider_UpdateCylinder(&this->actor, &this->bodyCollider);
     CollisionCheck_SetOC(play, &play->colChkCtx, &this->bodyCollider.base);
 
-    if (gSaveContext.save.info.playerData.health > 0 && (this->actor.colorFilterTimer == 0)) {
+    if ((gSaveContext.save.info.playerData.health > 0) && (this->actor.colorFilterTimer == 0) && (DECR(this->invincibilityTimer) == 0)) {
         CollisionCheck_SetAC(play, &play->colChkCtx, &this->bodyCollider.base);
     }
 

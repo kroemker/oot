@@ -6078,3 +6078,18 @@ void Actor_TriggerDynapolyIfPossible(Actor* actor, PlayState* play) {
         DynaPoly_SetPlayerAbove(&play->colCtx, actor->floorBgId);
     }
 }
+
+void Actor_CheckVoidOut(Actor* actor, PlayState* play) {
+    Player* player = GET_PLAYER(play);
+
+    if (actor->bgCheckFlags & BGCHECKFLAG_GROUND) {
+        s32 floorType = SurfaceType_GetFloorType(&play->colCtx, actor->floorPoly, actor->floorBgId);
+        if (floorType == FLOOR_TYPE_9) {
+            player->actor.freezeTimer = actor->freezeTimer = 50;
+            Play_TriggerVoidOut(play);
+            SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0);
+            play->transitionType = TRANS_TYPE_FADE_BLACK;
+            Sfx_PlaySfxCentered2(NA_SE_OC_ABYSS);
+        }
+    }
+}

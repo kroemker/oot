@@ -365,6 +365,7 @@ void TransformBabyGohma_Update(Actor* thisx, PlayState* play) {
     TransformBabyGohma_UpdateWaterMovement(this, play);
     TransformBabyGohma_UpdateEyeEnvColor(this);
     Actor_TriggerDynapolyIfPossible(&this->actor, play);
+    Actor_CheckVoidOut(&this->actor, play);
 
     this->actionFunc(this, play);
 

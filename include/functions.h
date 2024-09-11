@@ -491,7 +491,7 @@ s32 Actor_GetMovementSpeedAndYaw(Actor* actor, f32* outSpeedTarget, s16* outYawT
 void Actor_HandleZTarget(Actor* actor, PlayState* play);
 void Actor_SetPlayerLocation(Actor* actor, PlayState* play, f32 yOffset);
 void Actor_TriggerDynapolyIfPossible(Actor* actor, PlayState* play);
-void Actor_GetConveyorData(Actor* actor, PlayState* play, f32* outConveyorSpeed, s16* outConveyorYaw);
+void Actor_CheckVoidOut(Actor* actor, PlayState* play);
 void ActorOverlayTable_LogPrint(void);
 void ActorOverlayTable_Init(void);
 void ActorOverlayTable_Cleanup(void);

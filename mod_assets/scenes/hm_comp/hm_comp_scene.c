@@ -89,8 +89,18 @@ CollisionHeader hm_comp_scene_collisionHeader = {
     ARRAY_COUNT(hm_comp_scene_vertices), hm_comp_scene_vertices,
     ARRAY_COUNT(hm_comp_scene_polygons), hm_comp_scene_polygons,
     hm_comp_scene_polygonTypes,
-    NULL,
+    hm_comp_scene_bgCamInfo,
     0, NULL
+};
+
+Vec3s hm_comp_scene_camPosData[] = {
+    {     74,    -70,     69 },
+    { 0x12CD, 0xA134, 0x0000 },
+    {   3960,     -1,     -1 },
+};
+
+BgCamInfo hm_comp_scene_bgCamInfo[] = {
+    { CAM_SET_NONE, 3, &hm_comp_scene_camPosData[0] },
 };
 
 SurfaceType hm_comp_scene_polygonTypes[1] = {

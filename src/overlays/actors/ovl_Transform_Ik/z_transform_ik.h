@@ -35,6 +35,7 @@ typedef struct TransformIk {
     AnimationHeader* recoverAnimation;
     s32 animationTimer;
     u8 previousFrameInWater;
+    s16 invincibilityTimer;
 } TransformIk;
 
 #endif

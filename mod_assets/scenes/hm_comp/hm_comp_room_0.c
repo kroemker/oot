@@ -4,8 +4,8 @@
 /**
  * Header Child Day (Default)
 */
-#define LENGTH_HM_COMP_ROOM_0_HEADER00_OBJECTLIST 3
-#define LENGTH_HM_COMP_ROOM_0_HEADER00_ACTORLIST 17
+#define LENGTH_HM_COMP_ROOM_0_HEADER00_OBJECTLIST 4
+#define LENGTH_HM_COMP_ROOM_0_HEADER00_ACTORLIST 18
 SceneCmd hm_comp_room_0_header00[] = {
     SCENE_CMD_ROOM_SHAPE(&hm_comp_room_0_shapeHeader),
     SCENE_CMD_ECHO_SETTINGS(0x00),
@@ -20,6 +20,7 @@ SceneCmd hm_comp_room_0_header00[] = {
 s16 hm_comp_room_0_header00_objectList[LENGTH_HM_COMP_ROOM_0_HEADER00_OBJECTLIST] = {
     OBJECT_IK,
     OBJECT_HIDAN_OBJECTS,
+    OBJECT_HAND,
     OBJECT_BOX,
 };
 
@@ -30,6 +31,22 @@ ActorEntry hm_comp_room_0_header00_actorList[LENGTH_HM_COMP_ROOM_0_HEADER00_ACTO
         /* Position   */ { -223, -120, -126 },
         /* Rotation   */ { 0, 0, 1 },
         /* Parameters */ 0x27E1
+    },
+
+    // Dungeon Switches
+    {
+        /* Actor ID   */ ACTOR_OBJ_SWITCH,
+        /* Position   */ { 160, -120, -99 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0113
+    },
+
+    // Custom Actor
+    {
+        /* Actor ID   */ ACTOR_PROP_HAND,
+        /* Position   */ { 243, 72, -291 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(270.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0100
     },
 
     // Iron Knuckle
@@ -123,7 +140,7 @@ ActorEntry hm_comp_room_0_header00_actorList[LENGTH_HM_COMP_ROOM_0_HEADER00_ACTO
     // Dungeon Switches
     {
         /* Actor ID   */ ACTOR_OBJ_SWITCH,
-        /* Position   */ { 160, -120, -515 },
+        /* Position   */ { 160, -120, -435 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x8100
     },
@@ -132,14 +149,6 @@ ActorEntry hm_comp_room_0_header00_actorList[LENGTH_HM_COMP_ROOM_0_HEADER00_ACTO
     {
         /* Actor ID   */ ACTOR_OBJ_SWITCH,
         /* Position   */ { 0, -120, -595 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x8100
-    },
-
-    // Dungeon Switches
-    {
-        /* Actor ID   */ ACTOR_OBJ_SWITCH,
-        /* Position   */ { 0, -120, -675 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x8100
     },

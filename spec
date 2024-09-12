@@ -692,6 +692,13 @@ beginseg
 endseg
 
 beginseg
+    name "ovl_Prop_Hand"
+    compress
+    include "$(BUILD_DIR)/src/overlays/actors/ovl_Prop_Hand/z_prop_hand.o"
+    include "$(BUILD_DIR)/src/overlays/actors/ovl_Prop_Hand/ovl_Prop_Hand_reloc.o"
+endseg
+
+beginseg
     name "ovl_title"
     compress
     address 0x80800000
@@ -4052,6 +4059,14 @@ beginseg
     compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/objects/object_link_child/object_link_child.o"
+    number 6
+endseg
+
+beginseg
+    name "object_hand"
+    compress
+    romalign 0x1000
+    include "$(BUILD_DIR)/assets/objects/object_hand/object_hand.o"
     number 6
 endseg
 

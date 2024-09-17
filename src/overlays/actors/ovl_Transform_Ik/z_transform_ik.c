@@ -19,6 +19,7 @@ void TransformIk_Destroy(Actor* thisx, PlayState* play);
 void TransformIk_Update(Actor* thisx, PlayState* play);
 void TransformIk_Draw(Actor* thisx, PlayState* play);
 
+void TransformIk_Action_Cutscene(TransformIk* this, PlayState* play);
 void TransformIk_Action_Idle(TransformIk* this, PlayState* play);
 void TransformIk_Action_Walk(TransformIk* this, PlayState* play);
 void TransformIk_Action_Run(TransformIk* this, PlayState* play);
@@ -111,7 +112,7 @@ static ColliderQuadInit sAxeCollider = {
     },
     {
         ELEMTYPE_UNK2,
-        { 0x20000000, 0x0F, 0x40 },
+        { 0xFFCFFFFF, 0x0F, 0x40 },
         { 0x00000000, 0x00, 0x00 },
         ATELEM_ON | ATELEM_SFX_NORMAL,
         ACELEM_NONE,
@@ -129,7 +130,12 @@ void TransformIk_SetupAction(TransformIk* this, PlayState* play, TransformIkActi
     this->queuedAttack = 0;
     this->axeCollider.elem.atDmgInfo.dmgFlags = DMG_UNBLOCKABLE;
     this->axeCollider.elem.atDmgInfo.damage = 0x40;
-    if (this->actionFunc == TransformIk_Action_Idle) {
+    if (this->actionFunc == TransformIk_Action_Cutscene) {
+        Animation_Change(&this->skelAnime, &object_ik_Anim_00DD50, 0.0f, 0.0f, Animation_GetLastFrame(&object_ik_Anim_00DD50), ANIMMODE_LOOP, 4.0f);
+        Interface_SetDoAction(play, DO_ACTION_NONE);
+        Interface_LoadActionLabelB(play, DO_ACTION_NONE);
+    }
+    else if (this->actionFunc == TransformIk_Action_Idle) {
         Animation_Change(&this->skelAnime, &object_ik_Anim_00DD50, 0.0f, 0.0f, Animation_GetLastFrame(&object_ik_Anim_00DD50), ANIMMODE_LOOP, 4.0f);
         Interface_SetDoAction(play, DO_ACTION_ATTACK);
         Interface_LoadActionLabelB(play, DO_ACTION_ATTACK);
@@ -367,6 +373,18 @@ void TransformIk_Action_Walk(TransformIk* this, PlayState* play) {
     }
 }
 
+void TransformIk_Action_Cutscene(TransformIk* this, PlayState* play) {
+    Player* player = GET_PLAYER(play);
+
+    SkelAnime_Update(&this->skelAnime);
+
+    Math_StepToF(&this->actor.speed, 0.0f, 0.9f);
+
+    if (player->csAction == PLAYER_CSACTION_NONE) {
+        TransformIk_SetupAction(this, play, TransformIk_Action_Idle);
+    }
+}
+
 void TransformIk_Action_Idle(TransformIk* this, PlayState* play) {
     f32 speedTarget;
     s16 yawTarget;
@@ -533,6 +551,10 @@ void TransformIk_Update(Actor* thisx, PlayState* play) {
     }
     else {
         thisx->gravity = -1.0f;
+    }
+
+    if (player->csAction != PLAYER_CSACTION_NONE && this->actionFunc != TransformIk_Action_Cutscene) {
+        TransformIk_SetupAction(this, play, TransformIk_Action_Cutscene);
     }
 
     this->actionFunc(this, play);

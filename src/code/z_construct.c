@@ -4,7 +4,7 @@ void Interface_Destroy(PlayState* play) {
     Map_Destroy(play);
 }
 
-#define ICON_ITEM_SEGMENT_SIZE (4 * ITEM_ICON_SIZE)
+#define ICON_ITEM_SEGMENT_SIZE (6 * ITEM_ICON_SIZE)
 
 void Interface_Init(PlayState* play) {
     InterfaceContext* interfaceCtx = &play->interfaceCtx;
@@ -127,6 +127,18 @@ void Interface_Init(PlayState* play) {
         DMA_REQUEST_SYNC(interfaceCtx->iconItemSegment + (3 * ITEM_ICON_SIZE),
                          GET_ITEM_ICON_VROM(gSaveContext.save.info.equips.buttonItems[3]), ITEM_ICON_SIZE,
                          "../z_construct.c", 219);
+    }
+
+    if (gSaveContext.acquiredBabyGohmaTransform) {
+        DMA_REQUEST_SYNC(interfaceCtx->iconItemSegment + (4 * ITEM_ICON_SIZE),
+                         GET_ITEM_ICON_VROM(ITEM_DINS_FIRE), ITEM_ICON_SIZE,
+                         __FILE__, __LINE__);
+    }
+
+    if (gSaveContext.acquiredIronKnuckleTransform) {
+        DMA_REQUEST_SYNC(interfaceCtx->iconItemSegment + (5 * ITEM_ICON_SIZE),
+                         GET_ITEM_ICON_VROM(ITEM_NAYRUS_LOVE), ITEM_ICON_SIZE,
+                         __FILE__, __LINE__);
     }
 
     PRINTF("ＥＶＥＮＴ＝%d\n", ((void)0, gSaveContext.timerState));

@@ -2899,6 +2899,25 @@ void Interface_DrawDPad(PlayState* play) {
 
     gSPTextureRectangle(OVERLAY_DISP++, tlx, tly, brx, bry, G_TX_RENDERTILE, 0, 0, 2 << 10, 2 << 10);
 
+    // left: gohma baby
+    if (gSaveContext.acquiredBabyGohmaTransform) {
+
+        gDPPipeSync(OVERLAY_DISP++);
+        gDPLoadTextureBlock(OVERLAY_DISP++, interfaceCtx->iconItemSegment + 0x4000, G_IM_FMT_RGBA, G_IM_SIZ_32b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
+                        G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+
+        gSPTextureRectangle(OVERLAY_DISP++, tlx - loffset, tly, brx - loffset, bry, G_TX_RENDERTILE, 0, 0, 2 << 10, 2 << 10);
+    }
+
+    // right: ik
+    if (gSaveContext.acquiredIronKnuckleTransform) {
+        gDPPipeSync(OVERLAY_DISP++);
+        gDPLoadTextureBlock(OVERLAY_DISP++, interfaceCtx->iconItemSegment + 0x5000, G_IM_FMT_RGBA, G_IM_SIZ_32b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
+                        G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+
+        gSPTextureRectangle(OVERLAY_DISP++, tlx + roffset, tly, brx + roffset, bry, G_TX_RENDERTILE, 0, 0, 2 << 10, 2 << 10);
+    }
+
     CLOSE_DISPS(play->state.gfxCtx, "../z_parameter.c", 3071);
 }
 

@@ -2058,10 +2058,12 @@ void func_8083328C(PlayState* play, Player* this, LinkAnimationHeader* linkAnim)
     LinkAnimation_PlayOnceSetSpeed(play, &this->skelAnime, linkAnim, D_808535E8);
 }
 
+// is swimming
 int func_808332B8(Player* this) {
     return (this->stateFlags1 & PLAYER_STATE1_27) && (this->currentBoots != PLAYER_BOOTS_IRON);
 }
 
+// aiming boomerang
 s32 func_808332E4(Player* this) {
     return (this->stateFlags1 & PLAYER_STATE1_24);
 }
@@ -2410,19 +2412,19 @@ void Player_InitiateTransformation(Player* this, PlayState* play, s16 transformA
 }
 
 s32 Player_CheckTransform(Player* this, PlayState* play) {
-    if (CHECK_BTN_ALL(sControlInput->press.button, BTN_CLEFT)) {
+    if (CHECK_BTN_ALL(sControlInput->press.button, BTN_DLEFT) && gSaveContext.acquiredBabyGohmaTransform) {
         Player_InitiateTransformation(this, play, ACTOR_TRANSFORM_BABY_GOHMA, OBJECT_GOL, NA_SE_EN_GOMA_BJR_CRY);
         return 1;
     }
-    else if (CHECK_BTN_ALL(sControlInput->press.button, BTN_CDOWN)) {
+    /*else if (CHECK_BTN_ALL(sControlInput->press.button, BTN_CDOWN)) {
         if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
             Sfx_PlaySfxCentered(NA_SE_SY_ERROR);
         } else {
             Player_InitiateTransformation(this, play, ACTOR_TRANSFORM_OCTOROK, OBJECT_OKUTA, NA_SE_EN_OCTAROCK_LAND);
             return 1;
         }
-    }
-    else if (CHECK_BTN_ALL(sControlInput->press.button, BTN_CRIGHT)) {
+    }*/
+    else if (CHECK_BTN_ALL(sControlInput->press.button, BTN_DRIGHT) && gSaveContext.acquiredIronKnuckleTransform) {
         Player_InitiateTransformation(this, play, ACTOR_TRANSFORM_IK, OBJECT_IK, NA_SE_EN_IRONNACK_WAKEUP);
         return 1;
     }
@@ -4025,7 +4027,7 @@ static s32 (*sActionChangeFuncs[])(Player* this, PlayState* play) = {
  */
 s32 Player_TryActionChangeList(PlayState* play, Player* this, s8* actionChangeList, s32 updateUpperBody) {
     s32 i;
-
+    
     if (!(this->stateFlags1 & (PLAYER_STATE1_0 | PLAYER_STATE1_7 | PLAYER_STATE1_29))) {
         if (updateUpperBody) {
             sUpperBodyIsBusy = Player_UpdateUpperBody(this, play);
@@ -5630,6 +5632,7 @@ s32 func_8083AD4C(PlayState* play, Player* this) {
 s32 Player_StartCsAction(PlayState* play, Player* this) {
     // unk_6AD will get set to 3 in `Player_UpdateCommon` if `this->csAction` is non-zero
     // (with a special case for `PLAYER_CSACTION_7`)
+    PRINTF("Player_StartCsAction: unk_6AD=%d, CS_Action=%d\n", this->unk_6AD, this->csAction);
     if (this->unk_6AD == 3) {
         Player_SetupAction(play, this, Player_Action_CsAction, 0);
 
@@ -5876,6 +5879,7 @@ s32 Player_ActionChange_13(Player* this, PlayState* play) {
     return 0;
 }
 
+// setup speak or check
 s32 Player_ActionChange_4(Player* this, PlayState* play) {
     Actor* sp34 = this->talkActor;
     Actor* sp30 = this->unk_664;
@@ -11191,6 +11195,17 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
 
     sControlInput = input;
 
+    if (this->stateFlags3 & (PLAYER_STATE3_TRANSFORMED | PLAYER_STATE3_TRANSFORMING)) {
+        this->actionFunc(this, play);
+        
+        if (this->csAction == PLAYER_CSACTION_7) {
+            this->prevCsAction = PLAYER_CSACTION_NONE;
+            this->csAction = PLAYER_CSACTION_NONE;
+            PRINTF("Player_UpdateCommon reset state: unk_6AD=%d, csAction=%d\n", this->unk_6AD, this->csAction);
+        }
+        return;
+    }
+
     if (this->unk_A86 < 0) {
         this->unk_A86++;
         if (this->unk_A86 == 0) {
@@ -11245,22 +11260,6 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         gSaveContext.magicState = MAGIC_STATE_METER_FLASH_1;
         Player_SpawnMagicSpell(play, this, 1);
         this->stateFlags3 &= ~PLAYER_STATE3_RESTORE_NAYRUS_LOVE;
-    }
-
-    if (this->stateFlags3 & (PLAYER_STATE3_TRANSFORMED | PLAYER_STATE3_TRANSFORMING)) {
-        this->actionFunc(this, play);
-        
-        if (this->csAction != PLAYER_CSACTION_NONE) {
-            if ((this->csAction != PLAYER_CSACTION_7) ||
-                !(this->stateFlags1 & (PLAYER_STATE1_13 | PLAYER_STATE1_14 | PLAYER_STATE1_21 | PLAYER_STATE1_26))) {
-                this->unk_6AD = 3;
-            } else if (Player_Action_CsAction != this->actionFunc) {
-                func_80852944(play, this, NULL);
-            }
-        } else {
-            this->prevCsAction = PLAYER_CSACTION_NONE;
-        }
-        return;
     }
 
     if (this->stateFlags2 & PLAYER_STATE2_15) {

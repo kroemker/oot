@@ -329,6 +329,9 @@ void Sram_InitDebugSave(void) {
     gSaveContext.save.entranceIndex = ENTR_HYRULE_FIELD_0;
     gSaveContext.save.info.playerData.magicLevel = 0;
     gSaveContext.save.info.sceneFlags[SCENE_WATER_TEMPLE].swch = 0x40000000;
+
+    gSaveContext.acquiredBabyGohmaTransform = 1;
+    gSaveContext.acquiredIronKnuckleTransform = 1;
 }
 
 static s16 sDungeonEntrances[] = {

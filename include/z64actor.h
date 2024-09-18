@@ -229,6 +229,8 @@ typedef struct {
 //
 #define ACTOR_FLAG_28 (1 << 28)
 
+#define ACTOR_FLAG_ALWAYS_PUT_DOWN (1 << 29)
+
 #define COLORFILTER_GET_COLORINTENSITY(colorFilterParams) (((colorFilterParams) & 0x1F00) >> 5)
 #define COLORFILTER_GET_DURATION(colorFilterParams) ((colorFilterParams) & 0xFF)
 

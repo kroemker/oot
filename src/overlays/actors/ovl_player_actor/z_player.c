@@ -7083,8 +7083,9 @@ void func_8083EA94(Player* this, PlayState* play) {
 }
 
 s32 func_8083EAF0(Player* this, Actor* actor) {
-    if ((actor != NULL) && !(actor->flags & ACTOR_FLAG_23) &&
-        ((this->speedXZ < 1.1f) || (actor->id == ACTOR_EN_BOM_CHU))) {
+    if ((actor->flags | ACTOR_FLAG_ALWAYS_PUT_DOWN) || (
+        (actor != NULL) && !(actor->flags & ACTOR_FLAG_23) &&
+        ((this->speedXZ < 1.1f) || (actor->id == ACTOR_EN_BOM_CHU)))) {
         return 0;
     }
 
@@ -11201,7 +11202,6 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
         if (this->csAction == PLAYER_CSACTION_7) {
             this->prevCsAction = PLAYER_CSACTION_NONE;
             this->csAction = PLAYER_CSACTION_NONE;
-            PRINTF("Player_UpdateCommon reset state: unk_6AD=%d, csAction=%d\n", this->unk_6AD, this->csAction);
         }
         return;
     }

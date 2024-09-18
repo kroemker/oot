@@ -699,6 +699,13 @@ beginseg
 endseg
 
 beginseg
+    name "ovl_Hm_Comp_Objects"
+    compress
+    include "$(BUILD_DIR)/src/overlays/actors/ovl_Hm_Comp_Objects/z_hm_comp_objects.o"
+    include "$(BUILD_DIR)/src/overlays/actors/ovl_Hm_Comp_Objects/ovl_Hm_Comp_Objects_reloc.o"
+endseg
+
+beginseg
     name "ovl_title"
     compress
     address 0x80800000
@@ -4063,10 +4070,10 @@ beginseg
 endseg
 
 beginseg
-    name "object_hand"
+    name "object_hm_comp"
     compress
     romalign 0x1000
-    include "$(BUILD_DIR)/assets/objects/object_hand/object_hand.o"
+    include "$(BUILD_DIR)/assets/objects/object_hm_comp/object_hm_comp.o"
     number 6
 endseg
 

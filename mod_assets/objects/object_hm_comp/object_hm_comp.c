@@ -1,0 +1,11 @@
+#include "gPillar.c"
+#include "gPlatform.c"
+#include "gStairs.c"
+#include "gBishop.c"
+#include "gHand.c"
+
+#include "gPillar_collision.c"
+#include "gPlatform_collision.c"
+#include "gStairs_collision.c"
+#include "gBishop_collision.c"
+#include "gHand_collision.c"

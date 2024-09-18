@@ -1,0 +1,12 @@
+extern u64 gStairs_spot01_sceneTex_014F50_ci8_ci8[];
+extern u64 gStairs_spot01_sceneTex_014F50_ci8_pal_rgba16[];
+extern u64 gStairs_Bmori1_room_3Tex_0033D8_ci8_ci8[];
+extern u64 gStairs_Bmori1_room_3Tex_0033D8_ci8_pal_rgba16[];
+extern Vtx gStairs_gStairs_mesh_layer_Opaque_vtx_cull[8];
+extern Vtx gStairs_gStairs_mesh_layer_Opaque_vtx_0[8];
+extern Gfx gStairs_gStairs_mesh_layer_Opaque_tri_0[];
+extern Vtx gStairs_gStairs_mesh_layer_Opaque_vtx_1[20];
+extern Gfx gStairs_gStairs_mesh_layer_Opaque_tri_1[];
+extern Gfx mat_gStairs_stairs_layerOpaque[];
+extern Gfx mat_gStairs_side_001_layerOpaque[];
+extern Gfx gStairs[];

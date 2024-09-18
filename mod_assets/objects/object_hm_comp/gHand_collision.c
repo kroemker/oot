@@ -2,8 +2,6 @@
 #include "z64.h"
 #include "macros.h"
 
-
-
 SurfaceType gHand_polygonTypes[1] = {
     { SURFACETYPE0(0, 0, 0x00, 0, 0x00, 0x00, 0, 0), SURFACETYPE1(0x00, 0x00, 0, 0, 0, 0, 0, 0) },
 };

@@ -434,7 +434,7 @@ void DoorWarp1_WarpAppear(DoorWarp1* this, PlayState* play) {
 }
 
 void func_809998A4(DoorWarp1* this, PlayState* play) {
-    if (this->lightRayAlpha != 0.0f) {
+    if (this->lightRayAlpha > 25.0f) {
         Actor_PlaySfx(&this->actor, NA_SE_EV_WARP_HOLE - SFX_FLAG);
     }
     Math_SmoothStepToF(&this->lightRayAlpha, 0.0f, 0.1f, 2.0f, 0.01f);

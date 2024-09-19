@@ -352,6 +352,8 @@ void Player_Action_80850C68(Player* this, PlayState* play);
 void Player_Action_80850E84(Player* this, PlayState* play);
 void Player_Action_CsAction(Player* this, PlayState* play);
 
+void func_8083C0E8(Player* this, PlayState* play);
+
 // .bss part 1
 
 #pragma increment_block_number "gc-eu:0 gc-eu-mq:0 gc-us:0"
@@ -2453,7 +2455,8 @@ void Player_Action_TransformEnd(Player* this, PlayState* play) {
     if (play->envCtx.screenFillColor[3] == 0) {
         this->stateFlags3 &= ~PLAYER_STATE3_TRANSFORMING;
         play->envCtx.fillScreen = false;
-        func_8083A060(this, play); //return to stand still
+        //func_8083A060(this, play); //return to stand still
+        func_8083C0E8(this, play); //return to stand still (Player_SetupStandingStillNoMorph)
     }
 }
 
@@ -4351,11 +4354,14 @@ void func_80837C0C(PlayState* play, Player* this, s32 arg2, f32 arg3, f32 arg4, 
     LinkAnimationHeader* anim = NULL;
     LinkAnimationHeader** sp28;
 
+    PRINTF("0\n");
     if (this->stateFlags1 & PLAYER_STATE1_13) {
         func_80837B60(this);
     }
 
     this->unk_890 = 0;
+
+    PRINTF("1\n");
 
     Player_PlaySfx(this, NA_SE_PL_DAMAGE);
 
@@ -4367,18 +4373,25 @@ void func_80837C0C(PlayState* play, Player* this, s32 arg2, f32 arg3, f32 arg4, 
         return;
     }
 
+    PRINTF("2\n");
     func_80837AE0(this, arg6);
 
+    PRINTF("3\n");
     if (arg2 == 3) {
+        PRINTF("4\n");
         Player_SetupAction(play, this, Player_Action_8084FB10, 0);
+        PRINTF("5\n");
 
         anim = &gPlayerAnim_link_normal_ice_down;
 
         func_80832224(this);
+        PRINTF("6\n");
         Player_RequestRumble(this, 255, 10, 40, 0);
+        PRINTF("7\n");
 
         Player_PlaySfx(this, NA_SE_PL_FREEZE_S);
         func_80832698(this, NA_SE_VO_LI_FREEZE);
+        PRINTF("8\n");
     } else if (arg2 == 4) {
         Player_SetupAction(play, this, Player_Action_8084FBF4, 0);
 
@@ -4480,13 +4493,17 @@ void func_80837C0C(PlayState* play, Player* this, s32 arg2, f32 arg3, f32 arg4, 
         }
     }
 
+        PRINTF("9\n");
     func_80832564(play, this);
+        PRINTF("10\n");
 
     this->stateFlags1 |= PLAYER_STATE1_26;
 
+        PRINTF("11\n");
     if (anim != NULL) {
         Player_AnimPlayOnceAdjusted(play, this, anim);
     }
+        PRINTF("12\n");
 }
 
 s32 func_80838144(s32 arg0) {
@@ -11257,6 +11274,11 @@ void Player_UpdateCommon(Player* this, PlayState* play, Input* input) {
 
     if (this->bodyIsBurning) {
         Player_UpdateBodyBurn(play, this);
+    }
+
+    if (this->iceTrapFlag) {
+        func_80837C0C(play, this, 3, 0.0f, 0.0f, 0, 20);
+        this->iceTrapFlag = 0;
     }
 
     if ((this->stateFlags3 & PLAYER_STATE3_RESTORE_NAYRUS_LOVE) && (gSaveContext.nayrusLoveTimer != 0) &&

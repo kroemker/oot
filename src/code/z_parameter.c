@@ -4222,7 +4222,7 @@ void Interface_Update(PlayState* play) {
         interfaceCtx->dpadAlpha = CLAMP_MIN(interfaceCtx->dpadAlpha - 10, 70);
     }
     else {
-        interfaceCtx->dpadAlpha = CLAMP_MAX(interfaceCtx->dpadAlpha + 10, 255);
+        interfaceCtx->dpadAlpha = CLAMP_MAX(interfaceCtx->healthAlpha, CLAMP_MAX(interfaceCtx->dpadAlpha + 10, 255));
     }
 
     if (!IS_PAUSED(&play->pauseCtx)) {

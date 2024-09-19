@@ -6,11 +6,13 @@
 #include "gBishop.h"
 #include "gPillar.h"
 #include "gPlatform.h"
+#include "gGate.h"
 
 #include "gHand_collision.h"
 #include "gStairs_collision.h"
 #include "gBishop_collision.h"
 #include "gPillar_collision.h"
 #include "gPlatform_collision.h"
+#include "gGate_collision.h"
 
 #endif

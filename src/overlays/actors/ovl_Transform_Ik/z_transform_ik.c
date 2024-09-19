@@ -426,7 +426,7 @@ void TransformIk_Action_GetHit(TransformIk* this, PlayState* play) {
 void TransformIk_Action_Fall(TransformIk* this, PlayState* play) {
     if (this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) {
         if (!(this->actor.bgCheckFlags & BGCHECKFLAG_WATER)) {
-            Actor_PlaySfx(&this->actor, NA_SE_EV_STONE_BOUND);
+            Actor_PlaySfx(&this->actor, NA_SE_EV_BLOCK_BOUND);
             Actor_RequestQuakeAndRumble(&this->actor, play, 5, 5);
         }
         TransformIk_SetupAction(this, play, TransformIk_Action_Idle);

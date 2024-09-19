@@ -41,7 +41,7 @@ Spawn hm_comp_scene_header00_entranceList[] = {
 TransitionActorEntry hm_comp_scene_header00_transitionActors[] = {
     // Lifting Wooden Door
     {
-        /* Room & Cam Index (Front, Back) */ { 1, 0x00, 0, 0x00 },
+        /* Room & Cam Index (Front, Back) */ { 1, 255, 0, 255 },
         /* Actor ID                       */ ACTOR_DOOR_SHUTTER,
         /* Position                       */ { 320, -120, -499 },
         /* Rotation Y                     */ DEG_TO_BINANG(270.000),

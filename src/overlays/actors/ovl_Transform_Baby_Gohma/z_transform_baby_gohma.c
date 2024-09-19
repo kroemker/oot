@@ -102,6 +102,8 @@ void TransformBabyGohma_SetupAction(TransformBabyGohma* this, PlayState* play, T
     else if (this->actionFunc == TransformBabyGohma_Action_PrepareJump) {
         this->actor.speed = 0.0f;
         this->eyeColorIndex = 0;
+        Interface_SetDoAction(play, DO_ACTION_JUMP);
+        Interface_LoadActionLabelB(play, DO_ACTION_RETURN);
         Animation_Change(&this->skelAnime, &gObjectGolPrepareJumpAnim, 4.0f, 0.0f, Animation_GetLastFrame(&gObjectGolPrepareJumpAnim), ANIMMODE_ONCE, 0.0f);
     }
     else if (this->actionFunc == TransformBabyGohma_Action_Jump) {

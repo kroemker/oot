@@ -22,10 +22,13 @@
 #define PILLAR_MOVE_DISTANCE 1000.0f
 
 #define STAIRS_MOVE_DISTANCE 1000.0f
-#define STAIRS_RISE_SPEED 2.0f
+#define STAIRS_RISE_SPEED 6.0f
 
 #define GATE_MOVE_DISTANCE 300.0f
 #define GATE_RISE_SPEED 9.0f
+
+#define PLATFORM_MOVE_DISTANCE 500.0f
+#define PLATFORM_MOVE_SPEED 5.0f
 
 #define CHESS_PIECE_GRAVITY -1.2f
 
@@ -59,6 +62,8 @@ void HmCompObjects_Action_Stairs_Idle(HmCompObjects* this, PlayState* play);
 
 void HmCompObjects_Action_Gate_Rise(HmCompObjects* this, PlayState* play);
 void HmCompObjects_Action_Gate_Idle(HmCompObjects* this, PlayState* play);
+
+void HmCompObjects_Action_Platform_Move(HmCompObjects* this, PlayState* play);
 
 void HmCompObjects_Action_ChessPiecePuzzleSolved(HmCompObjects* this, PlayState* play);
 void HmCompObjects_Action_ChessPieceHeld(HmCompObjects* this, PlayState* play);
@@ -215,7 +220,8 @@ void HmCompObjects_Action_Pillar_Fall(HmCompObjects* this, PlayState* play) {
 
     if (Math_StepToF(&this->dyna.actor.world.pos.y, this->dyna.actor.home.pos.y, this->dyna.actor.velocity.y)) {
         this->dyna.actor.flags &= ~(ACTOR_FLAG_4 | ACTOR_FLAG_5);
-        Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_BLOCK_BOUND);
+        Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_STONE_BOUND);
+        Actor_RequestQuakeAndRumble(&this->dyna.actor, play, 10, 10);
 
         this->moved = 1;
         HmCompObjects_SetupAction(this, play, HmCompObjects_Action_Pillar_Idle);
@@ -312,9 +318,46 @@ void HmCompObjects_InitStairs(Actor* thisx, PlayState* play) {
 }
 
 // PLATFORM
+void HmCompObjects_Action_Platform_Move(HmCompObjects* this, PlayState* play) {
+    if (this->timer != 0) {
+        this->timer--;
+        return;
+    }
+
+    this->dyna.actor.velocity.y = CLAMP_MAX(this->dyna.actor.velocity.y + 0.5f, PLATFORM_MOVE_SPEED);
+
+    if (ABS(this->dyna.actor.world.pos.y - this->dyna.actor.home.pos.y) < 5.0f) {
+        this->dyna.actor.velocity.y = 0.0f;
+        this->dyna.actor.world.pos.y = this->dyna.actor.home.pos.y;
+        this->direction *= -1;
+        this->dyna.actor.home.pos.y += PLATFORM_MOVE_DISTANCE * this->direction;
+        this->timer = 10;
+    } else {
+        func_8002F974(&this->dyna.actor, NA_SE_EV_ELEVATOR_MOVE3 - SFX_FLAG);
+        this->dyna.actor.world.pos.y += this->direction * this->dyna.actor.velocity.y;
+    }
+}
+
+void HmCompObjects_InitPlatform(Actor* thisx, PlayState* play) {
+    HmCompObjects* this = (HmCompObjects*)thisx;
+    CollisionHeader* colHeader = NULL;
+
+    DynaPolyActor_Init(&this->dyna, DYNA_TRANSFORM_POS);
+    CollisionHeader_GetVirtual(&gPlatform_collisionHeader, &colHeader);
+    this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, &this->dyna.actor, colHeader);
+
+    if (this->inverted) {
+        this->direction = -1;
+        this->dyna.actor.home.pos.y -= PLATFORM_MOVE_DISTANCE; // move down initially if inverted
+    } else {
+        this->direction = 1;
+        this->dyna.actor.home.pos.y += PLATFORM_MOVE_DISTANCE;
+    }
+
+    HmCompObjects_SetupAction(this, play, HmCompObjects_Action_Platform_Move);
+}
 
 // GATE
-
 void HmCompObjects_Action_Gate_Rise(HmCompObjects* this, PlayState* play) {
     this->dyna.actor.velocity.y = CLAMP_MAX(this->dyna.actor.velocity.y + 1.0f, GATE_RISE_SPEED);
 
@@ -481,7 +524,10 @@ void HmCompObjects_Init(Actor* thisx, PlayState* play) {
         break;
     case HMCO_TYPE_GATE:
         HmCompObjects_InitGate(thisx, play);
-        break;        
+        break;
+    case HMCO_TYPE_PLATFORM:
+        HmCompObjects_InitPlatform(thisx, play);
+        break;
     case HMCO_TYPE_CHESS_BOARD_SWITCH_TRIGGER:
     case HMCO_TYPE_CHESS_BOARD_ICE_TRAP:
         HmCompObjects_InitChessBoardSwitchTrigger(thisx, play);

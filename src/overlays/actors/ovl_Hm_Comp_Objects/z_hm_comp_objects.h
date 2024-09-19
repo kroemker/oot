@@ -17,6 +17,7 @@ typedef struct HmCompObjects {
     u8 moved;
     s16 timer;
     ColliderCylinder collider;
+    s8 direction;
 } HmCompObjects;
 
 #endif

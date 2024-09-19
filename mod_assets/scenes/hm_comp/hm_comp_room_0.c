@@ -4,8 +4,8 @@
 /**
  * Header Child Day (Default)
 */
-#define LENGTH_HM_COMP_ROOM_0_HEADER00_OBJECTLIST 5
-#define LENGTH_HM_COMP_ROOM_0_HEADER00_ACTORLIST 27
+#define LENGTH_HM_COMP_ROOM_0_HEADER00_OBJECTLIST 6
+#define LENGTH_HM_COMP_ROOM_0_HEADER00_ACTORLIST 31
 SceneCmd hm_comp_room_0_header00[] = {
     SCENE_CMD_ROOM_SHAPE(&hm_comp_room_0_shapeHeader),
     SCENE_CMD_ECHO_SETTINGS(0x00),
@@ -22,6 +22,7 @@ s16 hm_comp_room_0_header00_objectList[LENGTH_HM_COMP_ROOM_0_HEADER00_OBJECTLIST
     OBJECT_HIDAN_OBJECTS,
     OBJECT_HM_COMP,
     OBJECT_WARP1,
+    OBJECT_BOMBIWA,
     OBJECT_BOX,
 };
 
@@ -64,6 +65,14 @@ ActorEntry hm_comp_room_0_header00_actorList[LENGTH_HM_COMP_ROOM_0_HEADER00_ACTO
         /* Position   */ { -261, -120, 198 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x3006
+    },
+
+    // Bombable Rock
+    {
+        /* Actor ID   */ ACTOR_OBJ_BOMBIWA,
+        /* Position   */ { 210, -120, -259 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0019
     },
 
     // Treasure Chest
@@ -120,6 +129,30 @@ ActorEntry hm_comp_room_0_header00_actorList[LENGTH_HM_COMP_ROOM_0_HEADER00_ACTO
         /* Position   */ { -1200, -120, -328 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x0301
+    },
+
+    // Custom Actor
+    {
+        /* Actor ID   */ ACTOR_HM_COMP_OBJECTS,
+        /* Position   */ { 124, -459, -1248 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0003
+    },
+
+    // Custom Actor
+    {
+        /* Actor ID   */ ACTOR_HM_COMP_OBJECTS,
+        /* Position   */ { 124, 97, -1743 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x8003
+    },
+
+    // Custom Actor
+    {
+        /* Actor ID   */ ACTOR_HM_COMP_OBJECTS,
+        /* Position   */ { -347, -53, -1814 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0003
     },
 
     // Iron Knuckle

@@ -12141,3 +12141,11 @@ beginseg
     include "$(BUILD_DIR)/assets/scenes/hm_comp/hm_comp_room_0.o"
     number 3
 endseg
+
+beginseg
+    name "hm_comp_room_1"
+    compress
+    romalign 0x1000
+    include "$(BUILD_DIR)/assets/scenes/hm_comp/hm_comp_room_1.o"
+    number 3
+endseg

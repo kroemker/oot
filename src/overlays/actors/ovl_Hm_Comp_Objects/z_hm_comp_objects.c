@@ -7,6 +7,8 @@
 #include "z_hm_comp_objects.h"
 #include "assets/objects/object_hm_comp/object_hm_comp.h"
 
+#include "../ovl_Door_Warp1/z_door_warp1.h"
+
 #define FLAGS (ACTOR_FLAG_4 | ACTOR_FLAG_5)
 
 #define HMCO_GET_TYPE(thisx) ((thisx)->params & 0x7)
@@ -19,14 +21,17 @@
 
 #define PILLAR_MOVE_DISTANCE 1000.0f
 
+#define STAIRS_MOVE_DISTANCE 1000.0f
+
 #define CHESS_PIECE_GRAVITY -1.2f
+#define CHESS_PIECE_SINK_SPEED 0.3f
 
 enum HmCompObjectsType {
     HMCO_TYPE_HAND = 0,
     HMCO_TYPE_PILLAR,
     HMCO_TYPE_STAIRS,
     HMCO_TYPE_PLATFORM,
-    HMCO_TYPE_CHESS_BOARD,
+    HMCO_TYPE_CHESS_BOARD_SWITCH_TRIGGER,
     HMCO_TYPE_CHESS_BISHOP,
     HMCO_TYPE_CHESS_ROOK,
     HMCO_TYPE_CHESS_KNIGHT,
@@ -44,9 +49,14 @@ void HmCompObjects_Action_Pillar_Idle(HmCompObjects* this, PlayState* play);
 void HmCompObjects_Action_Pillar_Fall(HmCompObjects* this, PlayState* play);
 void HmCompObjects_Action_Pillar_Shake(HmCompObjects* this, PlayState* play);
 
+void HmCompObjects_Action_Stairs_Rise(HmCompObjects* this, PlayState* play);
+void HmCompObjects_Action_Stairs_Idle(HmCompObjects* this, PlayState* play);
 
+void HmCompObjects_Action_ChessPieceSink(HmCompObjects* this, PlayState* play);
 void HmCompObjects_Action_ChessPieceHeld(HmCompObjects* this, PlayState* play);
 void HmCompObjects_Action_ChessPieceIdle(HmCompObjects* this, PlayState* play);
+
+void HmCompObjects_Action_ChessBoardSwitchTrigger_Idle(HmCompObjects* this, PlayState* play);
 
 static ColliderCylinderInit sPillarColliderInit = {
     {
@@ -68,10 +78,10 @@ static ColliderCylinderInit sPillarColliderInit = {
     { 50, 400, 0, { 0, 0, 0 } },
 };
 
-static ColliderCylinderInit sBishopColliderInit = {
+static ColliderCylinderInit sChessPieceColliderInit = {
     {
         COLTYPE_NONE,
-        AT_NONE,
+        AT_ON | AT_TYPE_OTHER,
         AC_NONE,
         OC1_ON | OC1_TYPE_ALL,
         OC2_TYPE_2,
@@ -79,13 +89,33 @@ static ColliderCylinderInit sBishopColliderInit = {
     },
     {
         ELEMTYPE_UNK0,
+        { 0x00000001, 0x00, 0x00 },
         { 0x00000000, 0x00, 0x00 },
-        { 0x00000000, 0x00, 0x00 },
-        ATELEM_NONE,
+        ATELEM_ON,
         ACELEM_NONE,
         OCELEM_ON,
     },
     { 20, 100, 0, { 0, 0, 0 } },
+};
+
+static ColliderCylinderInit sChessBoardSwitchColliderInit = {
+    {
+        COLTYPE_NONE,
+        AT_NONE,
+        AC_ON | AC_TYPE_OTHER,
+        OC1_NONE,
+        OC2_NONE,
+        COLSHAPE_CYLINDER,
+    },
+    {
+        ELEMTYPE_UNK0,
+        { 0x00000000, 0x00, 0x00 },
+        { 0x00000001, 0x00, 0x00 },
+        ATELEM_NONE,
+        ACELEM_ON,
+        OCELEM_NONE,
+    },
+    { 10, 10, 0, { 0, 0, 0 } },
 };
 
 ActorProfile Hm_Comp_Objects_Profile = {
@@ -217,7 +247,7 @@ void HmCompObjects_InitPillar(Actor* thisx, PlayState* play) {
 
     if (Flags_GetSwitch(play, this->switchFlag)) {
         this->moved = 1;
-        this->dyna.actor.world.pos.y -= PILLAR_MOVE_DISTANCE;
+        this->dyna.actor.home.pos.y = this->dyna.actor.world.pos.y -= PILLAR_MOVE_DISTANCE;
     }
     else {
         this->moved = 0;
@@ -228,7 +258,100 @@ void HmCompObjects_InitPillar(Actor* thisx, PlayState* play) {
     this->dyna.actor.room = -1;
 }
 
-//CHESS PIECE
+// STAIRS
+void HmCompObjects_Action_Stairs_Rise(HmCompObjects* this, PlayState* play) {
+    this->dyna.actor.velocity.y++;
+
+    if (Math_StepToF(&this->dyna.actor.world.pos.y, this->dyna.actor.home.pos.y, this->dyna.actor.velocity.y)) {
+        Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_BLOCK_BOUND);
+
+        this->moved = 1;
+        HmCompObjects_SetupAction(this, play, HmCompObjects_Action_Stairs_Idle);
+    }
+}
+
+void HmCompObjects_Action_Stairs_Idle(HmCompObjects* this, PlayState* play) {
+    if (this->moved) {
+        return;
+    }
+
+    if (Flags_GetSwitch(play, this->switchFlag)) {
+        this->dyna.actor.home.pos.y += STAIRS_MOVE_DISTANCE;
+        HmCompObjects_SetupAction(this, play, HmCompObjects_Action_Stairs_Rise);
+    }
+}
+
+void HmCompObjects_InitStairs(Actor* thisx, PlayState* play) {
+    HmCompObjects* this = (HmCompObjects*)thisx;
+    CollisionHeader* colHeader = NULL;
+
+    DynaPolyActor_Init(&this->dyna, DYNA_TRANSFORM_POS);
+    CollisionHeader_GetVirtual(&gStairs_collisionHeader, &colHeader);
+    this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, &this->dyna.actor, colHeader);
+
+    if (Flags_GetSwitch(play, this->switchFlag)) {
+        this->moved = 1;
+        this->dyna.actor.home.pos.y = this->dyna.actor.world.pos.y += STAIRS_MOVE_DISTANCE;
+    }
+    else {
+        this->moved = 0;
+    }
+
+    HmCompObjects_SetupAction(this, play, HmCompObjects_Action_Stairs_Idle);
+
+    this->dyna.actor.room = -1;
+}
+
+// PLATFORM
+
+//CHESS BOARD
+void HmCompObjects_Action_ChessBoardSwitchTrigger_Idle(HmCompObjects* this, PlayState* play) {
+    if (Flags_GetSwitch(play, this->switchFlag)) {
+        Actor_Kill(&this->dyna.actor);
+    } else if ((this->collider.base.acFlags & AC_HIT)) {
+        this->collider.base.acFlags &= ~AC_HIT;
+        if ((this->collider.base.ac->id == ACTOR_HM_COMP_OBJECTS) && (HMCO_GET_TYPE(this->collider.base.ac) >= HMCO_TYPE_CHESS_BISHOP)) {
+            HmCompObjects* piece = (HmCompObjects*)this->collider.base.ac;
+            if (piece->actionFunc != HmCompObjects_Action_ChessPieceIdle) {
+                return;
+            }
+
+            Flags_SetSwitch(play, this->switchFlag);
+            OnePointCutscene_AttentionSetSfx(play, &this->dyna.actor, NA_SE_SY_CORRECT_CHIME);
+
+            piece->dyna.actor.velocity.y = 0.0f;
+            Math_Vec3f_Copy(&piece->dyna.actor.home.pos, &piece->dyna.actor.world.pos);
+            piece->actionFunc = HmCompObjects_Action_ChessPieceSink;
+
+            Actor_Spawn(&play->actorCtx, play, ACTOR_DOOR_WARP1, this->dyna.actor.world.pos.x, this->dyna.actor.world.pos.y, this->dyna.actor.world.pos.z, 0, 0, 0, WARP_ORANGE + piece->type - HMCO_TYPE_CHESS_BISHOP);
+        }
+    } else {
+        Collider_UpdateCylinder(&this->dyna.actor, &this->collider);
+        CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);
+    }
+}
+
+void HmCompObjects_InitChessBoardSwitchTrigger(Actor* thisx, PlayState* play) {
+    HmCompObjects* this = (HmCompObjects*)thisx;
+    CollisionHeader* colHeader = NULL;
+
+    Collider_InitCylinder(play, &this->collider);
+    Collider_SetCylinder(play, &this->collider, thisx, &sChessBoardSwitchColliderInit);
+
+    HmCompObjects_SetupAction(this, play, HmCompObjects_Action_ChessBoardSwitchTrigger_Idle);
+}
+
+// CHESS PIECE
+void HmCompObjects_Action_ChessPieceSink(HmCompObjects* this, PlayState* play) {
+    this->dyna.actor.velocity.y = CLAMP_MAX(this->dyna.actor.velocity.y + 0.01f, CHESS_PIECE_SINK_SPEED);
+
+    this->dyna.actor.world.pos.y -= this->dyna.actor.velocity.y;
+    if (this->dyna.actor.world.pos.y < this->dyna.actor.home.pos.y - 100.0f) {
+        Actor_Kill(&this->dyna.actor);
+    }
+    Collider_UpdateCylinder(&this->dyna.actor, &this->collider);
+}
+
 void HmCompObjects_Action_ChessPieceHeld(HmCompObjects* this, PlayState* play) {
     if (Actor_HasNoParent(&this->dyna.actor, play)) {
         this->dyna.actor.room = play->roomCtx.curRoom.num;
@@ -253,6 +376,7 @@ void HmCompObjects_Action_ChessPieceIdle(HmCompObjects* this, PlayState* play) {
 
     if (this->dyna.actor.xzDistToPlayer < 180.0f) {
         Collider_UpdateCylinder(&this->dyna.actor, &this->collider);
+        CollisionCheck_SetAT(play, &play->colChkCtx, &this->collider.base);
         CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
     }
 }
@@ -262,7 +386,7 @@ void HmCompObjects_InitChessPiece(Actor* thisx, PlayState* play) {
     CollisionHeader* colHeader = NULL;
 
     Collider_InitCylinder(play, &this->collider);
-    Collider_SetCylinder(play, &this->collider, thisx, &sBishopColliderInit);
+    Collider_SetCylinder(play, &this->collider, thisx, &sChessPieceColliderInit);
 
     this->dyna.actor.flags |= ACTOR_FLAG_ALWAYS_PUT_DOWN;
     this->dyna.actor.gravity = CHESS_PIECE_GRAVITY;
@@ -275,12 +399,13 @@ void HmCompObjects_InitChessPiece(Actor* thisx, PlayState* play) {
 void HmCompObjects_Init(Actor* thisx, PlayState* play) {
     HmCompObjects* this = (HmCompObjects*)thisx;
 
-    PRINTF("HM COMP OBJECTS INIT params=0x%04x\n", thisx->params);
-
     this->type = HMCO_GET_TYPE(thisx);
     this->switchFlag = HMCO_GET_SWITCH_FLAG(thisx);
     this->inverted = HMCO_INVERTED(thisx);
     this->dyna.actor.gravity = 0;
+
+    PRINTF("HM COMP OBJECTS INIT params=0x%04x\n", thisx->params);
+    PRINTF("HM COMP OBJECTS INIT type=%d switchFlag=%d inverted=%d\n", this->type, this->switchFlag, this->inverted);
 
     switch (this->type) {
     case HMCO_TYPE_HAND:
@@ -288,6 +413,12 @@ void HmCompObjects_Init(Actor* thisx, PlayState* play) {
         break;
     case HMCO_TYPE_PILLAR:
         HmCompObjects_InitPillar(thisx, play);
+        break;
+    case HMCO_TYPE_STAIRS:
+        HmCompObjects_InitStairs(thisx, play);
+        break;
+    case HMCO_TYPE_CHESS_BOARD_SWITCH_TRIGGER:
+        HmCompObjects_InitChessBoardSwitchTrigger(thisx, play);
         break;
     case HMCO_TYPE_CHESS_BISHOP:
     case HMCO_TYPE_CHESS_ROOK:
@@ -300,11 +431,11 @@ void HmCompObjects_Init(Actor* thisx, PlayState* play) {
 void HmCompObjects_Destroy(Actor* thisx, PlayState* play) {
     HmCompObjects* this = (HmCompObjects*)thisx;
 
-    if (this->type <= HMCO_TYPE_CHESS_BOARD) {
+    if (this->type < HMCO_TYPE_CHESS_BOARD_SWITCH_TRIGGER) {
         DynaPoly_DeleteBgActor(play, &play->colCtx.dyna, this->dyna.bgId);
     }
 
-    if (this->type == HMCO_TYPE_PILLAR || this->type >= HMCO_TYPE_CHESS_BISHOP) {
+    if (this->type == HMCO_TYPE_PILLAR || this->type >= HMCO_TYPE_CHESS_BOARD_SWITCH_TRIGGER) {
         Collider_DestroyCylinder(play, &this->collider);
     }
 }
@@ -326,7 +457,7 @@ void HmCompObjects_Draw(Actor* thisx, PlayState* play) {
         Gfx_DrawDListOpa(play, gStairs);
     } else if (this->type == HMCO_TYPE_PLATFORM) {
         Gfx_DrawDListOpa(play, gPlatform);
-    // } else if (this->type == HMCO_TYPE_CHESS_BOARD) {
+    // } else if (this->type == HMCO_TYPE_CHESS_BOARD_SWITCH_TRIGGER) {
     //     Gfx_DrawDListOpa(play, gBoard);
     } else if (this->type == HMCO_TYPE_CHESS_BISHOP) {
         Gfx_DrawDListOpa(play, gBishop);

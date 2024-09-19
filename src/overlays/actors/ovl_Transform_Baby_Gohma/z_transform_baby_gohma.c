@@ -230,10 +230,11 @@ void TransformBabyGohma_Action_Run(TransformBabyGohma* this, PlayState* play) {
 
 void TransformBabyGohma_Action_PrepareJump(TransformBabyGohma* this, PlayState* play) {
     s32 finished = SkelAnime_Update(&this->skelAnime);
-    if (CHECK_BTN_ALL(play->state.input[0].cur.button, BTN_A)) {
+    if (CHECK_BTN_ALL(play->state.input[0].press.button, BTN_B)) {
+        TransformBabyGohma_SetupAction(this, play, TransformBabyGohma_Action_Idle);
+    } else if (CHECK_BTN_ALL(play->state.input[0].cur.button, BTN_A)) {
         this->framesAPressed++;
-    }
-    else if (finished) {
+    } else if (finished) {
         TransformBabyGohma_SetupAction(this, play, TransformBabyGohma_Action_Jump);
     }
 }

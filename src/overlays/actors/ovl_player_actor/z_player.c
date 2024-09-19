@@ -2412,6 +2412,10 @@ void Player_InitiateTransformation(Player* this, PlayState* play, s16 transformA
 }
 
 s32 Player_CheckTransform(Player* this, PlayState* play) {
+    if (play->roomCtx.curRoom.num == 1) { // no transformations in room 1
+        return 0;
+    }
+
     if (CHECK_BTN_ALL(sControlInput->press.button, BTN_DLEFT) && gSaveContext.acquiredBabyGohmaTransform) {
         Player_InitiateTransformation(this, play, ACTOR_TRANSFORM_BABY_GOHMA, OBJECT_GOL, NA_SE_EN_GOMA_BJR_CRY);
         return 1;

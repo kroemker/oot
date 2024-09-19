@@ -2892,7 +2892,7 @@ void Interface_DrawDPad(PlayState* play) {
     OPEN_DISPS(play->state.gfxCtx, "../z_parameter.c", 2795);
 
     gDPPipeSync(OVERLAY_DISP++);
-    gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->healthAlpha);
+    gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, interfaceCtx->dpadAlpha);
     gDPLoadTextureBlock(OVERLAY_DISP++, sDPadIcon, G_IM_FMT_IA, G_IM_SIZ_16b, 32, 32, 0,
                         G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                         G_TX_NOLOD);
@@ -3400,6 +3400,7 @@ void Interface_Draw(PlayState* play) {
             case SCENE_GANONS_TOWER_COLLAPSE_INTERIOR:
             case SCENE_INSIDE_GANONS_CASTLE_COLLAPSE:
             case SCENE_TREASURE_BOX_SHOP:
+            case SCENE_HM_COMP:
                 if (gSaveContext.save.info.inventory.dungeonKeys[gSaveContext.mapIndex] >= 0) {
                     // Small Key Icon
                     gDPPipeSync(OVERLAY_DISP++);
@@ -4217,6 +4218,12 @@ void Interface_Update(PlayState* play) {
         }
     }
 #endif
+    if (play->roomCtx.curRoom.num == 1) {  // no transformations in room 1
+        interfaceCtx->dpadAlpha = CLAMP_MIN(interfaceCtx->dpadAlpha - 10, 70);
+    }
+    else {
+        interfaceCtx->dpadAlpha = CLAMP_MAX(interfaceCtx->dpadAlpha + 10, 255);
+    }
 
     if (!IS_PAUSED(&play->pauseCtx)) {
         if ((gSaveContext.minigameState == 1) || !IS_CUTSCENE_LAYER ||

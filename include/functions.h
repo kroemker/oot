@@ -1769,3 +1769,6 @@ void FileSelect_Init(GameState* thisx);
 void FileSelect_Destroy(GameState* thisx);
 
 #endif
+
+void CustomDebugger_Update(PlayState* play);
+void CustomDebugger_Draw(PlayState* play);

@@ -56,33 +56,33 @@ static SavePlayerData sNewSavePlayerData = {
     0,                  // bgsFlag
     0,                  // ocarinaGameRoundNum
     {
-        { ITEM_NONE, ITEM_NONE, ITEM_NONE, ITEM_NONE }, // buttonItems
-        { SLOT_NONE, SLOT_NONE, SLOT_NONE },            // cButtonSlots
+        { ITEM_SWORD_MASTER, ITEM_BOW, ITEM_DEKU_NUT, ITEM_BOTTLE_POTION_RED }, // buttonItems
+        { SLOT_BOW, SLOT_DEKU_NUT, SLOT_BOTTLE_1 },            // cButtonSlots
         0,                                              // equipment
     },                                                  // childEquips
     {
-        { ITEM_NONE, ITEM_NONE, ITEM_NONE, ITEM_NONE }, // buttonItems
-        { SLOT_NONE, SLOT_NONE, SLOT_NONE },            // cButtonSlots
+        { ITEM_SWORD_MASTER, ITEM_BOW, ITEM_DEKU_NUT, ITEM_BOTTLE_POTION_RED }, // buttonItems
+        { SLOT_BOW, SLOT_DEKU_NUT, SLOT_BOTTLE_1 },            // cButtonSlots
         0,                                              // equipment
     },                                                  // adultEquips
     0,                                                  // unk_38
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },       // unk_3C
-    SCENE_LINKS_HOUSE,                                  // savedSceneId
+    SCENE_HM_COMP,                                  // savedSceneId
 };
 
 static ItemEquips sNewSaveEquips = {
     { ITEM_NONE, ITEM_NONE, ITEM_NONE, ITEM_NONE }, // buttonItems
     { SLOT_NONE, SLOT_NONE, SLOT_NONE },            // cButtonSlots
-    0x1100,                                         // equipment
+    0x1122,                                         // equipment
 };
 
 static Inventory sNewSaveInventory = {
     // items
     {
         ITEM_NONE, // SLOT_DEKU_STICK
-        ITEM_NONE, // SLOT_DEKU_NUT
+        ITEM_DEKU_NUT, // SLOT_DEKU_NUT
         ITEM_NONE, // SLOT_BOMB
-        ITEM_NONE, // SLOT_BOW
+        ITEM_BOW, // SLOT_BOW
         ITEM_NONE, // SLOT_ARROW_FIRE
         ITEM_NONE, // SLOT_DINS_FIRE
         ITEM_NONE, // SLOT_SLINGSHOT
@@ -97,7 +97,7 @@ static Inventory sNewSaveInventory = {
         ITEM_NONE, // SLOT_HAMMER
         ITEM_NONE, // SLOT_ARROW_LIGHT
         ITEM_NONE, // SLOT_NAYRUS_LOVE
-        ITEM_NONE, // SLOT_BOTTLE_1
+        ITEM_BOTTLE_POTION_RED, // SLOT_BOTTLE_1
         ITEM_NONE, // SLOT_BOTTLE_2
         ITEM_NONE, // SLOT_BOTTLE_3
         ITEM_NONE, // SLOT_BOTTLE_4
@@ -107,9 +107,9 @@ static Inventory sNewSaveInventory = {
     // ammo
     {
         0, // SLOT_DEKU_STICK
-        0, // SLOT_DEKU_NUT
+        20, // SLOT_DEKU_NUT
         0, // SLOT_BOMB
-        0, // SLOT_BOW
+        30, // SLOT_BOW
         0, // SLOT_ARROW_FIRE
         0, // SLOT_DINS_FIRE
         0, // SLOT_SLINGSHOT
@@ -125,7 +125,9 @@ static Inventory sNewSaveInventory = {
     },
     // equipment
     (((1 << EQUIP_INV_TUNIC_KOKIRI) << (EQUIP_TYPE_TUNIC * 4)) |
-     ((1 << EQUIP_INV_BOOTS_KOKIRI) << (EQUIP_TYPE_BOOTS * 4))),
+     ((1 << EQUIP_INV_BOOTS_KOKIRI) << (EQUIP_TYPE_BOOTS * 4)) |
+     ((1 << EQUIP_INV_SHIELD_HYLIAN) << (EQUIP_TYPE_SHIELD * 4)) |
+     ((1 << EQUIP_INV_SWORD_MASTER) << (EQUIP_TYPE_SWORD * 4))),
     0,                                                              // upgrades
     0,                                                              // questItems
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // dungeonItems
@@ -426,6 +428,9 @@ void Sram_OpenSave(SramContext* sramCtx) {
 
         case SCENE_SHADOW_TEMPLE_BOSS:
             gSaveContext.save.entranceIndex = ENTR_SHADOW_TEMPLE_0;
+            break;
+        case SCENE_HM_COMP:
+            gSaveContext.save.entranceIndex = ENTR_HM_COMP_0;
             break;
 
         case SCENE_GANONS_TOWER_COLLAPSE_INTERIOR:

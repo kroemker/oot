@@ -370,6 +370,7 @@ beginseg
     include "$(BUILD_DIR)/src/code/z_common_data.o"
     include "$(BUILD_DIR)/src/code/z_debug.o"
     include "$(BUILD_DIR)/src/code/z_debug_display.o"
+    include "$(BUILD_DIR)/src/code/z_custom_debugger.o"
     include "$(BUILD_DIR)/src/code/z_demo.o"
     include "$(BUILD_DIR)/src/code/code_80069420.o"
     include "$(BUILD_DIR)/src/code/z_draw.o"

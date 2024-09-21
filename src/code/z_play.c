@@ -947,6 +947,8 @@ void Play_Update(PlayState* this) {
                     EffectSs_UpdateAll(this);
 
                     PLAY_LOG(3662);
+
+                    CustomDebugger_Update(this);
                 }
             } else {
                 Rumble_SetUpdateEnabled(false);
@@ -1281,6 +1283,8 @@ void Play_Draw(PlayState* this) {
                 Environment_DrawSandstorm(this, this->envCtx.sandstormState);
             }
         }
+
+        CustomDebugger_Draw(this);
 
         if (!OOT_DEBUG || (R_HREG_MODE != HREG_MODE_PLAY) || R_PLAY_DRAW_DEBUG_OBJECTS) {
             DebugDisplay_DrawObjects(this);

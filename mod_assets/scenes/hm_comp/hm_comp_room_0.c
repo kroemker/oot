@@ -30,14 +30,6 @@ ActorEntry hm_comp_room_0_header00_actorList[LENGTH_HM_COMP_ROOM_0_HEADER00_ACTO
     // Custom Actor
     {
         /* Actor ID   */ ACTOR_HM_COMP_OBJECTS,
-        /* Position   */ { -217, -120, 0 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x1007
-    },
-
-    // Custom Actor
-    {
-        /* Actor ID   */ ACTOR_HM_COMP_OBJECTS,
         /* Position   */ { -261, -120, 269 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x3005
@@ -65,6 +57,14 @@ ActorEntry hm_comp_room_0_header00_actorList[LENGTH_HM_COMP_ROOM_0_HEADER00_ACTO
         /* Position   */ { -261, -120, 198 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x3006
+    },
+
+    // Custom Actor
+    {
+        /* Actor ID   */ ACTOR_HM_COMP_OBJECTS,
+        /* Position   */ { -217, -120, 0 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x3007
     },
 
     // Bombable Rock

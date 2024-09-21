@@ -221,7 +221,7 @@ void EnIk_InitImpl(Actor* thisx, PlayState* play) {
     thisx->colChkInfo.damageTable = &sDamageTable;
     thisx->colChkInfo.mass = MASS_HEAVY;
     this->isBreakingProp = false;
-    thisx->colChkInfo.health = 30;
+    thisx->colChkInfo.health = 20;
     thisx->gravity = -1.0f;
 
     PRINTF("IK INIT: params = %04x\n", thisx->params);

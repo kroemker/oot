@@ -158,7 +158,9 @@ void HmCompObjects_Action_Hand_Move(HmCompObjects* this, PlayState* play) {
     this->dyna.actor.world.pos.x += multiplier * this->dyna.actor.speed * Math_SinS(this->dyna.actor.shape.rot.y);
     this->dyna.actor.world.pos.z += multiplier * this->dyna.actor.speed * Math_CosS(this->dyna.actor.shape.rot.y);
 
-    if (Math_Vec3f_DistXZ(&this->dyna.actor.world.pos, &this->dyna.actor.home.pos) >= HAND_MOVE_DISTANCE) {
+    if (Math_Vec3f_DistXZ(&this->dyna.actor.world.pos, &this->dyna.actor.home.pos) <= 6.0f) {
+        Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_BLOCK_BOUND);
+        Math_Vec3f_Copy(&this->dyna.actor.world.pos, &this->dyna.actor.home.pos);
         this->moved ^= 1;
         this->dyna.actor.speed = 0.0f;
         HmCompObjects_SetupAction(this, play, HmCompObjects_Action_Hand_Idle);
@@ -167,7 +169,9 @@ void HmCompObjects_Action_Hand_Move(HmCompObjects* this, PlayState* play) {
 
 void HmCompObjects_Action_Hand_Idle(HmCompObjects* this, PlayState* play) {
     if (this->moved ^ (Flags_GetSwitch(play, this->switchFlag) || this->inverted)) {
-        Math_Vec3f_Copy(&this->dyna.actor.home.pos, &this->dyna.actor.world.pos);
+        f32 multiplier = this->moved ? -1.0f : 1.0f;
+        this->dyna.actor.home.pos.x += multiplier * HAND_MOVE_DISTANCE * Math_SinS(this->dyna.actor.shape.rot.y);
+        this->dyna.actor.home.pos.z += multiplier * HAND_MOVE_DISTANCE * Math_CosS(this->dyna.actor.shape.rot.y);
         HmCompObjects_SetupAction(this, play, HmCompObjects_Action_Hand_Move);
     }
 }
@@ -181,8 +185,9 @@ void HmCompObjects_InitHand(Actor* thisx, PlayState* play) {
     this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, &this->dyna.actor, colHeader);
 
     if (Flags_GetSwitch(play, this->switchFlag) || this->inverted) {
-        this->dyna.actor.world.pos.x += Math_SinF(this->dyna.actor.shape.rot.y) * HAND_MOVE_DISTANCE;
-        this->dyna.actor.world.pos.z += Math_CosF(this->dyna.actor.shape.rot.y) * HAND_MOVE_DISTANCE;
+        this->dyna.actor.world.pos.x += Math_SinS(this->dyna.actor.shape.rot.y) * HAND_MOVE_DISTANCE;
+        this->dyna.actor.world.pos.z += Math_CosS(this->dyna.actor.shape.rot.y) * HAND_MOVE_DISTANCE;
+        Math_Vec3f_Copy(&this->dyna.actor.home.pos, &this->dyna.actor.world.pos);
         this->moved = 1;
     }
     else {
@@ -380,7 +385,7 @@ void HmCompObjects_Action_Gate_Idle(HmCompObjects* this, PlayState* play) {
 
     if (Flags_GetSwitch(play, this->switchFlag)) {
         this->moved = 1;
-        this->timer = 50;
+        this->timer = 55;
         this->dyna.actor.home.pos.y += GATE_MOVE_DISTANCE;
         OnePointCutscene_Attention(play, &this->dyna.actor);
         HmCompObjects_SetupAction(this, play, HmCompObjects_Action_Gate_WaitForRise);
@@ -407,9 +412,12 @@ void HmCompObjects_InitGate(Actor* thisx, PlayState* play) {
 }
 
 //CHESS BOARD
+void HmCompObjects_Action_ChessBoardSwitchTrigger_PuzzleSolved(HmCompObjects* this, PlayState* play) {
+}
+
 void HmCompObjects_Action_ChessBoardSwitchTrigger_Idle(HmCompObjects* this, PlayState* play) {
     if (Flags_GetSwitch(play, this->switchFlag)) {
-        Actor_Kill(&this->dyna.actor);
+        HmCompObjects_SetupAction(this, play, HmCompObjects_Action_ChessBoardSwitchTrigger_PuzzleSolved);
     } else if ((this->collider.base.acFlags & AC_HIT)) {
         this->collider.base.acFlags &= ~AC_HIT;
         if ((this->collider.base.ac->id == ACTOR_HM_COMP_OBJECTS) && (HMCO_GET_TYPE(this->collider.base.ac) >= HMCO_TYPE_CHESS_BISHOP)) {
@@ -420,7 +428,9 @@ void HmCompObjects_Action_ChessBoardSwitchTrigger_Idle(HmCompObjects* this, Play
 
             if (this->type == HMCO_TYPE_CHESS_BOARD_SWITCH_TRIGGER) {
                 Flags_SetSwitch(play, this->switchFlag);
-                OnePointCutscene_AttentionSetSfx(play, &this->dyna.actor, NA_SE_SY_CORRECT_CHIME);
+                OnePointCutscene_Init(play, 5010, 50, &this->dyna.actor, CAM_ID_MAIN);
+                Sfx_PlaySfxCentered(NA_SE_SY_CORRECT_CHIME);
+                //OnePointCutscene_AttentionSetSfx(play, &this->dyna.actor, NA_SE_SY_CORRECT_CHIME);
 
                 piece->dyna.actor.velocity.y = 0.0f;
                 Math_Vec3f_Copy(&piece->dyna.actor.home.pos, &piece->dyna.actor.world.pos);
@@ -447,12 +457,45 @@ void HmCompObjects_InitChessBoardSwitchTrigger(Actor* thisx, PlayState* play) {
 
     Collider_InitCylinder(play, &this->collider);
     Collider_SetCylinder(play, &this->collider, thisx, &sChessBoardSwitchColliderInit);
+    Actor_ChangeCategory(play, &play->actorCtx, thisx, ACTORCAT_SWITCH);
 
-    HmCompObjects_SetupAction(this, play, HmCompObjects_Action_ChessBoardSwitchTrigger_Idle);
+    if (Flags_GetSwitch(play, this->switchFlag)) {
+        HmCompObjects_SetupAction(this, play, HmCompObjects_Action_ChessBoardSwitchTrigger_PuzzleSolved);
+    } else {
+        HmCompObjects_SetupAction(this, play, HmCompObjects_Action_ChessBoardSwitchTrigger_Idle);
+    }
 }
 
 // CHESS PIECE
+Actor* HmCompObjects_GetCorrectChessSquare(HmCompObjects* this, PlayState* play) {
+    Actor* actor = play->actorCtx.actorLists[ACTORCAT_SWITCH].head;
+
+    while (actor != NULL) {
+        if ((actor->id == ACTOR_HM_COMP_OBJECTS) && (HMCO_GET_TYPE(actor) == HMCO_TYPE_CHESS_BOARD_SWITCH_TRIGGER) && (HMCO_GET_SWITCH_FLAG(actor) == this->switchFlag)) {
+            return actor;
+        }
+        actor = actor->next;
+    }
+
+    return NULL;
+}
+
 void HmCompObjects_Action_ChessPiecePuzzleSolved(HmCompObjects* this, PlayState* play) {
+    Actor* square = HmCompObjects_GetCorrectChessSquare(this, play);
+    if (square != NULL) {
+        s32 angleDiff;
+        
+        Math_StepToAngleS(&this->dyna.actor.shape.rot.y, square->shape.rot.y, 0x400);
+        angleDiff = (s32)square->shape.rot.y - (s32)this->dyna.actor.shape.rot.y;
+        if (ABS(angleDiff) < 0x400) {
+            this->dyna.actor.shape.rot.y = square->shape.rot.y;
+        }
+        this->dyna.actor.world.rot.y = this->dyna.actor.shape.rot.y;
+
+        Math_ApproachF(&this->dyna.actor.world.pos.x, square->world.pos.x, 1.0f, 2.0f);
+        Math_ApproachF(&this->dyna.actor.world.pos.z, square->world.pos.z, 1.0f, 2.0f);
+    }
+
     Collider_UpdateCylinder(&this->dyna.actor, &this->collider);
     CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
 }
@@ -492,12 +535,23 @@ void HmCompObjects_InitChessPiece(Actor* thisx, PlayState* play) {
 
     Collider_InitCylinder(play, &this->collider);
     Collider_SetCylinder(play, &this->collider, thisx, &sChessPieceColliderInit);
+    Actor_ChangeCategory(play, &play->actorCtx, thisx, ACTORCAT_ITEMACTION);
 
     this->dyna.actor.flags |= ACTOR_FLAG_ALWAYS_PUT_DOWN;
     this->dyna.actor.gravity = CHESS_PIECE_GRAVITY;
     this->dyna.actor.colChkInfo.mass = MASS_IMMOVABLE;
 
-    HmCompObjects_SetupAction(this, play, HmCompObjects_Action_ChessPieceIdle);
+    if (Flags_GetSwitch(play, this->switchFlag)) {
+        Actor* square = HmCompObjects_GetCorrectChessSquare(this, play);
+        if (square != NULL) {
+            Math_Vec3f_Copy(&this->dyna.actor.world.pos, &square->world.pos);
+            Math_Vec3f_Copy(&this->dyna.actor.home.pos, &this->dyna.actor.world.pos);
+            this->dyna.actor.shape.rot.y = square->shape.rot.y;
+        }
+        HmCompObjects_SetupAction(this, play, HmCompObjects_Action_ChessPiecePuzzleSolved);
+    } else {
+        HmCompObjects_SetupAction(this, play, HmCompObjects_Action_ChessPieceIdle);
+    }
 }
 
 //

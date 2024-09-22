@@ -7950,6 +7950,46 @@ beginseg
 endseg
 
 beginseg
+    name "hm_comp_scene"
+    compress
+    romalign 0x1000
+    include "$(BUILD_DIR)/assets/scenes/hm_comp/hm_comp_scene.o"
+    number 2
+endseg
+
+beginseg
+    name "hm_comp_room_0"
+    compress
+    romalign 0x1000
+    include "$(BUILD_DIR)/assets/scenes/hm_comp/hm_comp_room_0.o"
+    number 3
+endseg
+
+beginseg
+    name "hm_comp_room_1"
+    compress
+    romalign 0x1000
+    include "$(BUILD_DIR)/assets/scenes/hm_comp/hm_comp_room_1.o"
+    number 3
+endseg
+
+beginseg
+    name "hm_comp_boss_scene"
+    compress
+    romalign 0x1000
+    include "$(BUILD_DIR)/assets/scenes/hm_comp_boss/hm_comp_boss_scene.o"
+    number 2
+endseg
+
+beginseg
+    name "hm_comp_boss_room_0"
+    compress
+    romalign 0x1000
+    include "$(BUILD_DIR)/assets/scenes/hm_comp_boss/hm_comp_boss_room_0.o"
+    number 3
+endseg
+
+beginseg
     name "ydan_scene"
     compress
     romalign 0x1000
@@ -12125,28 +12165,4 @@ beginseg
     compress
     romalign 0x1000
     include "$(BUILD_DIR)/baserom/softsprite_matrix_static.o"
-endseg
-
-beginseg
-    name "hm_comp_scene"
-    compress
-    romalign 0x1000
-    include "$(BUILD_DIR)/assets/scenes/hm_comp/hm_comp_scene.o"
-    number 2
-endseg
-
-beginseg
-    name "hm_comp_room_0"
-    compress
-    romalign 0x1000
-    include "$(BUILD_DIR)/assets/scenes/hm_comp/hm_comp_room_0.o"
-    number 3
-endseg
-
-beginseg
-    name "hm_comp_room_1"
-    compress
-    romalign 0x1000
-    include "$(BUILD_DIR)/assets/scenes/hm_comp/hm_comp_room_1.o"
-    number 3
 endseg

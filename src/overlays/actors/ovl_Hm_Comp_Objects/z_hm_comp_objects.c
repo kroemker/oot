@@ -430,7 +430,6 @@ void HmCompObjects_Action_ChessBoardSwitchTrigger_Idle(HmCompObjects* this, Play
                 Flags_SetSwitch(play, this->switchFlag);
                 OnePointCutscene_Init(play, 5010, 50, &this->dyna.actor, CAM_ID_MAIN);
                 Sfx_PlaySfxCentered(NA_SE_SY_CORRECT_CHIME);
-                //OnePointCutscene_AttentionSetSfx(play, &this->dyna.actor, NA_SE_SY_CORRECT_CHIME);
 
                 piece->dyna.actor.velocity.y = 0.0f;
                 Math_Vec3f_Copy(&piece->dyna.actor.home.pos, &piece->dyna.actor.world.pos);

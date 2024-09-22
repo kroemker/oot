@@ -64,7 +64,7 @@ ActorEntry hm_comp_room_0_header00_actorList[LENGTH_HM_COMP_ROOM_0_HEADER00_ACTO
         /* Actor ID   */ ACTOR_HM_COMP_OBJECTS,
         /* Position   */ { -217, -120, 0 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x3007
+        /* Parameters */ 0x3008
     },
 
     // Bombable Rock

@@ -707,6 +707,13 @@ beginseg
 endseg
 
 beginseg
+    name "ovl_Hm_Comp_Boss"
+    compress
+    include "$(BUILD_DIR)/src/overlays/actors/ovl_Hm_Comp_Boss/z_hm_comp_boss.o"
+    include "$(BUILD_DIR)/src/overlays/actors/ovl_Hm_Comp_Boss/ovl_Hm_Comp_Boss_reloc.o"
+endseg
+
+beginseg
     name "ovl_title"
     compress
     address 0x80800000
@@ -7970,6 +7977,30 @@ beginseg
     compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/scenes/hm_comp/hm_comp_room_1.o"
+    number 3
+endseg
+
+beginseg
+    name "hm_comp_room_2"
+    compress
+    romalign 0x1000
+    include "$(BUILD_DIR)/assets/scenes/hm_comp/hm_comp_room_2.o"
+    number 3
+endseg
+
+beginseg
+    name "hm_comp_room_3"
+    compress
+    romalign 0x1000
+    include "$(BUILD_DIR)/assets/scenes/hm_comp/hm_comp_room_3.o"
+    number 3
+endseg
+
+beginseg
+    name "hm_comp_room_4"
+    compress
+    romalign 0x1000
+    include "$(BUILD_DIR)/assets/scenes/hm_comp/hm_comp_room_4.o"
     number 3
 endseg
 

@@ -107,7 +107,7 @@ void TransformBabyGohma_SetupAction(TransformBabyGohma* this, PlayState* play, T
         Animation_Change(&this->skelAnime, &gObjectGolPrepareJumpAnim, 4.0f, 0.0f, Animation_GetLastFrame(&gObjectGolPrepareJumpAnim), ANIMMODE_ONCE, 0.0f);
     }
     else if (this->actionFunc == TransformBabyGohma_Action_Jump) {
-        this->actor.speed = CLAMP(this->framesAPressed * 1.2f + 10.0f, 10.0f, 20.0f);
+        this->actor.speed = CLAMP(this->framesAPressed * 1.1f + 6.0f, 8.0f, 16.0f);
         this->actor.velocity.y = CLAMP(this->framesAPressed * 0.6f + 8.0f, 8.0f, 12.0f);
         this->framesAPressed = 0;
         Animation_Change(&this->skelAnime, &gObjectGolJumpHeadbuttAnim, 1.0f, 0.0f, Animation_GetLastFrame(&gObjectGolJumpHeadbuttAnim), ANIMMODE_ONCE_INTERP, -2.0f);

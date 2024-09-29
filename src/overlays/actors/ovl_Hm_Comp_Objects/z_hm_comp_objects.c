@@ -6,6 +6,7 @@
 
 #include "z_hm_comp_objects.h"
 #include "assets/objects/object_hm_comp/object_hm_comp.h"
+#include "assets/scenes/hm_comp/hm_comp_scene.h"
 
 #include "../ovl_Door_Warp1/z_door_warp1.h"
 
@@ -24,7 +25,7 @@
 #define STAIRS_MOVE_DISTANCE 1000.0f
 #define STAIRS_RISE_SPEED 6.0f
 
-#define GATE_MOVE_DISTANCE 300.0f
+#define GATE_MOVE_DISTANCE 115.0f
 #define GATE_RISE_SPEED 9.0f
 
 #define PLATFORM_MOVE_DISTANCE 500.0f
@@ -37,7 +38,8 @@ enum HmCompObjectsType {
     HMCO_TYPE_PILLAR,
     HMCO_TYPE_STAIRS,
     HMCO_TYPE_PLATFORM,
-    HMCO_TYPE_GATE,
+    HMCO_TYPE_GATE_1,
+    HMCO_TYPE_GATE_2,
     HMCO_TYPE_CHESS_BOARD_SWITCH_TRIGGER,
     HMCO_TYPE_CHESS_BOARD_ICE_TRAP,
     HMCO_TYPE_CHESS_BISHOP,
@@ -272,8 +274,6 @@ void HmCompObjects_InitPillar(Actor* thisx, PlayState* play) {
     }
 
     HmCompObjects_SetupAction(this, play, HmCompObjects_Action_Pillar_Idle);
-
-    this->dyna.actor.room = -1;
 }
 
 // STAIRS
@@ -290,14 +290,22 @@ void HmCompObjects_Action_Stairs_Rise(HmCompObjects* this, PlayState* play) {
     }
 }
 
+
+void HmCompObjects_Action_Stairs_WaitForCsStart(HmCompObjects* this, PlayState* play) {
+    if (!Play_InCsMode(play)) {
+        Cutscene_SetScript(play, gBridgeCutscene);
+        gSaveContext.cutsceneTrigger = 1;
+        HmCompObjects_SetupAction(this, play, HmCompObjects_Action_Stairs_Rise);
+    }
+}
+
 void HmCompObjects_Action_Stairs_Idle(HmCompObjects* this, PlayState* play) {
     if (this->moved) {
         return;
     }
 
     if (Flags_GetSwitch(play, this->switchFlag)) {
-        this->dyna.actor.home.pos.y += STAIRS_MOVE_DISTANCE;
-        HmCompObjects_SetupAction(this, play, HmCompObjects_Action_Stairs_Rise);
+        HmCompObjects_SetupAction(this, play, HmCompObjects_Action_Stairs_WaitForCsStart);
     }
 }
 
@@ -308,18 +316,17 @@ void HmCompObjects_InitStairs(Actor* thisx, PlayState* play) {
     DynaPolyActor_Init(&this->dyna, DYNA_TRANSFORM_POS);
     CollisionHeader_GetVirtual(&gStairs_collisionHeader, &colHeader);
     this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, &this->dyna.actor, colHeader);
+    Actor_SetScale(&this->dyna.actor, 0.1f);
 
     if (Flags_GetSwitch(play, this->switchFlag)) {
         this->moved = 1;
-        this->dyna.actor.home.pos.y = this->dyna.actor.world.pos.y += STAIRS_MOVE_DISTANCE;
     }
     else {
+        this->dyna.actor.world.pos.y -= STAIRS_MOVE_DISTANCE;
         this->moved = 0;
     }
 
     HmCompObjects_SetupAction(this, play, HmCompObjects_Action_Stairs_Idle);
-
-    this->dyna.actor.room = -1;
 }
 
 // PLATFORM
@@ -467,13 +474,16 @@ void HmCompObjects_InitChessBoardSwitchTrigger(Actor* thisx, PlayState* play) {
 
 // CHESS PIECE
 Actor* HmCompObjects_GetCorrectChessSquare(HmCompObjects* this, PlayState* play) {
-    Actor* actor = play->actorCtx.actorLists[ACTORCAT_SWITCH].head;
+    s32 actorCategory;
 
-    while (actor != NULL) {
-        if ((actor->id == ACTOR_HM_COMP_OBJECTS) && (HMCO_GET_TYPE(actor) == HMCO_TYPE_CHESS_BOARD_SWITCH_TRIGGER) && (HMCO_GET_SWITCH_FLAG(actor) == this->switchFlag)) {
-            return actor;
+    for (actorCategory = 0; actorCategory < ACTORCAT_MAX; actorCategory++) {
+        Actor* actor = play->actorCtx.actorLists[actorCategory].head;
+        while (actor != NULL) {
+            if ((actor->id == ACTOR_HM_COMP_OBJECTS) && (HMCO_GET_TYPE(actor) == HMCO_TYPE_CHESS_BOARD_SWITCH_TRIGGER) && (HMCO_GET_SWITCH_FLAG(actor) == this->switchFlag)) {
+                return actor;
+            }
+            actor = actor->next;
         }
-        actor = actor->next;
     }
 
     return NULL;
@@ -492,6 +502,7 @@ void HmCompObjects_Action_ChessPiecePuzzleSolved(HmCompObjects* this, PlayState*
         this->dyna.actor.world.rot.y = this->dyna.actor.shape.rot.y;
 
         Math_ApproachF(&this->dyna.actor.world.pos.x, square->world.pos.x, 1.0f, 2.0f);
+        Math_ApproachF(&this->dyna.actor.world.pos.y, square->world.pos.y, 1.0f, 2.0f);
         Math_ApproachF(&this->dyna.actor.world.pos.z, square->world.pos.z, 1.0f, 2.0f);
     }
 
@@ -535,6 +546,7 @@ void HmCompObjects_InitChessPiece(Actor* thisx, PlayState* play) {
     Collider_InitCylinder(play, &this->collider);
     Collider_SetCylinder(play, &this->collider, thisx, &sChessPieceColliderInit);
     Actor_ChangeCategory(play, &play->actorCtx, thisx, ACTORCAT_ITEMACTION);
+    Actor_SetScale(&this->dyna.actor, 0.0075f);
 
     this->dyna.actor.flags |= ACTOR_FLAG_ALWAYS_PUT_DOWN;
     this->dyna.actor.gravity = CHESS_PIECE_GRAVITY;
@@ -575,7 +587,8 @@ void HmCompObjects_Init(Actor* thisx, PlayState* play) {
     case HMCO_TYPE_STAIRS:
         HmCompObjects_InitStairs(thisx, play);
         break;
-    case HMCO_TYPE_GATE:
+    case HMCO_TYPE_GATE_1:
+    case HMCO_TYPE_GATE_2:
         HmCompObjects_InitGate(thisx, play);
         break;
     case HMCO_TYPE_PLATFORM:
@@ -622,14 +635,16 @@ void HmCompObjects_Draw(Actor* thisx, PlayState* play) {
         Gfx_DrawDListOpa(play, gStairs);
     } else if (this->type == HMCO_TYPE_PLATFORM) {
         Gfx_DrawDListOpa(play, gPlatform);
-    } else if (this->type == HMCO_TYPE_GATE) {
-        Gfx_DrawDListOpa(play, gGate);
+    } else if (this->type == HMCO_TYPE_GATE_1) {
+        Gfx_DrawDListOpa(play, gGate1);
+    } else if (this->type == HMCO_TYPE_GATE_2) {
+        Gfx_DrawDListOpa(play, gGate2);
     } else if (this->type == HMCO_TYPE_CHESS_BISHOP) {
         Gfx_DrawDListOpa(play, gBishop);
-    // } else if (this->type == HMCO_TYPE_CHESS_ROOK) {
-    //     Gfx_DrawDListOpa(play, gRook);
-    // } else if (this->type == HMCO_TYPE_CHESS_KNIGHT) {
-    //     Gfx_DrawDListOpa(play, gKnight);
+    } else if (this->type == HMCO_TYPE_CHESS_ROOK) {
+        Gfx_DrawDListOpa(play, gRook);
+    } else if (this->type == HMCO_TYPE_CHESS_KNIGHT) {
+        Gfx_DrawDListOpa(play, gKnight);
     }
 }
 

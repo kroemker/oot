@@ -121,7 +121,7 @@ typedef struct {
     /* 0x0252 */ u16    magicAlpha; // also Rupee and Key counters alpha
     /* 0x0254 */ u16    minimapAlpha;
     /* 0x0256 */ s16    startAlpha;
-    u16 dpadAlpha;
+    s16 dpadAlpha;
     /* 0x0258 */ s16    unk_258;
     /* 0x025A */ s16    unk_25A;
     /* 0x025C */ s16    mapRoomNum;

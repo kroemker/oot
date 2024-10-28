@@ -8005,6 +8005,46 @@ beginseg
 endseg
 
 beginseg
+    name "hm_comp_room_5"
+    compress
+    romalign 0x1000
+    include "$(BUILD_DIR)/assets/scenes/hm_comp/hm_comp_room_5.o"
+    number 3
+endseg
+
+beginseg
+    name "hm_comp_room_6"
+    compress
+    romalign 0x1000
+    include "$(BUILD_DIR)/assets/scenes/hm_comp/hm_comp_room_6.o"
+    number 3
+endseg
+
+beginseg
+    name "hm_comp_room_7"
+    compress
+    romalign 0x1000
+    include "$(BUILD_DIR)/assets/scenes/hm_comp/hm_comp_room_7.o"
+    number 3
+endseg
+
+beginseg
+    name "hm_comp_room_8"
+    compress
+    romalign 0x1000
+    include "$(BUILD_DIR)/assets/scenes/hm_comp/hm_comp_room_8.o"
+    number 3
+endseg
+
+beginseg
+    name "hm_comp_room_9"
+    compress
+    romalign 0x1000
+    include "$(BUILD_DIR)/assets/scenes/hm_comp/hm_comp_room_9.o"
+    number 3
+endseg
+
+beginseg
     name "hm_comp_boss_scene"
     compress
     romalign 0x1000

@@ -748,7 +748,7 @@ s32 ObjSwitch_ExistsNearbyIkWithElement(ObjSwitch* this, PlayState* play, Actor*
             continue;
         }
         EnIk* ik = (EnIk*)(actor);
-        if (ik->puzzleKnuckle && ik->element == element && Actor_WorldDistXZToActor(baseActor, actor) < 121.0f) {
+        if (ik->puzzleKnuckle && ik->element == element && Actor_WorldDistXZToActor(baseActor, actor) < 180.0f) {
             return true;
         }
         actor = actor->next;

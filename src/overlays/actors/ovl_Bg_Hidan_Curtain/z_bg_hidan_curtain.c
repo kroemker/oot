@@ -73,7 +73,7 @@ void BgHidanCurtain_Init(Actor* thisx, PlayState* play) {
     PRINTF("Curtain (arg_data 0x%04x)\n", this->actor.params);
     Actor_SetFocus(&this->actor, 20.0f);
     this->type = (thisx->params >> 0xC) & 0xF;
-    if (this->type > 6) {
+    if (this->type > 7) {
         PRINTF("Error : object Type is not set(%s %d)(arg_data 0x%04x)\n", "../z_bg_hidan_curtain.c", 352,
                this->actor.params);
         Actor_Kill(&this->actor);
@@ -128,7 +128,7 @@ void BgHidanCurtain_WaitForSwitchOn(BgHidanCurtain* this, PlayState* play) {
             this->actionFunc = BgHidanCurtain_WaitForCutscene;
             OnePointCutscene_Init(play, 3350, -99, &this->actor, CAM_ID_MAIN);
             this->timer = 50;
-        } else if (this->type == 3) {
+        } else if ((this->type == 3) || (this->type == 7)) {
             this->actionFunc = BgHidanCurtain_WaitForCutscene;
             OnePointCutscene_Init(play, 3360, 60, &this->actor, CAM_ID_MAIN);
             this->timer = 30;
@@ -169,7 +169,7 @@ void BgHidanCurtain_TurnOff(BgHidanCurtain* this, PlayState* play) {
     BgHidanCurtainParams* hcParams = &sHCParams[this->size];
 
     if (Math_StepToF(&this->actor.world.pos.y, this->actor.home.pos.y - hcParams->riseDist, hcParams->riseSpeed)) {
-        if ((this->type == 0) || (this->type == 6)) {
+        if ((this->type == 0) || (this->type == 6) || (this->type == 7)) {
             Actor_Kill(&this->actor);
         } else if (this->type == 5) {
             this->actionFunc = BgHidanCurtain_WaitForSwitchOff;

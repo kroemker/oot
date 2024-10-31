@@ -5,7 +5,7 @@
  * Header Child Day (Default)
 */
 #define LENGTH_HM_COMP_ROOM_5_HEADER00_OBJECTLIST 2
-#define LENGTH_HM_COMP_ROOM_5_HEADER00_ACTORLIST 6
+#define LENGTH_HM_COMP_ROOM_5_HEADER00_ACTORLIST 5
 SceneCmd hm_comp_room_5_header00[] = {
     SCENE_CMD_ROOM_SHAPE(&hm_comp_room_5_shapeHeader),
     SCENE_CMD_ECHO_SETTINGS(0x00),
@@ -26,15 +26,7 @@ ActorEntry hm_comp_room_5_header00_actorList[LENGTH_HM_COMP_ROOM_5_HEADER00_ACTO
     // Iron Knuckle
     {
         /* Actor ID   */ ACTOR_EN_IK,
-        /* Position   */ { 1317, -677, 6206 },
-        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x3F02
-    },
-
-    // Iron Knuckle
-    {
-        /* Actor ID   */ ACTOR_EN_IK,
-        /* Position   */ { 1119, -677, 6206 },
+        /* Position   */ { 1219, -677, 6206 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x3F02
     },

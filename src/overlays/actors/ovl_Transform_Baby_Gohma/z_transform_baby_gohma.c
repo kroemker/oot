@@ -390,6 +390,7 @@ void TransformBabyGohma_Update(Actor* thisx, PlayState* play) {
     TransformBabyGohma_UpdateEyeEnvColor(this);
     Actor_TriggerDynapolyIfPossible(&this->actor, play);
     Actor_CheckVoidOut(&this->actor, play);
+    Actor_CheckExit(&this->actor, play);
 
     if (player->csAction != PLAYER_CSACTION_NONE && this->actionFunc != TransformBabyGohma_Action_Cutscene) {
         TransformBabyGohma_SetupAction(this, play, TransformBabyGohma_Action_Cutscene);

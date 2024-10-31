@@ -31,6 +31,12 @@ static s16 sDelayTimer = 0;
 void EnMag_Init(Actor* thisx, PlayState* play) {
     EnMag* this = (EnMag*)thisx;
 
+    PRINTF("En_Mag_Init, sceneLayer = %d\n", gSaveContext.sceneLayer);
+    if (gSaveContext.sceneLayer != SCENE_LAYER_CUTSCENE_FIRST) {
+        Actor_Kill(thisx);
+        return;
+    }
+
     YREG(1) = 63;
     YREG(3) = 80;
     YREG(4) = 255;

@@ -122,5 +122,6 @@
 /* 0x6D */ DEFINE_SCENE(testroom_scene, none, SCENE_TESTROOM, SDC_DEFAULT, 0, 0)
 #endif
 // Added scenes
+/* 0x6E */ DEFINE_SCENE(hm_comp_graveyard_scene, g_pn_29, SCENE_HM_COMP_GRAVEYARD, SDC_DEFAULT, 0, 0)
 /* 0x6E */ DEFINE_SCENE(hm_comp_scene, g_pn_57, SCENE_HM_COMP, SDC_DEFAULT, 0, 0)
 /* 0x6E */ DEFINE_SCENE(hm_comp_boss_scene, none, SCENE_HM_COMP_BOSS, SDC_DEFAULT, 0, 0)

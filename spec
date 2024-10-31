@@ -8077,6 +8077,22 @@ beginseg
 endseg
 
 beginseg
+    name "hm_comp_graveyard_scene"
+    compress
+    romalign 0x1000
+    include "$(BUILD_DIR)/assets/scenes/hm_comp_graveyard/hm_comp_graveyard_scene.o"
+    number 2
+endseg
+
+beginseg
+    name "hm_comp_graveyard_room_0"
+    compress
+    romalign 0x1000
+    include "$(BUILD_DIR)/assets/scenes/hm_comp_graveyard/hm_comp_graveyard_room_0.o"
+    number 3
+endseg
+
+beginseg
     name "ydan_scene"
     compress
     romalign 0x1000

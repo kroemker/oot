@@ -6093,3 +6093,21 @@ void Actor_CheckVoidOut(Actor* actor, PlayState* play) {
         }
     }
 }
+
+void Actor_CheckExit(Actor* actor, PlayState* play) {
+    Player* player = GET_PLAYER(play);
+
+    if (actor->bgCheckFlags & BGCHECKFLAG_GROUND) {
+        s32 exitIndex = SurfaceType_GetExitIndex(&play->colCtx, actor->floorPoly, actor->floorBgId);
+        if (exitIndex != 0) {
+            play->nextEntranceIndex = play->exitList[exitIndex - 1];
+            gSaveContext.retainWeatherMode = true;
+            Scene_SetTransitionForNextEntrance(play);
+            play->transitionTrigger = TRANS_TRIGGER_START;
+            gSaveContext.entranceSpeed = actor->speed;
+            Interface_ChangeHudVisibilityMode(HUD_VISIBILITY_NOTHING_ALT);
+            player->stateFlags1 |= PLAYER_STATE1_0 | PLAYER_STATE1_29;
+        }
+    }
+}
+

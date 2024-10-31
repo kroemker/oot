@@ -542,6 +542,7 @@ void TransformIk_Update(Actor* thisx, PlayState* play) {
 
     Actor_TriggerDynapolyIfPossible(&this->actor, play);
     Actor_CheckVoidOut(&this->actor, play);
+    Actor_CheckExit(&this->actor, play);
     if (!(this->actor.bgCheckFlags & BGCHECKFLAG_GROUND) && (this->actionFunc != TransformIk_Action_Fall)) {
         TransformIk_SetupAction(this, play, TransformIk_Action_Fall);
     }

@@ -263,6 +263,14 @@ void EnItem00_Init(Actor* thisx, PlayState* play) {
             shadowScale = 0.6f;
             this->actor.world.rot.x = 0x4000;
             break;
+        case ITEM00_SOUL_IK:
+            this->actor.objectSlot = Object_GetSlot(&play->objectCtx, OBJECT_GI_SUTARU);
+            Actor_SetObjectDependency(play, &this->actor);
+            Actor_SetScale(&this->actor, 0.5f);
+            this->scale = 0.5f;
+            yOffset = 0.0f;
+            shadowScale = 0.6f;
+            break;
     }
 
     this->unk_156 = 0;
@@ -346,6 +354,7 @@ void EnItem00_Init(Actor* thisx, PlayState* play) {
         case ITEM00_SHIELD_HYLIAN:
         case ITEM00_TUNIC_ZORA:
         case ITEM00_TUNIC_GORON:
+        case ITEM00_SOUL_IK:
         case ITEM00_BOMBS_SPECIAL:
             break;
     }
@@ -595,7 +604,7 @@ void EnItem00_Update(Actor* thisx, PlayState* play) {
     CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);
 
     if ((this->actor.params == ITEM00_SHIELD_DEKU) || (this->actor.params == ITEM00_SHIELD_HYLIAN) ||
-        (this->actor.params == ITEM00_TUNIC_ZORA) || (this->actor.params == ITEM00_TUNIC_GORON)) {
+        (this->actor.params == ITEM00_TUNIC_ZORA) || (this->actor.params == ITEM00_TUNIC_GORON) || this->actor.params >= ITEM00_SOUL_IK) {
         this->actor.shape.yOffset = Math_CosS(this->actor.shape.rot.x) * 37.0f;
         this->actor.shape.yOffset = ABS(this->actor.shape.yOffset);
     }
@@ -689,6 +698,8 @@ void EnItem00_Update(Actor* thisx, PlayState* play) {
         case ITEM00_TUNIC_GORON:
             getItemId = GI_TUNIC_GORON;
             break;
+        case ITEM00_SOUL_IK:
+            getItemId = GI_SOUL_IK;
         case ITEM00_BOMBS_SPECIAL:
             break;
     }
@@ -706,6 +717,7 @@ void EnItem00_Update(Actor* thisx, PlayState* play) {
         case ITEM00_SHIELD_DEKU:
         case ITEM00_SHIELD_HYLIAN:
         case ITEM00_TUNIC_ZORA:
+        case ITEM00_SOUL_IK:
         case ITEM00_TUNIC_GORON:
             if (Actor_HasParent(&this->actor, play)) {
                 Flags_SetCollectible(play, this->collectibleFlag);
@@ -806,6 +818,11 @@ void EnItem00_Draw(Actor* thisx, PlayState* play) {
                 break;
             case ITEM00_TUNIC_GORON:
                 GetItem_Draw(play, GID_TUNIC_GORON);
+                break;
+            case ITEM00_SOUL_IK:
+                GetItem_Draw(play, GID_SOUL_IK);
+                gSaveContext.acquiredBabyGohmaTransform = true;
+                gSaveContext.acquiredIronKnuckleTransform = true;
                 break;
             case ITEM00_FLEXIBLE:
                 break;

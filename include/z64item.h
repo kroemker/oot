@@ -157,6 +157,7 @@ typedef enum {
     /* 0x03 */ ITEM_BOW,
     /* 0x04 */ ITEM_ARROW_FIRE,
     /* 0x05 */ ITEM_DINS_FIRE,
+    ITEM_SOUL_IK = 0x05,
     /* 0x06 */ ITEM_SLINGSHOT,
     /* 0x07 */ ITEM_OCARINA_FAIRY,
     /* 0x08 */ ITEM_OCARINA_OF_TIME,
@@ -443,6 +444,7 @@ typedef enum {
     /* 0x7B */ GI_BULLET_BAG_50,
     /* 0x7C */ GI_ICE_TRAP, // freezes link when opened from a chest
     /* 0x7D */ GI_TEXT_0, // no model appears over Link, shows text id 0 (pocket egg)
+    GI_SOUL_IK,
     /* 0x7E */ GI_MAX
 } GetItemID;
 
@@ -546,6 +548,7 @@ typedef enum {
     /* 0x60 */ GID_ARROW_ICE,
     /* 0x61 */ GID_ARROW_LIGHT,
     /* 0x62 */ GID_SKULL_TOKEN,
+    GID_SOUL_IK = 0x62,
     /* 0x63 */ GID_DINS_FIRE,
     /* 0x64 */ GID_FARORES_WIND,
     /* 0x65 */ GID_NAYRUS_LOVE,

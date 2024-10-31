@@ -782,6 +782,7 @@ static GetItemEntry sGetItemTable[] = {
     GET_ITEM_NONE,
     // GI_TEXT_0
     GET_ITEM_NONE,
+    GET_ITEM(ITEM_SOUL_IK, OBJECT_GI_SUTARU, GID_SOUL_IK, 0x3A, 0x80, CHEST_ANIM_LONG),
 };
 
 #define GET_PLAYER_ANIM(group, type) D_80853914[group * PLAYER_ANIMTYPE_MAX + type]

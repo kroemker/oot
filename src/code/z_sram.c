@@ -42,8 +42,8 @@ static SavePlayerData sNewSavePlayerData = {
         FILENAME_SPACE,
     },                  // playerName
     0,                  // n64ddFlag
-    0x30,               // healthCapacity
-    0x30,               // defense
+    0x80,               // healthCapacity
+    0x80,               // defense
     0,                  // magicLevel
     MAGIC_NORMAL_METER, // magic
     0,                  // rupees
@@ -67,7 +67,7 @@ static SavePlayerData sNewSavePlayerData = {
     },                                                  // adultEquips
     0,                                                  // unk_38
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },       // unk_3C
-    SCENE_HM_COMP,                                  // savedSceneId
+    SCENE_HM_COMP_GRAVEYARD,                                  // savedSceneId
 };
 
 static ItemEquips sNewSaveEquips = {
@@ -444,9 +444,9 @@ void Sram_OpenSave(SramContext* sramCtx) {
         default:
             if (gSaveContext.save.info.playerData.savedSceneId != SCENE_LINKS_HOUSE) {
                 gSaveContext.save.entranceIndex =
-                    (LINK_AGE_IN_YEARS == YEARS_CHILD) ? ENTR_LINKS_HOUSE_0 : ENTR_TEMPLE_OF_TIME_7;
+                    (LINK_AGE_IN_YEARS == YEARS_CHILD) ? ENTR_HM_COMP_GRAVEYARD_0 : ENTR_HM_COMP_GRAVEYARD_0;
             } else {
-                gSaveContext.save.entranceIndex = ENTR_LINKS_HOUSE_0;
+                gSaveContext.save.entranceIndex = ENTR_HM_COMP_GRAVEYARD_0;
             }
             break;
     }
@@ -763,10 +763,10 @@ void Sram_InitSave(FileSelectState* fileSelect, SramContext* sramCtx) {
     Sram_InitNewSave();
 #endif
 
-    gSaveContext.save.entranceIndex = ENTR_LINKS_HOUSE_0;
-    gSaveContext.save.linkAge = LINK_AGE_CHILD;
+    gSaveContext.save.entranceIndex = ENTR_HM_COMP_GRAVEYARD_0;
+    gSaveContext.save.linkAge = LINK_AGE_ADULT;
     gSaveContext.save.dayTime = CLOCK_TIME(10, 0);
-    gSaveContext.save.cutsceneIndex = 0xFFF1;
+    gSaveContext.save.cutsceneIndex = 0;
 
 #if OOT_DEBUG
     if (fileSelect->buttonIndex == 0) {

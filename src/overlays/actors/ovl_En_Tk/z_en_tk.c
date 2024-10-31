@@ -330,19 +330,7 @@ s32 EnTk_Orient(EnTk* this, PlayState* play) {
 }
 
 u16 EnTk_GetTextId(PlayState* play, Actor* thisx) {
-    u16 textId = MaskReaction_GetTextId(play, MASK_REACTION_SET_DAMPE);
-
-    if (textId != 0) {
-        return textId;
-    }
-
-    if (GET_INFTABLE(INFTABLE_D9)) {
-        /* "Do you want me to dig here? ..." */
-        return 0x5019;
-    } else {
-        /* "Hey kid! ..." */
-        return 0x5018;
-    }
+    return thisx->params == 0 ? 0x5019 : 0x5020;
 }
 
 s16 EnTk_UpdateTalkState(PlayState* play, Actor* thisx) {
@@ -353,6 +341,9 @@ s16 EnTk_UpdateTalkState(PlayState* play, Actor* thisx) {
         case TEXT_STATE_DONE_HAS_NEXT:
             break;
         case TEXT_STATE_CLOSING:
+            if (thisx->params == 0) {
+                Actor_OfferGetItem(thisx, play, GI_SOUL_IK, thisx->xzDistToPlayer + 1.0f, fabsf(thisx->yDistToPlayer) + 1.0f);
+                }
             /* "I am the boss of the carpenters ..." (wtf?) */
             if (thisx->textId == 0x5028) {
                 SET_INFTABLE(INFTABLE_D8);
@@ -380,10 +371,7 @@ s16 EnTk_UpdateTalkState(PlayState* play, Actor* thisx) {
             }
             break;
         case TEXT_STATE_EVENT:
-            if (Message_ShouldAdvance(play) && (thisx->textId == 0x0084 || thisx->textId == 0x0085)) {
                 Message_CloseTextbox(play);
-                talkState = NPC_TALK_STATE_IDLE;
-            }
             break;
         case TEXT_STATE_DONE:
         case TEXT_STATE_SONG_DEMO_DONE:
@@ -489,12 +477,6 @@ void EnTk_Init(Actor* thisx, PlayState* play) {
 
     CollisionCheck_SetInfo2(&this->actor.colChkInfo, NULL, &sColChkInfoInit);
 
-    if (gSaveContext.save.dayTime <= CLOCK_TIME(18, 0) || gSaveContext.save.dayTime >= CLOCK_TIME(21, 0) ||
-        LINK_IS_ADULT || play->sceneId != SCENE_GRAVEYARD) {
-        Actor_Kill(&this->actor);
-        return;
-    }
-
     Actor_SetScale(&this->actor, 0.01f);
 
     this->actor.targetMode = 6;
@@ -519,13 +501,6 @@ void EnTk_Rest(EnTk* this, PlayState* play) {
         v1 -= this->h_21E;
         v1 = this->actor.yawTowardsPlayer - v1;
 
-        if (this->interactInfo.talkState == NPC_TALK_STATE_ACTION) {
-            EnTk_DigAnim(this, play);
-            this->interactInfo.talkState = NPC_TALK_STATE_IDLE;
-            this->actionFunc = EnTk_Dig;
-            return;
-        }
-
         Npc_UpdateTalking(play, &this->actor, &this->interactInfo.talkState, this->collider.dim.radius + 30.0f,
                           EnTk_GetTextId, EnTk_UpdateTalkState);
     } else if (EnTk_CheckFacingPlayer(this)) {
@@ -543,13 +518,6 @@ void EnTk_Rest(EnTk* this, PlayState* play) {
 
         this->actionCountdown = 0;
         this->interactInfo.talkState = NPC_TALK_STATE_TALKING;
-    } else if (DECR(this->actionCountdown) == 0) {
-        EnTk_WalkAnim(this, play);
-        this->actionFunc = EnTk_Walk;
-
-        /*! @bug v1 is uninitialized past this branch */
-    } else {
-        v1 = 0;
     }
 
     a1_ = CLAMP(-v1, 1270, 10730);

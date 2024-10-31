@@ -328,7 +328,7 @@ void Sram_InitDebugSave(void) {
         }
     }
 
-    gSaveContext.save.entranceIndex = ENTR_HYRULE_FIELD_0;
+    gSaveContext.save.entranceIndex = ENTR_HM_COMP_0;
     gSaveContext.save.info.playerData.magicLevel = 0;
     gSaveContext.save.info.sceneFlags[SCENE_WATER_TEMPLE].swch = 0x40000000;
 

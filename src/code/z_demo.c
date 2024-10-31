@@ -1270,7 +1270,7 @@ void CutsceneCmd_Destination(PlayState* play, CutsceneContext* csCtx, CsCmdDesti
                 break;
 
             case CS_DEST_HYRULE_FIELD_TITLE_SCREEN:
-                play->nextEntranceIndex = ENTR_HYRULE_FIELD_0;
+                play->nextEntranceIndex = ENTR_HM_COMP_0;
                 play->transitionTrigger = TRANS_TRIGGER_START;
                 gSaveContext.save.cutsceneIndex = 0xFFF3;
                 play->transitionType = TRANS_TYPE_FADE_BLACK;

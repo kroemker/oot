@@ -7,9 +7,13 @@
 #include "global.h"
 
 void TitleSetup_SetupTitleScreen(TitleSetupState* this) {
-    gSaveContext.gameMode = GAMEMODE_NORMAL;
+    gSaveContext.gameMode = GAMEMODE_TITLE_SCREEN;
     this->state.running = false;
-    SET_NEXT_GAMESTATE(&this->state, MapSelect_Init, MapSelectState);
+    gSaveContext.save.linkAge = LINK_AGE_ADULT;
+    Sram_InitDebugSave();
+    gSaveContext.save.cutsceneIndex = 0xFFF0;
+    gSaveContext.sceneLayer = SCENE_LAYER_CUTSCENE_FIRST;
+    SET_NEXT_GAMESTATE(&this->state, Play_Init, PlayState);
 }
 
 void func_80803C5C(TitleSetupState* this) {

@@ -55,7 +55,7 @@ ActorEntry hm_comp_boss_room_0_header00_actorList[LENGTH_HM_COMP_BOSS_ROOM_0_HEA
         /* Actor ID   */ ACTOR_HM_COMP_OBJECTS,
         /* Position   */ { 63, -120, -589 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x1305
+        /* Parameters */ 0x3F05
     },
 
     // Brick Pillar (Spirit Temple)

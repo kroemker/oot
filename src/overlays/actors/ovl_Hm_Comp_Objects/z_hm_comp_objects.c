@@ -394,7 +394,7 @@ void HmCompObjects_Action_Gate_Idle(HmCompObjects* this, PlayState* play) {
         return;
     }
 
-    if (Flags_GetSwitch(play, this->switchFlag)) {
+    if (Flags_GetSwitch(play, this->switchFlag) || (this->switchFlag == 0x3F && Flags_GetClear(play, this->dyna.actor.room))) {
         this->moved = 1;
         this->timer = 55;
         this->dyna.actor.home.pos.y += this->type == HMCO_TYPE_GATE_1 ? GATE1_MOVE_DISTANCE : GATE2_MOVE_DISTANCE;
@@ -412,7 +412,7 @@ void HmCompObjects_InitGate(Actor* thisx, PlayState* play) {
     CollisionHeader_GetVirtual(this->type == HMCO_TYPE_GATE_1 ? &gGate1_collisionHeader : &gGate2_collisionHeader , &colHeader);
     this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, &this->dyna.actor, colHeader);
 
-    if (Flags_GetSwitch(play, this->switchFlag)) {
+    if (Flags_GetSwitch(play, this->switchFlag) || (this->switchFlag == 0x3F && Flags_GetClear(play, this->dyna.actor.room))) {
         this->moved = 1;
         this->dyna.actor.home.pos.y = this->dyna.actor.world.pos.y += this->type == HMCO_TYPE_GATE_1 ? GATE1_MOVE_DISTANCE : GATE2_MOVE_DISTANCE;
     }

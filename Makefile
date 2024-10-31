@@ -37,7 +37,7 @@ N64_EMULATOR ?=
 # Set to override game region in the ROM header. Options: JP, US, EU
 REGION ?= US
 
-DEBUG ?= 0
+DEBUG ?= 1
 
 CFLAGS ?=
 CPPFLAGS ?=

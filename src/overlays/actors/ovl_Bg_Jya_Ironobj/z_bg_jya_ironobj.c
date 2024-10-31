@@ -252,7 +252,7 @@ void func_808992E8(BgJyaIronobj* this, PlayState* play) {
     if (this->colCylinder.base.acFlags & AC_HIT) {
         actor = this->colCylinder.base.ac;
         this->colCylinder.base.acFlags &= ~AC_HIT;
-        if (actor != NULL && actor->id == ACTOR_EN_IK) {
+        if (actor != NULL && (actor->id == ACTOR_EN_IK || this->colCylinder.elem.acHitElem->atDmgInfo.dmgFlags & DMG_UNBLOCKABLE)) {
             particleFunc[this->dyna.actor.params & 1](this, play, (EnIk*)actor);
             SfxSource_PlaySfxAtFixedWorldPos(play, &this->dyna.actor.world.pos, 80, NA_SE_EN_IRONNACK_BREAK_PILLAR);
             dropPos.x = this->dyna.actor.world.pos.x;

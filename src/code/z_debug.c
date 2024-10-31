@@ -165,6 +165,7 @@ void Regs_UpdateEditor(Input* input) {
     s32 pageDataStart = ((gRegEditor->regGroup * REG_PAGES) + gRegEditor->regPage - 1) * REGS_PER_PAGE;
     s32 increment;
     s32 i;
+    return;
 
     dPadInputCur = input->cur.button & (BTN_DUP | BTN_DLEFT | BTN_DRIGHT | BTN_DDOWN);
 
@@ -282,6 +283,7 @@ void Debug_DrawText(GraphicsContext* gfxCtx) {
     Gfx* opaStart;
     GfxPrint printer;
     s32 pad;
+    return;
 
     OPEN_DISPS(gfxCtx, "../z_debug.c", 628);
 

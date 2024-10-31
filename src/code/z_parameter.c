@@ -4218,11 +4218,16 @@ void Interface_Update(PlayState* play) {
         }
     }
 #endif
-    if (play->roomCtx.curRoom.num == 1) {  // no transformations in room 1
-        interfaceCtx->dpadAlpha = CLAMP_MIN(interfaceCtx->dpadAlpha - 10, 70);
+    if (gSaveContext.acquiredIronKnuckleTransform) {
+        if (play->roomCtx.curRoom.num == 1) {  // no transformations in room 1
+            interfaceCtx->dpadAlpha = CLAMP_MIN(interfaceCtx->dpadAlpha - 10, 70);
+        }
+        else {
+            interfaceCtx->dpadAlpha = CLAMP_MAX(interfaceCtx->healthAlpha, CLAMP_MAX(interfaceCtx->dpadAlpha + 10, 255));
+        }
     }
     else {
-        interfaceCtx->dpadAlpha = CLAMP_MAX(interfaceCtx->healthAlpha, CLAMP_MAX(interfaceCtx->dpadAlpha + 10, 255));
+        interfaceCtx->dpadAlpha = 0;
     }
 
     if (!IS_PAUSED(&play->pauseCtx)) {

@@ -11646,12 +11646,6 @@ void Player_Update(Actor* thisx, PlayState* play) {
     s32 pad;
     Input input;
 
-#if OOT_DEBUG
-    if (!Player_UpdateNoclip(this, play)) {
-        goto skip_update;
-    }
-#endif
-
     if (gSaveContext.dogParams < 0) {
         static Vec3f sDogSpawnOffset = { 0.0f, 0.0f, -30.0f };
         static Vec3f sDogSpawnPos;

@@ -129,17 +129,13 @@ void Interface_Init(PlayState* play) {
                          "../z_construct.c", 219);
     }
 
-    if (gSaveContext.acquiredBabyGohmaTransform) {
         DMA_REQUEST_SYNC(interfaceCtx->iconItemSegment + (4 * ITEM_ICON_SIZE),
                          GET_ITEM_ICON_VROM(ITEM_DINS_FIRE), ITEM_ICON_SIZE,
                          __FILE__, __LINE__);
-    }
 
-    if (gSaveContext.acquiredIronKnuckleTransform) {
         DMA_REQUEST_SYNC(interfaceCtx->iconItemSegment + (5 * ITEM_ICON_SIZE),
                          GET_ITEM_ICON_VROM(ITEM_NAYRUS_LOVE), ITEM_ICON_SIZE,
                          __FILE__, __LINE__);
-    }
 
     PRINTF("ＥＶＥＮＴ＝%d\n", ((void)0, gSaveContext.timerState));
 

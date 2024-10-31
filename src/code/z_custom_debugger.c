@@ -55,6 +55,7 @@ void CustomDebugger_Draw(PlayState* play) {
     Gfx* polyOpa;
     GfxPrint printer;
     GraphicsContext* gfxCtx = play->state.gfxCtx;
+    return;
 
     if (!sDebuggerShow || !OOT_DEBUG) {
         return;
@@ -83,6 +84,8 @@ void CustomDebugger_Draw(PlayState* play) {
 
 void CustomDebugger_Update(PlayState* play) {
     Input* input = &play->state.input[0];
+
+    return;
 
     if (!OOT_DEBUG || (sDebuggerTimer > 0)) {
         sDebuggerTimer--;

@@ -343,7 +343,9 @@ s16 EnTk_UpdateTalkState(PlayState* play, Actor* thisx) {
         case TEXT_STATE_CLOSING:
             if (thisx->params == 0) {
                 Actor_OfferGetItem(thisx, play, GI_SOUL_IK, thisx->xzDistToPlayer + 1.0f, fabsf(thisx->yDistToPlayer) + 1.0f);
-                }
+                gSaveContext.acquiredBabyGohmaTransform = 1;
+                gSaveContext.acquiredIronKnuckleTransform = 1;
+            }
             /* "I am the boss of the carpenters ..." (wtf?) */
             if (thisx->textId == 0x5028) {
                 SET_INFTABLE(INFTABLE_D8);
@@ -495,6 +497,10 @@ void EnTk_Destroy(Actor* thisx, PlayState* play) {
 void EnTk_Rest(EnTk* this, PlayState* play) {
     s16 v1;
     s16 a1_;
+
+    if (gSaveContext.acquiredBabyGohmaTransform) {
+        return;
+    }
 
     if (this->interactInfo.talkState != NPC_TALK_STATE_IDLE) {
         v1 = this->actor.shape.rot.y;

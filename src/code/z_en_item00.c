@@ -821,8 +821,6 @@ void EnItem00_Draw(Actor* thisx, PlayState* play) {
                 break;
             case ITEM00_SOUL_IK:
                 GetItem_Draw(play, GID_SOUL_IK);
-                gSaveContext.acquiredBabyGohmaTransform = true;
-                gSaveContext.acquiredIronKnuckleTransform = true;
                 break;
             case ITEM00_FLEXIBLE:
                 break;

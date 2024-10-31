@@ -71,8 +71,8 @@ static SavePlayerData sNewSavePlayerData = {
 };
 
 static ItemEquips sNewSaveEquips = {
-    { ITEM_NONE, ITEM_NONE, ITEM_NONE, ITEM_NONE }, // buttonItems
-    { SLOT_NONE, SLOT_NONE, SLOT_NONE },            // cButtonSlots
+    { ITEM_SWORD_MASTER, ITEM_BOW, ITEM_DEKU_NUT, ITEM_BOTTLE_POTION_RED }, // buttonItems
+    { SLOT_BOW, SLOT_DEKU_NUT, SLOT_BOTTLE_1 },            // cButtonSlots
     0x1122,                                         // equipment
 };
 
@@ -128,7 +128,7 @@ static Inventory sNewSaveInventory = {
      ((1 << EQUIP_INV_BOOTS_KOKIRI) << (EQUIP_TYPE_BOOTS * 4)) |
      ((1 << EQUIP_INV_SHIELD_HYLIAN) << (EQUIP_TYPE_SHIELD * 4)) |
      ((1 << EQUIP_INV_SWORD_MASTER) << (EQUIP_TYPE_SWORD * 4))),
-    0,                                                              // upgrades
+    0x125249,                                                              // upgrades
     0,                                                              // questItems
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // dungeonItems
     {
@@ -165,6 +165,8 @@ void Sram_InitNewSave(void) {
     gSaveContext.save.info.playerData.magicLevel = 0;
     gSaveContext.save.info.infTable[INFTABLE_1DX_INDEX] = 1;
     gSaveContext.save.info.sceneFlags[SCENE_WATER_TEMPLE].swch = 0x40000000;
+    gSaveContext.acquiredBabyGohmaTransform = 0;
+    gSaveContext.acquiredIronKnuckleTransform = 0;
 }
 
 static SavePlayerData sDebugSavePlayerData = {
@@ -645,25 +647,8 @@ void Sram_VerifyAndLoadAllSaves(FileSelectState* fileSelect, SramContext* sramCt
                 bzero(&gSaveContext.save.totalDays, sizeof(s32));
                 bzero(&gSaveContext.save.bgsDayCount, sizeof(s32));
 
-#if OOT_DEBUG
-                if (!slotNum) {
-                    Sram_InitDebugSave();
-                    gSaveContext.save.info.playerData.newf[0] = 'Z';
-                    gSaveContext.save.info.playerData.newf[1] = 'E';
-                    gSaveContext.save.info.playerData.newf[2] = 'L';
-                    gSaveContext.save.info.playerData.newf[3] = 'D';
-                    gSaveContext.save.info.playerData.newf[4] = 'A';
-                    gSaveContext.save.info.playerData.newf[5] = 'Z';
-                    PRINTF("newf=%x,%x,%x,%x,%x,%x\n", gSaveContext.save.info.playerData.newf[0],
-                           gSaveContext.save.info.playerData.newf[1], gSaveContext.save.info.playerData.newf[2],
-                           gSaveContext.save.info.playerData.newf[3], gSaveContext.save.info.playerData.newf[4],
-                           gSaveContext.save.info.playerData.newf[5]);
-                } else {
-                    Sram_InitNewSave();
-                }
-#else
+
                 Sram_InitNewSave();
-#endif
 
                 ptr = (u16*)&gSaveContext;
                 PRINTF("\n--------------------------------------------------------------\n");
@@ -753,15 +738,7 @@ void Sram_InitSave(FileSelectState* fileSelect, SramContext* sramCtx) {
     u16* ptr;
     u16 checksum;
 
-#if OOT_DEBUG
-    if (fileSelect->buttonIndex != 0) {
-        Sram_InitNewSave();
-    } else {
-        Sram_InitDebugSave();
-    }
-#else
     Sram_InitNewSave();
-#endif
 
     gSaveContext.save.entranceIndex = ENTR_HM_COMP_GRAVEYARD_0;
     gSaveContext.save.linkAge = LINK_AGE_ADULT;

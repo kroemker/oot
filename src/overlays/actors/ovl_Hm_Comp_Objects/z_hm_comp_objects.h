@@ -18,6 +18,7 @@ typedef struct HmCompObjects {
     s16 timer;
     ColliderCylinder collider;
     s8 direction;
+    Actor* correctSquare;
 } HmCompObjects;
 
 #endif

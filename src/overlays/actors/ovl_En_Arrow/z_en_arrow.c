@@ -259,6 +259,7 @@ void EnArrow_Fly(EnArrow* this, PlayState* play) {
     atTouched = (this->actor.params != ARROW_NORMAL_LIT) && (this->actor.params <= ARROW_SEED) &&
                 (this->collider.base.atFlags & AT_HIT);
 
+    PRINTF("atTouched: %d\n", atTouched);
     if (atTouched || this->touchedPoly) {
         if (this->actor.params >= ARROW_SEED) {
             if (atTouched) {
@@ -338,6 +339,7 @@ void EnArrow_Fly(EnArrow* this, PlayState* play) {
         }
     }
 
+    PRINTF("hitActor: %08x\n", this->hitActor);
     if (this->hitActor != NULL) {
         if (this->hitActor->update != NULL) {
             Vec3f sp60;

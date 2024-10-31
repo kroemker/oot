@@ -8,7 +8,7 @@
 #include "assets/objects/gameplay_dangeon_keep/gameplay_dangeon_keep.h"
 #include "overlays/effects/ovl_Effect_Ss_Kakera/z_eff_ss_kakera.h"
 
-#define FLAGS (ACTOR_FLAG_4 | ACTOR_FLAG_26)
+#define FLAGS (ACTOR_FLAG_4 | ACTOR_FLAG_5 | ACTOR_FLAG_26)
 
 void ObjKibako_Init(Actor* thisx, PlayState* play);
 void ObjKibako_Destroy(Actor* thisx, PlayState* play2);
@@ -46,7 +46,7 @@ static ColliderCylinderInit sCylinderInit = {
     {
         ELEMTYPE_UNK0,
         { 0x00000002, 0x00, 0x01 },
-        { 0x4FC00748, 0x00, 0x00 },
+        { 0x4FC00748 | DMG_ARROW, 0x00, 0x00 },
         ATELEM_ON | ATELEM_SFX_NORMAL,
         ACELEM_ON,
         OCELEM_ON,
@@ -202,12 +202,10 @@ void ObjKibako_Idle(ObjKibako* this, PlayState* play) {
         if (!(this->collider.base.ocFlags1 & OC1_TYPE_PLAYER) && (this->actor.xzDistToPlayer > 28.0f)) {
             this->collider.base.ocFlags1 |= OC1_TYPE_PLAYER;
         }
-        if (this->actor.xzDistToPlayer < 600.0f) {
-            Collider_UpdateCylinder(&this->actor, &this->collider);
-            CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);
-            if (this->actor.xzDistToPlayer < 180.0f) {
-                CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
-            }
+        Collider_UpdateCylinder(&this->actor, &this->collider);
+        CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);
+        if (this->actor.xzDistToPlayer < 180.0f) {
+            CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
         }
         if (this->actor.xzDistToPlayer < 100.0f) {
             Actor_OfferCarry(&this->actor, play);

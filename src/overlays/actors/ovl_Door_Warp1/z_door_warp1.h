@@ -19,7 +19,9 @@ typedef enum {
     /*  7 */ WARP_UNK_7,
     /*  8 */ WARP_ORANGE,
     /*  9 */ WARP_GREEN,
-    /* 10 */ WARP_RED
+    /* 10 */ WARP_RED,
+    WARP_BLUE,
+    WARP_PURPLE,
 } DoorWarp1Type;
 
 typedef enum {

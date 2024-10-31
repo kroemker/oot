@@ -7104,7 +7104,7 @@ void func_8083EA94(Player* this, PlayState* play) {
 }
 
 s32 func_8083EAF0(Player* this, Actor* actor) {
-    if ((actor->flags | ACTOR_FLAG_ALWAYS_PUT_DOWN) || (
+    if ((actor->id == ACTOR_HM_COMP_OBJECTS) || (
         (actor != NULL) && !(actor->flags & ACTOR_FLAG_23) &&
         ((this->speedXZ < 1.1f) || (actor->id == ACTOR_EN_BOM_CHU)))) {
         return 0;

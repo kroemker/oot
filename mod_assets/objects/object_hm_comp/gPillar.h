@@ -1,12 +1,7 @@
-extern u64 gPillar_FIRE_bs_room_1Tex_0061D8_ci4_ci4[];
-extern u64 gPillar_FIRE_bs_room_1Tex_0061D8_ci4_pal_rgba16[];
-extern u64 gPillar_FIRE_bs_room_0Tex_004068_ci4_ci4[];
-extern u64 gPillar_FIRE_bs_room_0Tex_004068_ci4_pal_rgba16[];
+extern u64 gPillar_silver_rock_ci4_ci4[];
+extern u64 gPillar_silver_rock_ci4_pal_rgba16[];
 extern Vtx gPillar_gPillar_mesh_layer_Opaque_vtx_cull[8];
-extern Vtx gPillar_gPillar_mesh_layer_Opaque_vtx_0[16];
+extern Vtx gPillar_gPillar_mesh_layer_Opaque_vtx_0[48];
 extern Gfx gPillar_gPillar_mesh_layer_Opaque_tri_0[];
-extern Vtx gPillar_gPillar_mesh_layer_Opaque_vtx_1[8];
-extern Gfx gPillar_gPillar_mesh_layer_Opaque_tri_1[];
-extern Gfx mat_gPillar_side_layerOpaque[];
-extern Gfx mat_gPillar_top_layerOpaque[];
+extern Gfx mat_gPillar_f3dlite_material_001_layerOpaque[];
 extern Gfx gPillar[];

@@ -11,7 +11,7 @@ SceneCmd hm_comp_room_2_header00[] = {
     SCENE_CMD_ECHO_SETTINGS(0x00),
     SCENE_CMD_ROOM_BEHAVIOR(0x00, 0x00, false, false),
     SCENE_CMD_SKYBOX_DISABLES(false, false),
-    SCENE_CMD_TIME_SETTINGS(255, 255, 10),
+    SCENE_CMD_TIME_SETTINGS(255, 255, 0),
     SCENE_CMD_OBJECT_LIST(LENGTH_HM_COMP_ROOM_2_HEADER00_OBJECTLIST, hm_comp_room_2_header00_objectList),
     SCENE_CMD_ACTOR_LIST(LENGTH_HM_COMP_ROOM_2_HEADER00_ACTORLIST, hm_comp_room_2_header00_actorList),
     SCENE_CMD_END(),
@@ -26,7 +26,7 @@ ActorEntry hm_comp_room_2_header00_actorList[LENGTH_HM_COMP_ROOM_2_HEADER00_ACTO
     // Treasure Chest
     {
         /* Actor ID   */ ACTOR_EN_BOX,
-        /* Position   */ { -1772, -616, 428 },
+        /* Position   */ { -1772, -616, 410 },
         /* Rotation   */ { 0, 0x8000, 7 },
         /* Parameters */ 0x27E0
     },
@@ -34,7 +34,7 @@ ActorEntry hm_comp_room_2_header00_actorList[LENGTH_HM_COMP_ROOM_2_HEADER00_ACTO
     // Flame Circle
     {
         /* Actor ID   */ ACTOR_BG_HIDAN_CURTAIN,
-        /* Position   */ { -1772, -616, 428 },
+        /* Position   */ { -1772, -616, 410 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(90.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x7006
     },
@@ -883,7 +883,7 @@ Gfx hm_comp_room_2_dl_room_03_mesh_layer_Opaque[] = {
 	gsSPDisplayList(hm_comp_room_2_dl_room_03_mesh_layer_Opaque_tri_1),
 	gsSPDisplayList(mat_hm_comp_room_1_dl_f3dlite_material_015_layerOpaque),
 	gsSPDisplayList(hm_comp_room_2_dl_room_03_mesh_layer_Opaque_tri_2),
-	gsSPDisplayList(mat_hm_comp_room_2_dl_f3dlite_material_018_layerOpaque),
+	gsSPDisplayList(mat_hm_comp_room_1_dl_f3dlite_material_018_layerOpaque),
 	gsSPDisplayList(hm_comp_room_2_dl_room_03_mesh_layer_Opaque_tri_3),
 	gsSPDisplayList(mat_hm_comp_room_1_dl_f3dlite_material_016_layerOpaque),
 	gsSPDisplayList(hm_comp_room_2_dl_room_03_mesh_layer_Opaque_tri_4),

@@ -111,6 +111,8 @@ void DoorWarp1_SetupWarp(DoorWarp1* this, PlayState* play) {
         case WARP_ORANGE:
         case WARP_GREEN:
         case WARP_RED:
+        case WARP_BLUE:
+        case WARP_PURPLE:
             this->unk_194 = 0.23f;
             this->unk_198 = 0.6f;
             break;
@@ -153,6 +155,8 @@ void DoorWarp1_SetupWarp(DoorWarp1* this, PlayState* play) {
         case WARP_ORANGE:
         case WARP_GREEN:
         case WARP_RED:
+        case WARP_BLUE:
+        case WARP_PURPLE:
             break;
     }
 
@@ -361,6 +365,8 @@ void DoorWarp1_ChooseInitialAction(DoorWarp1* this, PlayState* play) {
         case WARP_ORANGE:
         case WARP_GREEN:
         case WARP_RED:
+        case WARP_BLUE:
+        case WARP_PURPLE:
             DoorWarp1_SetupWarp(this, play);
             break;
         case WARP_DUNGEON_ADULT:
@@ -405,7 +411,7 @@ void DoorWarp1_WarpAppear(DoorWarp1* this, PlayState* play) {
     Math_SmoothStepToF(&this->warpAlpha, 255.0f, 0.4f, 10.0f, 0.01f);
 
     if (this->actor.params != WARP_YELLOW && this->actor.params != WARP_ORANGE && this->actor.params != WARP_GREEN &&
-        this->actor.params != WARP_RED) {
+        this->actor.params != WARP_RED && this->actor.params != WARP_BLUE && this->actor.params != WARP_PURPLE) {
         if (this->scale < 100) {
             this->scale += 2;
         }
@@ -926,7 +932,8 @@ void DoorWarp1_DrawWarp(DoorWarp1* this, PlayState* play) {
 
     temp_f0 = 1.0f - (2.0f - this->unk_194) / 1.7f;
     if (this->actor.params != WARP_YELLOW && this->actor.params != WARP_DESTINATION &&
-        this->actor.params != WARP_ORANGE && this->actor.params != WARP_GREEN && this->actor.params != WARP_RED) {
+        this->actor.params != WARP_ORANGE && this->actor.params != WARP_GREEN && this->actor.params != WARP_RED &&
+        this->actor.params != WARP_PURPLE && this->actor.params != WARP_BLUE) {
         this->unk_19C += (s16)(temp_f0 * 15.0f);
     }
     if (this->actor.params == WARP_DESTINATION) {
@@ -950,6 +957,14 @@ void DoorWarp1_DrawWarp(DoorWarp1* this, PlayState* play) {
         case WARP_RED:
             gDPSetPrimColor(POLY_XLU_DISP++, 0x00, 0x80, 255, 255, 255, (u8)this->warpAlpha);
             gDPSetEnvColor(POLY_XLU_DISP++, 255, 50, 0, 255);
+            break;
+        case WARP_BLUE:
+            gDPSetPrimColor(POLY_XLU_DISP++, 0x00, 0x80, 255, 255, 255, (u8)this->warpAlpha);
+            gDPSetEnvColor(POLY_XLU_DISP++, 0, 50, 255, 255);
+            break;
+        case WARP_PURPLE:
+            gDPSetPrimColor(POLY_XLU_DISP++, 0x00, 0x80, 255, 255, 255, (u8)this->warpAlpha);
+            gDPSetEnvColor(POLY_XLU_DISP++, 150, 0, 255, 255);
             break;
         default:
             gDPSetPrimColor(POLY_XLU_DISP++, 0x00, 0x80, 255 * temp_f0, 255, 255, (u8)this->warpAlpha);
@@ -993,6 +1008,14 @@ void DoorWarp1_DrawWarp(DoorWarp1* this, PlayState* play) {
                 gDPSetPrimColor(POLY_XLU_DISP++, 0x00, 0x80, 255, 255, 255, (u8)this->warpAlpha);
                 gDPSetEnvColor(POLY_XLU_DISP++, 255, 50, 0, 255);
                 break;
+            case WARP_BLUE:
+                gDPSetPrimColor(POLY_XLU_DISP++, 0x00, 0x80, 255, 255, 255, (u8)this->warpAlpha);
+                gDPSetEnvColor(POLY_XLU_DISP++, 0, 50, 255, 255);
+                break;
+            case WARP_PURPLE:
+                gDPSetPrimColor(POLY_XLU_DISP++, 0x00, 0x80, 255, 255, 255, (u8)this->warpAlpha);
+                gDPSetEnvColor(POLY_XLU_DISP++, 150, 0, 255, 255);
+                break;
             default:
                 gDPSetPrimColor(POLY_XLU_DISP++, 0x00, 0x80, 255 * temp_f0, 255, 255, (u8)this->lightRayAlpha);
                 gDPSetEnvColor(POLY_XLU_DISP++, 0, 255 * temp_f0, 255, 255);
@@ -1034,6 +1057,8 @@ void DoorWarp1_Draw(Actor* thisx, PlayState* play) {
         case WARP_ORANGE:
         case WARP_GREEN:
         case WARP_RED:
+        case WARP_BLUE:
+        case WARP_PURPLE:
             DoorWarp1_DrawWarp(this, play);
             break;
         case WARP_BLUE_CRYSTAL:

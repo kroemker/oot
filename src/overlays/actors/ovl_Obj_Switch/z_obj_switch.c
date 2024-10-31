@@ -739,6 +739,23 @@ s32 ObjSwitch_AllIksFinishedMoving(ObjSwitch* this, PlayState* play) {
     return true;
 }
 
+s32 ObjSwitch_RightNeighborWithElement(ObjSwitch* this, PlayState* play, Actor* baseActor, u8 element) {
+    Actor* actor = play->actorCtx.actorLists[ACTORCAT_PROP].head;
+
+    while (actor != NULL) {
+        if (actor->id != ACTOR_EN_IK) {
+            actor = actor->next;
+            continue;
+        }
+        EnIk* ik = (EnIk*)(actor);
+        if (ik->puzzleKnuckle && ik->element == element && Actor_WorldDistXZToActor(baseActor, actor) < 180.0f && actor->world.pos.x > baseActor->world.pos.x) {
+            return true;
+        }
+        actor = actor->next;
+    }
+    return false;
+}
+
 s32 ObjSwitch_ExistsNearbyIkWithElement(ObjSwitch* this, PlayState* play, Actor* baseActor, u8 element) {
     Actor* actor = play->actorCtx.actorLists[ACTORCAT_PROP].head;
 
@@ -774,24 +791,32 @@ s32 ObjSwitch_AllIkRulesFulfilled(ObjSwitch* this, PlayState* play) {
         u8 nearby1, nearby2;
         switch (ik->element) {
             case IK_ELEMENT_LIGHT:
-                // PRINTF("Ik element: Light\n");
                 break;
             case IK_ELEMENT_FOREST:
-                nearby1 = ObjSwitch_ExistsNearbyIkWithElement(this, play, actor, IK_ELEMENT_WATER);
-                nearby2 = ObjSwitch_ExistsNearbyIkWithElement(this, play, actor, IK_ELEMENT_LIGHT);
-                // PRINTF("Ik element: Forest, water nearby1: %d, light nearby2: %d\n", nearby1, nearby2);
-                if (!nearby1 || !nearby2) {
+                if (!ObjSwitch_RightNeighborWithElement(this, play, actor, IK_ELEMENT_LIGHT)) {
                     return false;
                 }
+                // nearby1 = ObjSwitch_ExistsNearbyIkWithElement(this, play, actor, IK_ELEMENT_WATER);
+                // nearby2 = ObjSwitch_ExistsNearbyIkWithElement(this, play, actor, IK_ELEMENT_LIGHT);
+                // // PRINTF("Ik element: Forest, water nearby1: %d, light nearby2: %d\n", nearby1, nearby2);
+                // if (!nearby1 || !nearby2) {
+                //     return false;
+                // }
                 break;
             case IK_ELEMENT_FIRE:
-                nearby1 = ObjSwitch_ExistsNearbyIkWithElement(this, play, actor, IK_ELEMENT_WATER);
-                // PRINTF("Ik element: Fire, water nearby1: %d\n", nearby1);
-                if (nearby1) {
+                if (!ObjSwitch_RightNeighborWithElement(this, play, actor, IK_ELEMENT_WATER)) {
                     return false;
                 }
+                // nearby1 = ObjSwitch_ExistsNearbyIkWithElement(this, play, actor, IK_ELEMENT_WATER);
+                // // PRINTF("Ik element: Fire, water nearby1: %d\n", nearby1);
+                // if (nearby1) {
+                //     return false;
+                // }
                 break;
             case IK_ELEMENT_WATER:
+                if (!ObjSwitch_RightNeighborWithElement(this, play, actor, IK_ELEMENT_FOREST)) {
+                    return false;
+                }
                 // PRINTF("Ik element: Water\n");
                 break;
             case IK_ELEMENT_SHADOW:

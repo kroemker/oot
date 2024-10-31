@@ -57,7 +57,7 @@ ActorProfile Door_Shutter_Profile = {
     /**/ DoorShutter_Init,
     /**/ DoorShutter_Destroy,
     /**/ DoorShutter_Update,
-    /**/ DoorShutter_Draw,
+    /**/ NULL,
 };
 
 typedef enum {
@@ -491,6 +491,7 @@ void DoorShutter_WaitForObject(DoorShutter* this, PlayState* play) {
         } else {
             DoorShutter_SetupDoor(this, play);
         }
+        this->dyna.actor.draw = DoorShutter_Draw;
     }
 }
 

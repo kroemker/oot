@@ -8045,6 +8045,22 @@ beginseg
 endseg
 
 beginseg
+    name "hm_comp_room_10"
+    compress
+    romalign 0x1000
+    include "$(BUILD_DIR)/assets/scenes/hm_comp/hm_comp_room_10.o"
+    number 3
+endseg
+
+beginseg
+    name "hm_comp_room_11"
+    compress
+    romalign 0x1000
+    include "$(BUILD_DIR)/assets/scenes/hm_comp/hm_comp_room_11.o"
+    number 3
+endseg
+
+beginseg
     name "hm_comp_boss_scene"
     compress
     romalign 0x1000

@@ -4,13 +4,97 @@
 /**
  * Header Child Day (Default)
 */
+#define LENGTH_HM_COMP_ROOM_8_HEADER00_ACTORLIST 10
 SceneCmd hm_comp_room_8_header00[] = {
     SCENE_CMD_ROOM_SHAPE(&hm_comp_room_8_shapeHeader),
     SCENE_CMD_ECHO_SETTINGS(0x00),
     SCENE_CMD_ROOM_BEHAVIOR(0x00, 0x00, false, false),
     SCENE_CMD_SKYBOX_DISABLES(false, false),
-    SCENE_CMD_TIME_SETTINGS(255, 255, 10),
+    SCENE_CMD_TIME_SETTINGS(255, 255, 0),
+    SCENE_CMD_ACTOR_LIST(LENGTH_HM_COMP_ROOM_8_HEADER00_ACTORLIST, hm_comp_room_8_header00_actorList),
     SCENE_CMD_END(),
+};
+
+ActorEntry hm_comp_room_8_header00_actorList[LENGTH_HM_COMP_ROOM_8_HEADER00_ACTORLIST] = {
+    // Dungeon Switches
+    {
+        /* Actor ID   */ ACTOR_OBJ_SWITCH,
+        /* Position   */ { 4933, -467, 1897 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x8D00
+    },
+
+    // Dungeon Switches
+    {
+        /* Actor ID   */ ACTOR_OBJ_SWITCH,
+        /* Position   */ { 4933, -467, 1987 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x8D00
+    },
+
+    // Dungeon Switches
+    {
+        /* Actor ID   */ ACTOR_OBJ_SWITCH,
+        /* Position   */ { 4933, -467, 2076 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x8D00
+    },
+
+    // Dungeon Switches
+    {
+        /* Actor ID   */ ACTOR_OBJ_SWITCH,
+        /* Position   */ { 4933, -467, 2166 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x8D00
+    },
+
+    // Dungeon Switches
+    {
+        /* Actor ID   */ ACTOR_OBJ_SWITCH,
+        /* Position   */ { 4933, -467, 2256 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x8D00
+    },
+
+    // Dungeon Switches
+    {
+        /* Actor ID   */ ACTOR_OBJ_SWITCH,
+        /* Position   */ { 4843, -467, 1897 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x8D00
+    },
+
+    // Dungeon Switches
+    {
+        /* Actor ID   */ ACTOR_OBJ_SWITCH,
+        /* Position   */ { 4843, -467, 2166 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x8D00
+    },
+
+    // Dungeon Switches
+    {
+        /* Actor ID   */ ACTOR_OBJ_SWITCH,
+        /* Position   */ { 4843, -467, 1987 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x8D00
+    },
+
+    // Dungeon Switches
+    {
+        /* Actor ID   */ ACTOR_OBJ_SWITCH,
+        /* Position   */ { 4843, -467, 2076 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x8D00
+    },
+
+    // Dungeon Switches
+    {
+        /* Actor ID   */ ACTOR_OBJ_SWITCH,
+        /* Position   */ { 4843, -467, 2256 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x8D00
+    },
 };
 
 RoomShapeNormal hm_comp_room_8_shapeHeader = {
@@ -1022,7 +1106,7 @@ Gfx hm_comp_room_8_dl_room_13_mesh_layer_Opaque[] = {
 	gsSPDisplayList(hm_comp_room_8_dl_room_13_mesh_layer_Opaque_tri_1),
 	gsSPDisplayList(mat_hm_comp_room_1_dl_f3dlite_material_015_layerOpaque),
 	gsSPDisplayList(hm_comp_room_8_dl_room_13_mesh_layer_Opaque_tri_2),
-	gsSPDisplayList(mat_hm_comp_room_2_dl_f3dlite_material_018_layerOpaque),
+	gsSPDisplayList(mat_hm_comp_room_1_dl_f3dlite_material_018_layerOpaque),
 	gsSPDisplayList(hm_comp_room_8_dl_room_13_mesh_layer_Opaque_tri_3),
 	gsSPDisplayList(mat_hm_comp_room_1_dl_f3dlite_material_016_layerOpaque),
 	gsSPDisplayList(hm_comp_room_8_dl_room_13_mesh_layer_Opaque_tri_4),

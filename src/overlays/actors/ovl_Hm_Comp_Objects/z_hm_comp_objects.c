@@ -16,17 +16,20 @@
 #define HMCO_INVERTED(thisx) (((thisx)->params >> 15) & 1)
 #define HMCO_GET_SWITCH_FLAG(thisx) (((thisx)->params >> 8) & 0x7F)
 
-#define HAND_ACCEL 1.0f
-#define HAND_SPEED 5.0f
-#define HAND_MOVE_DISTANCE 500.0f
+#define HAND_ACCEL 0.6f
+#define HAND_SPEED 3.5f
+#define HAND_MOVE_DISTANCE 190.0f
 
-#define PILLAR_MOVE_DISTANCE 1000.0f
+#define PILLAR_MOVE_DISTANCE 545.0f
 
 #define STAIRS_MOVE_DISTANCE 1000.0f
 #define STAIRS_RISE_SPEED 6.0f
 
-#define GATE_MOVE_DISTANCE 115.0f
-#define GATE_RISE_SPEED 9.0f
+#define GATE1_MOVE_DISTANCE 115.0f
+#define GATE1_RISE_SPEED 9.0f
+
+#define GATE2_MOVE_DISTANCE 190.0f
+#define GATE2_RISE_SPEED 9.0f
 
 #define PLATFORM_MOVE_DISTANCE 500.0f
 #define PLATFORM_MOVE_SPEED 5.0f
@@ -90,7 +93,7 @@ static ColliderCylinderInit sPillarColliderInit = {
         ACELEM_ON,
         OCELEM_ON,
     },
-    { 50, 400, 0, { 0, 0, 0 } },
+    { 186, 280, 0, { 0, 0, 0 } },
 };
 
 static ColliderCylinderInit sChessPieceColliderInit = {
@@ -157,8 +160,8 @@ void HmCompObjects_Action_Hand_Move(HmCompObjects* this, PlayState* play) {
     
     func_8002F974(&this->dyna.actor, NA_SE_EV_ELEVATOR_MOVE - SFX_FLAG);
 
-    this->dyna.actor.world.pos.x += multiplier * this->dyna.actor.speed * Math_SinS(this->dyna.actor.shape.rot.y);
-    this->dyna.actor.world.pos.z += multiplier * this->dyna.actor.speed * Math_CosS(this->dyna.actor.shape.rot.y);
+    this->dyna.actor.world.pos.x += multiplier * this->dyna.actor.speed * Math_SinS(this->dyna.actor.shape.rot.y + 0x0000);
+    this->dyna.actor.world.pos.z += multiplier * this->dyna.actor.speed * Math_CosS(this->dyna.actor.shape.rot.y + 0x0000);
 
     if (Math_Vec3f_DistXZ(&this->dyna.actor.world.pos, &this->dyna.actor.home.pos) <= 6.0f) {
         Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_BLOCK_BOUND);
@@ -170,10 +173,11 @@ void HmCompObjects_Action_Hand_Move(HmCompObjects* this, PlayState* play) {
 }
 
 void HmCompObjects_Action_Hand_Idle(HmCompObjects* this, PlayState* play) {
-    if (this->moved ^ (Flags_GetSwitch(play, this->switchFlag) || this->inverted)) {
+    s32 shouldBeMoved = (!!Flags_GetSwitch(play, this->switchFlag)) ^ this->inverted;
+    if ((!this->moved && shouldBeMoved) || (this->moved && !shouldBeMoved)) {
         f32 multiplier = this->moved ? -1.0f : 1.0f;
-        this->dyna.actor.home.pos.x += multiplier * HAND_MOVE_DISTANCE * Math_SinS(this->dyna.actor.shape.rot.y);
-        this->dyna.actor.home.pos.z += multiplier * HAND_MOVE_DISTANCE * Math_CosS(this->dyna.actor.shape.rot.y);
+        this->dyna.actor.home.pos.x += multiplier * HAND_MOVE_DISTANCE * Math_SinS(this->dyna.actor.shape.rot.y + 0x0000);
+        this->dyna.actor.home.pos.z += multiplier * HAND_MOVE_DISTANCE * Math_CosS(this->dyna.actor.shape.rot.y + 0x0000);
         HmCompObjects_SetupAction(this, play, HmCompObjects_Action_Hand_Move);
     }
 }
@@ -186,9 +190,9 @@ void HmCompObjects_InitHand(Actor* thisx, PlayState* play) {
     CollisionHeader_GetVirtual(&gHand_collisionHeader, &colHeader);
     this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, &this->dyna.actor, colHeader);
 
-    if (Flags_GetSwitch(play, this->switchFlag) || this->inverted) {
-        this->dyna.actor.world.pos.x += Math_SinS(this->dyna.actor.shape.rot.y) * HAND_MOVE_DISTANCE;
-        this->dyna.actor.world.pos.z += Math_CosS(this->dyna.actor.shape.rot.y) * HAND_MOVE_DISTANCE;
+    if ((!!Flags_GetSwitch(play, this->switchFlag)) ^ this->inverted) {
+        this->dyna.actor.world.pos.x += Math_SinS(this->dyna.actor.shape.rot.y + 0x0000) * HAND_MOVE_DISTANCE;
+        this->dyna.actor.world.pos.z += Math_CosS(this->dyna.actor.shape.rot.y + 0x0000) * HAND_MOVE_DISTANCE;
         Math_Vec3f_Copy(&this->dyna.actor.home.pos, &this->dyna.actor.world.pos);
         this->moved = 1;
     }
@@ -371,7 +375,7 @@ void HmCompObjects_InitPlatform(Actor* thisx, PlayState* play) {
 
 // GATE
 void HmCompObjects_Action_Gate_Rise(HmCompObjects* this, PlayState* play) {
-    this->dyna.actor.velocity.y = CLAMP_MAX(this->dyna.actor.velocity.y + 1.0f, GATE_RISE_SPEED);
+    this->dyna.actor.velocity.y = CLAMP_MAX(this->dyna.actor.velocity.y + 1.0f, HMCO_TYPE_GATE_1 ? GATE1_RISE_SPEED : GATE2_RISE_SPEED);
 
     if (Math_StepToF(&this->dyna.actor.world.pos.y, this->dyna.actor.home.pos.y, this->dyna.actor.velocity.y)) {
         HmCompObjects_SetupAction(this, play, HmCompObjects_Action_Gate_Idle);
@@ -393,8 +397,9 @@ void HmCompObjects_Action_Gate_Idle(HmCompObjects* this, PlayState* play) {
     if (Flags_GetSwitch(play, this->switchFlag)) {
         this->moved = 1;
         this->timer = 55;
-        this->dyna.actor.home.pos.y += GATE_MOVE_DISTANCE;
-        OnePointCutscene_Attention(play, &this->dyna.actor);
+        this->dyna.actor.home.pos.y += this->type == HMCO_TYPE_GATE_1 ? GATE1_MOVE_DISTANCE : GATE2_MOVE_DISTANCE;
+        OnePointCutscene_Init(play, 5010, 30, &this->dyna.actor, CAM_ID_MAIN);
+        // OnePointCutscene_Attention(play, &this->dyna.actor);
         HmCompObjects_SetupAction(this, play, HmCompObjects_Action_Gate_WaitForRise);
     }
 }
@@ -404,12 +409,12 @@ void HmCompObjects_InitGate(Actor* thisx, PlayState* play) {
     CollisionHeader* colHeader = NULL;
 
     DynaPolyActor_Init(&this->dyna, DYNA_TRANSFORM_POS);
-    CollisionHeader_GetVirtual(&gGate_collisionHeader, &colHeader);
+    CollisionHeader_GetVirtual(this->type == HMCO_TYPE_GATE_1 ? &gGate1_collisionHeader : &gGate2_collisionHeader , &colHeader);
     this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, &this->dyna.actor, colHeader);
 
     if (Flags_GetSwitch(play, this->switchFlag)) {
         this->moved = 1;
-        this->dyna.actor.home.pos.y = this->dyna.actor.world.pos.y += GATE_MOVE_DISTANCE;
+        this->dyna.actor.home.pos.y = this->dyna.actor.world.pos.y += this->type == HMCO_TYPE_GATE_1 ? GATE1_MOVE_DISTANCE : GATE2_MOVE_DISTANCE;
     }
     else {
         this->moved = 0;
@@ -421,6 +426,12 @@ void HmCompObjects_InitGate(Actor* thisx, PlayState* play) {
 //CHESS BOARD
 void HmCompObjects_Action_ChessBoardSwitchTrigger_PuzzleSolved(HmCompObjects* this, PlayState* play) {
 }
+
+s32 sWarpColors[] = {
+    WARP_BLUE, // bishop
+    WARP_PURPLE, // rook
+    WARP_GREEN, // knight
+};
 
 void HmCompObjects_Action_ChessBoardSwitchTrigger_Idle(HmCompObjects* this, PlayState* play) {
     if (Flags_GetSwitch(play, this->switchFlag)) {
@@ -441,8 +452,9 @@ void HmCompObjects_Action_ChessBoardSwitchTrigger_Idle(HmCompObjects* this, Play
                 piece->dyna.actor.velocity.y = 0.0f;
                 Math_Vec3f_Copy(&piece->dyna.actor.home.pos, &piece->dyna.actor.world.pos);
                 piece->actionFunc = HmCompObjects_Action_ChessPiecePuzzleSolved;
+                piece->correctSquare = &this->dyna.actor;
 
-                Actor_Spawn(&play->actorCtx, play, ACTOR_DOOR_WARP1, this->dyna.actor.world.pos.x, this->dyna.actor.world.pos.y, this->dyna.actor.world.pos.z, 0, 0, 0, WARP_ORANGE + piece->type - HMCO_TYPE_CHESS_BISHOP);
+                Actor_Spawn(&play->actorCtx, play, ACTOR_DOOR_WARP1, this->dyna.actor.world.pos.x, this->dyna.actor.world.pos.y, this->dyna.actor.world.pos.z, 0, 0, 0, sWarpColors[piece->type - HMCO_TYPE_CHESS_BISHOP]);
             }
             else {
                 Player* player = GET_PLAYER(play);
@@ -464,6 +476,7 @@ void HmCompObjects_InitChessBoardSwitchTrigger(Actor* thisx, PlayState* play) {
     Collider_InitCylinder(play, &this->collider);
     Collider_SetCylinder(play, &this->collider, thisx, &sChessBoardSwitchColliderInit);
     Actor_ChangeCategory(play, &play->actorCtx, thisx, ACTORCAT_SWITCH);
+    this->dyna.actor.flags &= ~(ACTOR_FLAG_5 | ACTOR_FLAG_4);
 
     if (Flags_GetSwitch(play, this->switchFlag)) {
         HmCompObjects_SetupAction(this, play, HmCompObjects_Action_ChessBoardSwitchTrigger_PuzzleSolved);
@@ -473,37 +486,20 @@ void HmCompObjects_InitChessBoardSwitchTrigger(Actor* thisx, PlayState* play) {
 }
 
 // CHESS PIECE
-Actor* HmCompObjects_GetCorrectChessSquare(HmCompObjects* this, PlayState* play) {
-    s32 actorCategory;
-
-    for (actorCategory = 0; actorCategory < ACTORCAT_MAX; actorCategory++) {
-        Actor* actor = play->actorCtx.actorLists[actorCategory].head;
-        while (actor != NULL) {
-            if ((actor->id == ACTOR_HM_COMP_OBJECTS) && (HMCO_GET_TYPE(actor) == HMCO_TYPE_CHESS_BOARD_SWITCH_TRIGGER) && (HMCO_GET_SWITCH_FLAG(actor) == this->switchFlag)) {
-                return actor;
-            }
-            actor = actor->next;
-        }
-    }
-
-    return NULL;
-}
-
 void HmCompObjects_Action_ChessPiecePuzzleSolved(HmCompObjects* this, PlayState* play) {
-    Actor* square = HmCompObjects_GetCorrectChessSquare(this, play);
-    if (square != NULL) {
+    if (this->correctSquare != NULL) {
         s32 angleDiff;
         
-        Math_StepToAngleS(&this->dyna.actor.shape.rot.y, square->shape.rot.y, 0x400);
-        angleDiff = (s32)square->shape.rot.y - (s32)this->dyna.actor.shape.rot.y;
+        Math_StepToAngleS(&this->dyna.actor.shape.rot.y, this->correctSquare->shape.rot.y, 0x400);
+        angleDiff = (s32)this->correctSquare->shape.rot.y - (s32)this->dyna.actor.shape.rot.y;
         if (ABS(angleDiff) < 0x400) {
-            this->dyna.actor.shape.rot.y = square->shape.rot.y;
+            this->dyna.actor.shape.rot.y = this->correctSquare->shape.rot.y;
         }
         this->dyna.actor.world.rot.y = this->dyna.actor.shape.rot.y;
 
-        Math_ApproachF(&this->dyna.actor.world.pos.x, square->world.pos.x, 1.0f, 2.0f);
-        Math_ApproachF(&this->dyna.actor.world.pos.y, square->world.pos.y, 1.0f, 2.0f);
-        Math_ApproachF(&this->dyna.actor.world.pos.z, square->world.pos.z, 1.0f, 2.0f);
+        Math_ApproachF(&this->dyna.actor.world.pos.x, this->correctSquare->world.pos.x, 1.0f, 2.0f);
+        Math_ApproachF(&this->dyna.actor.world.pos.y, this->correctSquare->world.pos.y, 1.0f, 2.0f);
+        Math_ApproachF(&this->dyna.actor.world.pos.z, this->correctSquare->world.pos.z, 1.0f, 2.0f);
     }
 
     Collider_UpdateCylinder(&this->dyna.actor, &this->collider);
@@ -553,12 +549,6 @@ void HmCompObjects_InitChessPiece(Actor* thisx, PlayState* play) {
     this->dyna.actor.colChkInfo.mass = MASS_IMMOVABLE;
 
     if (Flags_GetSwitch(play, this->switchFlag)) {
-        Actor* square = HmCompObjects_GetCorrectChessSquare(this, play);
-        if (square != NULL) {
-            Math_Vec3f_Copy(&this->dyna.actor.world.pos, &square->world.pos);
-            Math_Vec3f_Copy(&this->dyna.actor.home.pos, &this->dyna.actor.world.pos);
-            this->dyna.actor.shape.rot.y = square->shape.rot.y;
-        }
         HmCompObjects_SetupAction(this, play, HmCompObjects_Action_ChessPiecePuzzleSolved);
     } else {
         HmCompObjects_SetupAction(this, play, HmCompObjects_Action_ChessPieceIdle);

@@ -272,7 +272,7 @@ void EnIk_InitImpl(Actor* thisx, PlayState* play) {
         EnIk_SetupStandUp(this);
     }
 
-    if (this->switchFlag != 0xFF) {
+    if (this->switchFlag != 0x3F) {
         if (Flags_GetSwitch(play, this->switchFlag)) {
             Actor_Kill(thisx);
         }
@@ -327,8 +327,8 @@ void EnIk_SetupStandUp(EnIk* this) {
 
 void EnIk_StandUp(EnIk* this, PlayState* play) {
     Vec3f sparksPos;
-
-    if (this->bodyCollider.base.acFlags & AC_HIT) {
+    // if (this->bodyCollider.base.acFlags & AC_HIT) {
+    if (ABS(this->actor.yDistToPlayer) < 5.0f) {
         sparksPos = this->actor.world.pos;
         Actor_PlaySfx(&this->actor, NA_SE_EN_IRONNACK_ARMOR_HIT);
         sparksPos.y += 30.0f;
@@ -1114,7 +1114,7 @@ void EnIk_PostLimbDrawEnemy(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* 
 }
 
 static Color_RGB8 sPuzzleIkColors[6] = {
-    { 116, 125, 15 }, // LIGHT
+    { 81, 15, 125 }, // LIGHT
     { 26, 125, 15 },  // FOREST
     { 125, 15, 15 },  // FIRE
     { 15, 39, 125 },  // WATER

@@ -46,7 +46,7 @@ static ColliderCylinderInit sCylinderInit = {
 
 static Color_RGBA8 sPrimColors[] = {
     { 255, 170, 255, 255 },
-    { 255, 200, 0, 255 },
+    { 255, 100, 100, 255 },
     { 0, 170, 255, 255 },
     { 170, 255, 0, 255 },
 };
@@ -96,7 +96,7 @@ void BgPoSyokudai_Init(Actor* thisx, PlayState* play) {
     this->collider.dim.pos.y = thisx->world.pos.y;
     this->collider.dim.pos.z = thisx->world.pos.z;
 
-    if (this->flameColor == POE_FLAME_PURPLE && Flags_GetSwitch(play, POE_TORCH_FLAG + POE_FLAME_GREEN) &&
+    /*if (this->flameColor == POE_FLAME_PURPLE && Flags_GetSwitch(play, POE_TORCH_FLAG + POE_FLAME_GREEN) &&
         Flags_GetSwitch(play, POE_TORCH_FLAG + POE_FLAME_BLUE) &&
         Flags_GetSwitch(play, POE_TORCH_FLAG + POE_FLAME_RED) && !Flags_GetSwitch(play, thisx->params)) {
 
@@ -112,7 +112,7 @@ void BgPoSyokudai_Init(Actor* thisx, PlayState* play) {
         if (play->envCtx.lightSettingOverride == LIGHT_SETTING_OVERRIDE_NONE) {
             play->envCtx.lightSettingOverride = 4;
         }
-    }
+    }*/
 
     this->flameTextureScroll = (s16)(Rand_ZeroOne() * 20.0f);
 }

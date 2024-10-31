@@ -11,7 +11,7 @@ typedef void (*EnIkActionFunc)(struct EnIk*, PlayState*);
 #define IK_GET_UPPER_PARAMS(thisx) ((thisx)->params & 0xFF00)
 #define IK_GET_ARMOR_TYPE(thisx) ((thisx)->params & 0xF)
 #define IK_GET_PUZZLE_ELEMENT(thisx) (((thisx)->params >> 4) & 0xF)
-#define IK_GET_SWITCH_FLAG(thisx) (((thisx)->params >> 8) & 0x1F)
+#define IK_GET_SWITCH_FLAG(thisx) (((thisx)->params >> 8) & 0x3F)
 #define IK_IS_PUZZLE_KNUCKLE(thisx) (((thisx)->params >> 0xF) & 1)
 
 typedef enum {

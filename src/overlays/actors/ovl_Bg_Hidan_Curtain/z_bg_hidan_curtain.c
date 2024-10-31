@@ -109,7 +109,8 @@ void BgHidanCurtain_Init(Actor* thisx, PlayState* play) {
         }
     }
     if (((this->type == 1) && Flags_GetTreasure(play, this->treasureFlag)) ||
-        (((this->type == 0) || (this->type == 6)) && Flags_GetClear(play, this->actor.room))) {
+        (((this->type == 0) || (this->type == 6)) && Flags_GetClear(play, this->actor.room)) || 
+        ((this->type == 7) && Flags_GetSwitch(play, this->actor.params))) {
         Actor_Kill(&this->actor);
     }
     this->texScroll = Rand_ZeroOne() * 15.0f;

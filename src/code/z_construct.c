@@ -28,7 +28,7 @@ void Interface_Init(PlayState* play) {
     interfaceCtx->unk_260 = 0;
     interfaceCtx->unk_244 = interfaceCtx->aAlpha = interfaceCtx->bAlpha = interfaceCtx->cLeftAlpha =
         interfaceCtx->cDownAlpha = interfaceCtx->cRightAlpha = interfaceCtx->healthAlpha = interfaceCtx->startAlpha =
-            interfaceCtx->magicAlpha = 0;
+            interfaceCtx->magicAlpha = interfaceCtx->dpadAlpha = 0;
 
     parameterSize = (uintptr_t)_parameter_staticSegmentRomEnd - (uintptr_t)_parameter_staticSegmentRomStart;
 

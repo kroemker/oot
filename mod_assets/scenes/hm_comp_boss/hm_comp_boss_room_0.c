@@ -5,13 +5,13 @@
  * Header Child Day (Default)
 */
 #define LENGTH_HM_COMP_BOSS_ROOM_0_HEADER00_OBJECTLIST 5
-#define LENGTH_HM_COMP_BOSS_ROOM_0_HEADER00_ACTORLIST 9
+#define LENGTH_HM_COMP_BOSS_ROOM_0_HEADER00_ACTORLIST 10
 SceneCmd hm_comp_boss_room_0_header00[] = {
     SCENE_CMD_ROOM_SHAPE(&hm_comp_boss_room_0_shapeHeader),
     SCENE_CMD_ECHO_SETTINGS(0x00),
     SCENE_CMD_ROOM_BEHAVIOR(0x00, 0x00, false, false),
     SCENE_CMD_SKYBOX_DISABLES(false, false),
-    SCENE_CMD_TIME_SETTINGS(255, 255, 10),
+    SCENE_CMD_TIME_SETTINGS(255, 255, 0),
     SCENE_CMD_OBJECT_LIST(LENGTH_HM_COMP_BOSS_ROOM_0_HEADER00_OBJECTLIST, hm_comp_boss_room_0_header00_objectList),
     SCENE_CMD_ACTOR_LIST(LENGTH_HM_COMP_BOSS_ROOM_0_HEADER00_ACTORLIST, hm_comp_boss_room_0_header00_actorList),
     SCENE_CMD_END(),
@@ -29,17 +29,17 @@ ActorEntry hm_comp_boss_room_0_header00_actorList[LENGTH_HM_COMP_BOSS_ROOM_0_HEA
     // Iron Knuckle
     {
         /* Actor ID   */ ACTOR_EN_IK,
-        /* Position   */ { 56, -120, -1298 },
+        /* Position   */ { 128, -120, -1298 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x3F01
+        /* Parameters */ 0x3F02
     },
 
     // Iron Knuckle
     {
         /* Actor ID   */ ACTOR_EN_IK,
-        /* Position   */ { -44, -120, -1298 },
+        /* Position   */ { -2, -120, -1298 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x3F01
+        /* Parameters */ 0x3F02
     },
 
     // Dampe Grave Digging Game
@@ -55,7 +55,7 @@ ActorEntry hm_comp_boss_room_0_header00_actorList[LENGTH_HM_COMP_BOSS_ROOM_0_HEA
         /* Actor ID   */ ACTOR_HM_COMP_OBJECTS,
         /* Position   */ { 63, -120, -589 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x3F05
+        /* Parameters */ 0x3005
     },
 
     // Brick Pillar (Spirit Temple)
@@ -94,6 +94,14 @@ ActorEntry hm_comp_boss_room_0_header00_actorList[LENGTH_HM_COMP_BOSS_ROOM_0_HEA
     {
         /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
         /* Position   */ { 469, -120, -811 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0
+    },
+
+    // Brick Pillar (Spirit Temple)
+    {
+        /* Actor ID   */ ACTOR_BG_JYA_IRONOBJ,
+        /* Position   */ { -341, -120, -1298 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x0
     },

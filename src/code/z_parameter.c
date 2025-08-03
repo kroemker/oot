@@ -4202,28 +4202,12 @@ void Interface_Update(PlayState* play) {
     s16 risingAlpha;
     u16 action;
 
-#if OOT_DEBUG
-    {
-        Input* debugInput = &play->state.input[2];
-
-        if (CHECK_BTN_ALL(debugInput->press.button, BTN_DLEFT)) {
-            gSaveContext.language = LANGUAGE_ENG;
-            PRINTF("J_N=%x J_N=%x\n", gSaveContext.language, &gSaveContext.language);
-        } else if (CHECK_BTN_ALL(debugInput->press.button, BTN_DUP)) {
-            gSaveContext.language = LANGUAGE_GER;
-            PRINTF("J_N=%x J_N=%x\n", gSaveContext.language, &gSaveContext.language);
-        } else if (CHECK_BTN_ALL(debugInput->press.button, BTN_DRIGHT)) {
-            gSaveContext.language = LANGUAGE_FRA;
-            PRINTF("J_N=%x J_N=%x\n", gSaveContext.language, &gSaveContext.language);
-        }
-    }
-#endif
     if (gSaveContext.acquiredIronKnuckleTransform) {
         if (play->roomCtx.curRoom.num == 1) {  // no transformations in room 1
             interfaceCtx->dpadAlpha = CLAMP_MIN(interfaceCtx->dpadAlpha - 10, 70);
         }
         else {
-            interfaceCtx->dpadAlpha = CLAMP_MAX(interfaceCtx->healthAlpha, CLAMP_MAX(interfaceCtx->dpadAlpha + 10, 255));
+            interfaceCtx->dpadAlpha = CLAMP_MAX(CLAMP_MAX(interfaceCtx->dpadAlpha + 10, 255), interfaceCtx->healthAlpha);
         }
     }
     else {

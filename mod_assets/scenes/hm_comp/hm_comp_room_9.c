@@ -5,7 +5,7 @@
  * Header Child Day (Default)
 */
 #define LENGTH_HM_COMP_ROOM_9_HEADER00_OBJECTLIST 2
-#define LENGTH_HM_COMP_ROOM_9_HEADER00_ACTORLIST 6
+#define LENGTH_HM_COMP_ROOM_9_HEADER00_ACTORLIST 9
 SceneCmd hm_comp_room_9_header00[] = {
     SCENE_CMD_ROOM_SHAPE(&hm_comp_room_9_shapeHeader),
     SCENE_CMD_ECHO_SETTINGS(0x00),
@@ -69,6 +69,30 @@ ActorEntry hm_comp_room_9_header00_actorList[LENGTH_HM_COMP_ROOM_9_HEADER00_ACTO
         /* Position   */ { 1767, -382, 765 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x8003
+    },
+
+    // Breakable Pot
+    {
+        /* Actor ID   */ ACTOR_OBJ_TSUBO,
+        /* Position   */ { 925, -382, 1317 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0003
+    },
+
+    // Breakable Pot
+    {
+        /* Actor ID   */ ACTOR_OBJ_TSUBO,
+        /* Position   */ { 982, -382, 1317 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0003
+    },
+
+    // Breakable Pot
+    {
+        /* Actor ID   */ ACTOR_OBJ_TSUBO,
+        /* Position   */ { 1048, -382, 1317 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0003
     },
 };
 

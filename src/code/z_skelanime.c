@@ -1456,6 +1456,7 @@ BAD_RETURN(s32) SkelAnime_Init(PlayState* play, SkelAnime* skelAnime, SkeletonHe
 BAD_RETURN(s32) SkelAnime_InitFlex(PlayState* play, SkelAnime* skelAnime, FlexSkeletonHeader* skeletonHeaderSeg,
                                    AnimationHeader* animation, Vec3s* jointTable, Vec3s* morphTable, s32 limbCount) {
     FlexSkeletonHeader* skeletonHeader = SEGMENTED_TO_VIRTUAL(skeletonHeaderSeg);
+    PRINTF("skeletonHeaderSeg = %08x, skeletonHeader = %08x\n", skeletonHeaderSeg, skeletonHeader);
 
     skelAnime->limbCount = skeletonHeader->sh.limbCount + 1;
     skelAnime->dListCount = skeletonHeader->dListCount;
@@ -1468,6 +1469,7 @@ BAD_RETURN(s32) SkelAnime_InitFlex(PlayState* play, SkelAnime* skelAnime, FlexSk
         skelAnime->morphTable =
             ZELDA_ARENA_MALLOC(skelAnime->limbCount * sizeof(*skelAnime->morphTable), "../z_skelanime.c", 3048);
     } else {
+        PRINTF("limbCount = %d, skelAnime->limbCount = %d\n", limbCount, skelAnime->limbCount);
         ASSERT(limbCount == skelAnime->limbCount, "joint_buff_num == this->joint_num", "../z_skelanime.c", 3052);
         skelAnime->jointTable = jointTable;
         skelAnime->morphTable = morphTable;

@@ -7,24 +7,6 @@ VisZBuf sVisZBuf;
 VisMono sVisMono;
 ViMode sViMode;
 
-#if OOT_DEBUG
-FaultClient sGameFaultClient;
-u16 sLastButtonPressed;
-
-void GameState_FaultPrint(void) {
-    static char sBtnChars[] = "ABZSuldr*+LRudlr";
-    s32 i;
-
-    PRINTF("last_button=%04x\n", sLastButtonPressed);
-    FaultDrawer_DrawText(120, 180, "%08x", sLastButtonPressed);
-    for (i = 0; i < ARRAY_COUNT(sBtnChars); i++) {
-        if (sLastButtonPressed & (1 << i)) {
-            FaultDrawer_DrawText((i * 8) + 120, 190, "%c", sBtnChars[i]);
-        }
-    }
-}
-#endif
-
 void GameState_SetFBFilter(Gfx** gfxP) {
     Gfx* gfx = *gfxP;
 
@@ -164,31 +146,7 @@ void GameState_Draw(GameState* gameState, GraphicsContext* gfxCtx) {
         GameState_SetFBFilter(&newDList);
     }
 
-#if OOT_DEBUG
-    sLastButtonPressed = gameState->input[0].press.button | gameState->input[0].cur.button;
-    if (R_DISABLE_INPUT_DISPLAY == 0) {
-        GameState_DrawInputDisplay(sLastButtonPressed, &newDList);
-    }
-
-    if (R_ENABLE_AUDIO_DBG & 1) {
-        s32 pad;
-        GfxPrint printer;
-
-        GfxPrint_Init(&printer);
-        GfxPrint_Open(&printer, newDList);
-        AudioDebug_Draw(&printer);
-        newDList = GfxPrint_Close(&printer);
-        GfxPrint_Destroy(&printer);
-    }
-#endif
-
     if (R_ENABLE_ARENA_DBG < 0) {
-#if OOT_DEBUG
-        s32 pad;
-        DebugArena_Display();
-        SystemArena_Display();
-        PRINTF("%08x bytes left until the death of Hyrule (game_alloc)\n", THA_GetRemaining(&gameState->tha));
-#endif
         R_ENABLE_ARENA_DBG = 0;
     }
 
@@ -257,82 +215,6 @@ void GameState_Update(GameState* gameState) {
 
     func_800C4344(gameState);
 
-#if OOT_DEBUG
-    if (SREG(63) == 1u) {
-        if (R_VI_MODE_EDIT_STATE < VI_MODE_EDIT_STATE_INACTIVE) {
-            R_VI_MODE_EDIT_STATE = VI_MODE_EDIT_STATE_INACTIVE;
-            gfxCtx->viMode = &gViConfigMode;
-            gfxCtx->viFeatures = gViConfigFeatures;
-            gfxCtx->xScale = gViConfigXScale;
-            gfxCtx->yScale = gViConfigYScale;
-        } else if (R_VI_MODE_EDIT_STATE > VI_MODE_EDIT_STATE_INACTIVE) {
-            ViMode_Update(&sViMode, &gameState->input[0]);
-            gfxCtx->viMode = &sViMode.customViMode;
-            gfxCtx->viFeatures = sViMode.viFeatures;
-            gfxCtx->xScale = 1.0f;
-            gfxCtx->yScale = 1.0f;
-        }
-    } else if (SREG(63) >= 2) {
-        gfxCtx->viMode = &gViConfigMode;
-        gfxCtx->viFeatures = gViConfigFeatures;
-        gfxCtx->xScale = gViConfigXScale;
-        gfxCtx->yScale = gViConfigYScale;
-
-        if (SREG(63) == 6 || (SREG(63) == 2u && osTvType == OS_TV_NTSC)) {
-            gfxCtx->viMode = &osViModeNtscLan1;
-            gfxCtx->yScale = 1.0f;
-        }
-
-        if (SREG(63) == 5 || (SREG(63) == 2u && osTvType == OS_TV_MPAL)) {
-            gfxCtx->viMode = &osViModeMpalLan1;
-            gfxCtx->yScale = 1.0f;
-        }
-
-        if (SREG(63) == 4 || (SREG(63) == 2u && osTvType == OS_TV_PAL)) {
-            gfxCtx->viMode = &osViModePalLan1;
-            gfxCtx->yScale = 1.0f;
-        }
-
-        if (SREG(63) == 3 || (SREG(63) == 2u && osTvType == OS_TV_PAL)) {
-            gfxCtx->viMode = &osViModeFpalLan1;
-            gfxCtx->yScale = 0.833f;
-        }
-    } else {
-        gfxCtx->viMode = NULL;
-    }
-
-    if (R_HREG_MODE == HREG_MODE_VI) {
-        if (R_VI_INIT != HREG_MODE_VI) {
-            R_VI_INIT = HREG_MODE_VI;
-            R_VI_NEXT_Y_SCALE_MODE = 0;
-            R_VI_NEXT_ADDI_SCAN_LINES = gViConfigAdditionalScanLines;
-            R_VI_CUR_ADDI_SCAN_LINES = 0;
-            R_VI_CUR_Y_SCALE_MODE = 0;
-        }
-
-        if (R_VI_NEXT_ADDI_SCAN_LINES < 0) {
-            R_VI_NEXT_ADDI_SCAN_LINES = 0;
-        }
-
-        if (R_VI_NEXT_ADDI_SCAN_LINES > 0x30) {
-            R_VI_NEXT_ADDI_SCAN_LINES = 0x30;
-        }
-
-        if ((R_VI_CUR_ADDI_SCAN_LINES != R_VI_NEXT_ADDI_SCAN_LINES) ||
-            R_VI_CUR_Y_SCALE_MODE != R_VI_NEXT_Y_SCALE_MODE) {
-
-            R_VI_CUR_ADDI_SCAN_LINES = R_VI_NEXT_ADDI_SCAN_LINES;
-            R_VI_CUR_Y_SCALE_MODE = R_VI_NEXT_Y_SCALE_MODE;
-
-            gViConfigAdditionalScanLines = R_VI_NEXT_ADDI_SCAN_LINES;
-            gViConfigYScale = R_VI_NEXT_Y_SCALE_MODE == 0
-                                  ? ((f32)SCREEN_HEIGHT) / (gViConfigAdditionalScanLines + (f32)SCREEN_HEIGHT)
-                                  : 1.0f;
-            D_80009430 = 1;
-        }
-    }
-#endif
-
     if (R_PAUSE_BG_PRERENDER_STATE != (u32)PAUSE_BG_PRERENDER_PROCESS) {
         GameState_Draw(gameState, gfxCtx);
         func_800C49F4(gfxCtx);
@@ -389,9 +271,6 @@ void GameState_Realloc(GameState* gameState, size_t size) {
         THA_Init(&gameState->tha, NULL, 0);
         PRINTF("Failure to secure Hyral\n"); // "Failure to secure Hyral"
 
-#if OOT_DEBUG
-        SystemArena_Display();
-#endif
         HUNGUP_AND_CRASH("../game.c", 1044);
     }
 }
@@ -444,10 +323,6 @@ void GameState_Init(GameState* gameState, GameStateFunc init, GraphicsContext* g
     endTime = osGetTime();
     PRINTF("Other initialization processing time %d us\n", OS_CYCLES_TO_USEC(endTime - startTime));
 
-#if OOT_DEBUG
-    Fault_AddClient(&sGameFaultClient, GameState_FaultPrint, NULL, NULL);
-#endif
-
     PRINTF("game constructor end\n"); // "game constructor end"
 }
 
@@ -470,11 +345,6 @@ void GameState_Destroy(GameState* gameState) {
     }
     THA_Destroy(&gameState->tha);
     GameAlloc_Cleanup(&gameState->alloc);
-
-#if OOT_DEBUG
-    SystemArena_Display();
-    Fault_RemoveClient(&sGameFaultClient);
-#endif
 
     PRINTF("game destructor end\n"); // "game destructor end"
 }

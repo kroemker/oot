@@ -374,6 +374,10 @@ void HmCompObjects_InitPlatform(Actor* thisx, PlayState* play) {
 }
 
 // GATE
+s32 HmCompObjects_Action_NoEnemiesLeft(HmCompObjects* this, PlayState* play) {
+    return play->actorCtx.actorLists[ACTORCAT_ENEMY].head == NULL;
+}
+
 void HmCompObjects_Action_Gate_Rise(HmCompObjects* this, PlayState* play) {
     this->dyna.actor.velocity.y = CLAMP_MAX(this->dyna.actor.velocity.y + 1.0f, HMCO_TYPE_GATE_1 ? GATE1_RISE_SPEED : GATE2_RISE_SPEED);
 
@@ -394,7 +398,11 @@ void HmCompObjects_Action_Gate_Idle(HmCompObjects* this, PlayState* play) {
         return;
     }
 
-    if (Flags_GetSwitch(play, this->switchFlag) || (this->switchFlag == 0x3F && Flags_GetClear(play, this->dyna.actor.room))) {
+    if (Flags_GetSwitch(play, this->switchFlag) || (this->switchFlag == 0x30 && HmCompObjects_Action_NoEnemiesLeft(this, play))) {
+        if (this->switchFlag == 0x30 && HmCompObjects_Action_NoEnemiesLeft(this, play)) {
+            SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, 0);
+        }
+
         this->moved = 1;
         this->timer = 55;
         this->dyna.actor.home.pos.y += this->type == HMCO_TYPE_GATE_1 ? GATE1_MOVE_DISTANCE : GATE2_MOVE_DISTANCE;
@@ -412,7 +420,7 @@ void HmCompObjects_InitGate(Actor* thisx, PlayState* play) {
     CollisionHeader_GetVirtual(this->type == HMCO_TYPE_GATE_1 ? &gGate1_collisionHeader : &gGate2_collisionHeader , &colHeader);
     this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, &this->dyna.actor, colHeader);
 
-    if (Flags_GetSwitch(play, this->switchFlag) || (this->switchFlag == 0x3F && Flags_GetClear(play, this->dyna.actor.room))) {
+    if (Flags_GetSwitch(play, this->switchFlag)) {
         this->moved = 1;
         this->dyna.actor.home.pos.y = this->dyna.actor.world.pos.y += this->type == HMCO_TYPE_GATE_1 ? GATE1_MOVE_DISTANCE : GATE2_MOVE_DISTANCE;
     }

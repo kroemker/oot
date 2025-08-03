@@ -843,6 +843,7 @@ void Actor_Init(Actor* actor, PlayState* play) {
     actor->floorBgId = BGCHECK_SCENE;
     ActorShape_Init(&actor->shape, 0.0f, NULL, 0.0f);
     if (Object_IsLoaded(&play->objectCtx, actor->objectSlot)) {
+        PRINTF("Actor_init: object_slot %d, gSegments[6] %08x -> %08x\n", actor->objectSlot, gSegments[6], VIRTUAL_TO_PHYSICAL(Actor_GetObjectSegment(play, actor)));
         Actor_SetObjectDependency(play, actor);
         actor->init(actor, play);
         actor->init = NULL;

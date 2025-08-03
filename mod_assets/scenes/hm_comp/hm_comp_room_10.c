@@ -29,7 +29,7 @@ ActorEntry hm_comp_room_10_header00_actorList[LENGTH_HM_COMP_ROOM_10_HEADER00_AC
         /* Actor ID   */ ACTOR_OBJ_SWITCH,
         /* Position   */ { 3611, -134, 760 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x8D00
+        /* Parameters */ 0x8F00
     },
 
     // Dungeon Switches
@@ -37,7 +37,7 @@ ActorEntry hm_comp_room_10_header00_actorList[LENGTH_HM_COMP_ROOM_10_HEADER00_AC
         /* Actor ID   */ ACTOR_OBJ_SWITCH,
         /* Position   */ { 3531, -134, 760 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x8D00
+        /* Parameters */ 0x8F00
     },
 
     // Dungeon Switches
@@ -45,7 +45,7 @@ ActorEntry hm_comp_room_10_header00_actorList[LENGTH_HM_COMP_ROOM_10_HEADER00_AC
         /* Actor ID   */ ACTOR_OBJ_SWITCH,
         /* Position   */ { 3531, -134, 680 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x8D00
+        /* Parameters */ 0x8F00
     },
 
     // Dungeon Switches
@@ -53,7 +53,7 @@ ActorEntry hm_comp_room_10_header00_actorList[LENGTH_HM_COMP_ROOM_10_HEADER00_AC
         /* Actor ID   */ ACTOR_OBJ_SWITCH,
         /* Position   */ { 3531, -134, 600 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x8D00
+        /* Parameters */ 0x8F00
     },
 
     // Dungeon Switches
@@ -61,7 +61,7 @@ ActorEntry hm_comp_room_10_header00_actorList[LENGTH_HM_COMP_ROOM_10_HEADER00_AC
         /* Actor ID   */ ACTOR_OBJ_SWITCH,
         /* Position   */ { 3611, -134, 600 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x8D00
+        /* Parameters */ 0x8F00
     },
 
     // Dungeon Switches
@@ -69,7 +69,7 @@ ActorEntry hm_comp_room_10_header00_actorList[LENGTH_HM_COMP_ROOM_10_HEADER00_AC
         /* Actor ID   */ ACTOR_OBJ_SWITCH,
         /* Position   */ { 3691, -134, 600 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x8D00
+        /* Parameters */ 0x8F00
     },
 
     // Dungeon Switches
@@ -77,7 +77,7 @@ ActorEntry hm_comp_room_10_header00_actorList[LENGTH_HM_COMP_ROOM_10_HEADER00_AC
         /* Actor ID   */ ACTOR_OBJ_SWITCH,
         /* Position   */ { 3691, -134, 680 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
-        /* Parameters */ 0x8D00
+        /* Parameters */ 0x8F00
     },
 };
 

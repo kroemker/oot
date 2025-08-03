@@ -7,7 +7,7 @@
 SceneCmd hm_comp_boss_scene_header00[] = {
     SCENE_CMD_COL_HEADER(&hm_comp_boss_scene_collisionHeader),
     SCENE_CMD_ROOM_LIST(1, hm_comp_boss_scene_roomList),
-    SCENE_CMD_SOUND_SETTINGS(0x00, 0x01, NA_BGM_NO_MUSIC),
+    SCENE_CMD_SOUND_SETTINGS(0x00, 0x01, NA_BGM_DUNGEON),
     SCENE_CMD_MISC_SETTINGS(0x00, 0x00),
     SCENE_CMD_SPECIAL_FILES(0x00, OBJECT_GAMEPLAY_DANGEON_KEEP),
     SCENE_CMD_SKYBOX_SETTINGS(0x00, 0x00, LIGHT_MODE_TIME),
@@ -26,7 +26,7 @@ ActorEntry hm_comp_boss_scene_header00_playerEntryList[] = {
     // Link / Spawn point
     {
         /* Actor ID   */ ACTOR_PLAYER,
-        /* Position   */ { 6, -120, -1948 },
+        /* Position   */ { 73, -120, -1948 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x0FFF
     },

@@ -84,6 +84,7 @@ void Object_InitContext(PlayState* play, ObjectContext* objectCtx) {
         GAME_STATE_ALLOC(&play->state, spaceSize, "../z_scene.c", 219);
     objectCtx->spaceEnd = (void*)((uintptr_t)objectCtx->spaceStart + spaceSize);
     objectCtx->transformSpaceStart = GAME_STATE_ALLOC(&play->state, TRANSFORM_OBJECT_SPACE, __FILE__, __LINE__);
+    objectCtx->loadedTransformObjectId = -1;
 
     objectCtx->mainKeepSlot = Object_SpawnPersistent(objectCtx, OBJECT_GAMEPLAY_KEEP);
     gSegments[4] = VIRTUAL_TO_PHYSICAL(objectCtx->slots[objectCtx->mainKeepSlot].segment);

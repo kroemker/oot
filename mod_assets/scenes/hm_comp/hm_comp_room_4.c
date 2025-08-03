@@ -5,7 +5,7 @@
  * Header Child Day (Default)
 */
 #define LENGTH_HM_COMP_ROOM_4_HEADER00_OBJECTLIST 1
-#define LENGTH_HM_COMP_ROOM_4_HEADER00_ACTORLIST 5
+#define LENGTH_HM_COMP_ROOM_4_HEADER00_ACTORLIST 10
 SceneCmd hm_comp_room_4_header00[] = {
     SCENE_CMD_ROOM_SHAPE(&hm_comp_room_4_shapeHeader),
     SCENE_CMD_ECHO_SETTINGS(0x00),
@@ -30,6 +30,14 @@ ActorEntry hm_comp_room_4_header00_actorList[LENGTH_HM_COMP_ROOM_4_HEADER00_ACTO
         /* Parameters */ 0x0920
     },
 
+    // Dungeon Switches
+    {
+        /* Actor ID   */ ACTOR_OBJ_SWITCH,
+        /* Position   */ { 1123, -382, 5393 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0930
+    },
+
     // Small Wooden Crate
     {
         /* Actor ID   */ ACTOR_OBJ_KIBAKO,
@@ -42,6 +50,38 @@ ActorEntry hm_comp_room_4_header00_actorList[LENGTH_HM_COMP_ROOM_4_HEADER00_ACTO
     {
         /* Actor ID   */ ACTOR_OBJ_KIBAKO,
         /* Position   */ { 1354, -382, 2889 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0003
+    },
+
+    // Small Wooden Crate
+    {
+        /* Actor ID   */ ACTOR_OBJ_KIBAKO,
+        /* Position   */ { 1354, -382, 2939 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0003
+    },
+
+    // Small Wooden Crate
+    {
+        /* Actor ID   */ ACTOR_OBJ_KIBAKO,
+        /* Position   */ { 1354, -382, 5339 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0009
+    },
+
+    // Small Wooden Crate
+    {
+        /* Actor ID   */ ACTOR_OBJ_KIBAKO,
+        /* Position   */ { 1354, -382, 5394 },
+        /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
+        /* Parameters */ 0x0003
+    },
+
+    // Small Wooden Crate
+    {
+        /* Actor ID   */ ACTOR_OBJ_KIBAKO,
+        /* Position   */ { 1354, -382, 5445 },
         /* Rotation   */ { DEG_TO_BINANG(0.000), DEG_TO_BINANG(180.000), DEG_TO_BINANG(0.000) },
         /* Parameters */ 0x0003
     },

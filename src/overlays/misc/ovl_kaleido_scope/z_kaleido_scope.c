@@ -634,13 +634,6 @@ void KaleidoScope_SetupPageSwitch(PauseContext* pauseCtx, u8 pt) {
 }
 
 void KaleidoScope_HandlePageToggles(PauseContext* pauseCtx, Input* input) {
-    if ((pauseCtx->debugState == 0) && CHECK_BTN_ALL(input->press.button, BTN_L)) {
-#if OOT_DEBUG
-        pauseCtx->debugState = 1;
-#endif
-        return;
-    }
-
     if (CHECK_BTN_ALL(input->press.button, BTN_R)) {
         KaleidoScope_SetupPageSwitch(pauseCtx, PAGE_SWITCH_PT_RIGHT);
         return;
